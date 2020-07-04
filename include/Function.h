@@ -22,6 +22,8 @@ namespace skx {
     class Function {
     private:
         ReturnOpWithCtx* walk(CompileItem* item);
+        bool lastFailed = false;
+        uint16_t lastFailLevel = 0;
     public:
         std::string name;
         std::vector<VariableDescriptor*> targetParams;

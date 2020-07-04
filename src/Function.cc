@@ -59,5 +59,11 @@ skx::ReturnOpWithCtx* skx::Function::walk(skx::CompileItem *item) {
         }
         //assignments should not have children
     }
+    if(!item->executions.empty()) {
+        for (int i = 0; i < item->executions.size(); ++i) {
+            auto current = item->executions[i];
+            current->execute(item->ctx);
+        }
+    }
     return nullptr;
 }

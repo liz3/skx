@@ -5,6 +5,7 @@
 #include "../include/TreeCompiler.h"
 #include "../include/utils.h"
 #include "../include/stdlib.h"
+#include "../include/RegexUtils.h"
 
 #include "../include/Function.h"
 
@@ -196,6 +197,8 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
             step = 0;
             assigment = nullptr;
         }
+
+
         if (current[0] == '{' && current[current.length() - 1] == '}') {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *currentVar = nullptr;
@@ -280,6 +283,25 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
             }
         }
         target->executions.push_back(pr);
+        return;
+    }
+    auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
+    if (!(funcCallMatches).empty()) {
+        auto entry = funcCallMatches[0];
+        std::string base = entry.content;
+        std::string name = base.substr(0, base.find_first_of(" \n\r\t\f\v("));
+        size_t paramsStart = base.find_first_of('(');
+        size_t paramsEnd = base.find_last_of(')');
+        std::string params = base.substr(paramsStart + 1, paramsEnd - paramsStart - 1);
+        auto *call = new FunctionInvoker();
+        call->function = context->global->functions[name];
+
+        for (auto const &param : skx::Utils::split(params, ",")) {
+            auto trimmed = skx::Utils::trim(param);
+            auto descriptor = skx::Variable::extractNameSafe(trimmed);
+            call->dependencies.push_back(descriptor);
+        }
+        target->executions.push_back(call);
     }
 
 }

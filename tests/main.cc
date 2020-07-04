@@ -31,6 +31,6 @@ int main() {
     auto var2 = result->compiledPreRuntimeEvents[0]->children[0]->children[0]->ctx->vars["test2"];
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
     auto t = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "everything took: " << sizeof(float )<< " microseonds";
+    std::cout << "everything took: " << t << " microseonds";
     return 0;
 }

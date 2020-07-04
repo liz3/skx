@@ -49,6 +49,7 @@ void skx::Utils::copyVariableValue(skx::Variable *source, skx::Variable *target)
             break;
         case STRING:
             target->value = new std::string(*(static_cast<std::string *>(source->value)));
+            break;
         case ARRAY:
             //THIS IS NOT A DEEP COPY
             auto *array = static_cast<Array *>(source->value);

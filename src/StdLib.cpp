@@ -20,8 +20,14 @@ namespace skx {
             if(!sourceVar) {
                 return nullptr;
             }
-           std::string* val = static_cast<std::string*>(sourceVar->value);
-           std::cout << (*val) << "\n";
+           if(sourceVar->type == STRING) {
+               std::string* val = static_cast<std::string*>(sourceVar->value);
+               std::cout << (*val) << "\n";
+           } else if(sourceVar->type == BOOLEAN) {
+               bool * v = static_cast<bool *>(sourceVar->value);
+               std::string val((*v) ? "true" : "false");
+               std::cout << (val) << "\n";
+           }
         }
         return nullptr;
     }

@@ -18,7 +18,7 @@ namespace skx {
 
         Variable* execute(Context *target) override;
     };
-    class FunctionInvoker : public Execution { //Yes this is a execution
+    class FunctionInvoker : public Execution { //Yep, this is a execution
     public:
         FunctionInvoker() : Execution() {
             name = "std::invoke";
