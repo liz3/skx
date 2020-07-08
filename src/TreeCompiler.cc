@@ -115,7 +115,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             currentOperator = nullptr;
         }
         if ((current == "true" || current == "false") && state == 2) {
-            currentOperator->target = new OperatorPart(LITERAL, BOOLEAN, new bool(current == "true:"), false);
+            currentOperator->target = new OperatorPart(LITERAL, BOOLEAN, new bool(current == "true"), false);
 
             target->comparisons.push_back(currentOperator);
             state = 0;
