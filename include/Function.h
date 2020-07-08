@@ -26,8 +26,8 @@ namespace skx {
         uint16_t lastFailLevel = 0;
     public:
         std::string name;
-        std::vector<VariableDescriptor*> targetParams;
-        Variable* run(std::vector<Variable*> execVars);
+        std::vector<ValueDescriptor*> targetParams;
+        OperatorPart *run(std::vector<OperatorPart *> execVars, Context *callingContext);
         CompileItem* functionItem;
         VarType returnType = UNDEFINED;
 

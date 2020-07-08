@@ -130,19 +130,32 @@ bool skx::Assigment::execute(skx::Context *context) {
     if(targetVar->state == SPOILED) {
         return false;
     }
-    if (source->type == UNDEFINED) {
+    if (source->type == UNDEFINED && source->operatorType != EXECUTION) {
         targetVar->type = UNDEFINED;
         targetVar->value = nullptr;
         return true;
     }
-    if (source->type != target->type) return false;
+    if (source->type != target->type && source->operatorType != EXECUTION) return false;
     void *sourceValue;
     if (source->operatorType == LITERAL) {
         sourceValue = source->value;
     } else if (source->operatorType == EXECUTION) {
         auto* execTarget = static_cast<Execution*>(source->value);
-        Variable* executionResult = execTarget->execute(context);
-        sourceValue = executionResult == nullptr ? nullptr : executionResult->value;
+        OperatorPart* executionResult = execTarget->execute(context);
+        if(executionResult == nullptr) {
+            sourceValue = nullptr;
+        } else {
+            if(executionResult->operatorType == VARIABLE) {
+                sourceValue = static_cast<Variable*>(executionResult->value)->value;
+                source->type = static_cast<Variable*>(executionResult->value)->type;
+            } else {
+                if(executionResult->operatorType == LITERAL) {
+                    source->type = executionResult->type;
+                }
+                sourceValue = executionResult->value;
+            }
+        }
+
     }else {
         auto *sourceVar = static_cast<Variable *>(source->value);
         if(sourceVar->state == SPOILED) {
@@ -274,6 +287,6 @@ bool skx::Assigment::execute(skx::Context *context) {
 skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, void *value, bool isDouble)
         : operatorType(operatorType), type(type), value(value), isDouble(isDouble) {}
 
-skx::Variable *skx::Execution::execute(skx::Context *target) {
+skx::OperatorPart *skx::Execution::execute(skx::Context *target) {
     return nullptr;
 }

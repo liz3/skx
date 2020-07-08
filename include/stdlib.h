@@ -16,7 +16,7 @@ namespace skx {
             name = "std::print";
         }
 
-        Variable* execute(Context *target) override;
+        OperatorPart* execute(Context *target) override;
     };
     class FunctionInvoker : public Execution { //Yep, this is a execution
     public:
@@ -24,7 +24,7 @@ namespace skx {
             name = "std::invoke";
         }
         Function* function;
-        Variable* execute(Context *target) override;
+        OperatorPart* execute(Context *target) override;
     };
 }
 

@@ -5,6 +5,7 @@
 #include "../include/TreeCompiler.h"
 #include "../include/utils.h"
 #include "../include/stdlib.h"
+#include "../include/Literal.h"
 #include "../include/RegexUtils.h"
 
 #include "../include/Function.h"
@@ -62,6 +63,8 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
             compileCondition(actualContent, context, target);
         } else if (actualContent.rfind("set", 0) == 0) {
             compileAssigment(actualContent, context, target);
+        }  else if (actualContent.rfind("return", 0) == 0) {
+            compileReturn(actualContent, context, target);
         } else {
             compileExecution(actualContent, context, target);
         }
@@ -93,6 +96,9 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
     std::string last = "";
     for (int i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
+        if(current[current.length() -1] == ':') {
+            current = current.substr(0, current.length() - 1);
+        }
         if (current.rfind('"', 0) == 0 && state == 2) {
             int x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
@@ -108,7 +114,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             state = 0;
             currentOperator = nullptr;
         }
-        if ((current == "true:" || current == "false:") && state == 2) {
+        if ((current == "true" || current == "false") && state == 2) {
             currentOperator->target = new OperatorPart(LITERAL, BOOLEAN, new bool(current == "true:"), false);
 
             target->comparisons.push_back(currentOperator);
@@ -197,7 +203,32 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
             step = 0;
             assigment = nullptr;
         }
+        if(step == 2) {
+            auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
+            if (!(funcCallMatches).empty()) {
+                auto entry = funcCallMatches[0];
+                std::string base = entry.content;
+                std::string name = base.substr(0, base.find_first_of(" \n\r\t\f\v("));
+                size_t paramsStart = base.find_first_of('(');
+                size_t paramsEnd = base.find_last_of(')');
+                std::string params = base.substr(paramsStart + 1, paramsEnd - paramsStart - 1);
+                auto *call = new FunctionInvoker();
+                call->function = ctx->global->functions[name];
 
+                for (auto const &param : skx::Utils::split(params, ",")) {
+                    auto trimmed = skx::Utils::trim(param);
+                    auto descriptor = skx::Variable::extractNameSafe(trimmed);
+
+                    call->dependencies.push_back(new OperatorPart(DESCRIPTOR, UNDEFINED, descriptor, false));
+                }
+                assigment->source = new OperatorPart(EXECUTION, UNDEFINED, call, false);
+                target->assignments.push_back(assigment);
+                assigment = nullptr;
+                step = 0;
+                created = false;
+            }
+
+        }
 
         if (current[0] == '{' && current[current.length() - 1] == '}') {
             auto descriptor = skx::Variable::extractNameSafe(current);
@@ -254,7 +285,7 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
     std::string params = base.substr(paramsStart + 1, paramsEnd - paramsStart - 1);
     for (auto const &param : skx::Utils::split(params, ",")) {
         auto trimmed = skx::Utils::trim(param);
-        VariableDescriptor *descriptor = new VariableDescriptor();
+        ValueDescriptor *descriptor = new ValueDescriptor();
         if (trimmed.find(':') == std::string::npos) {
             descriptor->type = CONTEXT;
             descriptor->name = trimmed;
@@ -276,11 +307,28 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
     if (content.find("to console") != std::string::npos) {
         auto *pr = new Print();
         auto spaceSplit = skx::Utils::split(content, " ");
-        for (auto current : spaceSplit) {
+        size_t pos = 0;
+        for (int i = 0; i < spaceSplit.size(); i++) {
+            auto current = spaceSplit[i];
+            if (current.rfind('"', 0) == 0) {
+                int x = i;
+                while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
+                    i++;
+                    if (i != x)
+                        current = current.append(" " + spaceSplit[i]);
+
+                }
+                if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
+                auto *f = new std::string(current.substr(1, current.length() - 2));
+                pr->dependencies.push_back(new OperatorPart(LITERAL, STRING, f, false));
+
+            }
+
             if (current[0] == '{' && current[current.length() - 1] == '}') {
                 auto descriptor = skx::Variable::extractNameSafe(current);
-                pr->dependencies.push_back(descriptor);
+                pr->dependencies.push_back(new OperatorPart(DESCRIPTOR, UNDEFINED, descriptor, false));
             }
+            pos += current.length();
         }
         target->executions.push_back(pr);
         return;
@@ -299,9 +347,39 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
         for (auto const &param : skx::Utils::split(params, ",")) {
             auto trimmed = skx::Utils::trim(param);
             auto descriptor = skx::Variable::extractNameSafe(trimmed);
-            call->dependencies.push_back(descriptor);
+
+            call->dependencies.push_back(new OperatorPart(DESCRIPTOR, UNDEFINED, descriptor, false));
         }
         target->executions.push_back(call);
     }
 
+}
+
+void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pContext, skx::CompileItem *pItem) {
+    auto spaceSplit = skx::Utils::split(basicString.substr(7), " ");
+
+    for (int i = 0; i < spaceSplit.size(); i++) {
+        auto current = spaceSplit[i];
+        if (current.rfind('"', 0) == 0) {
+            int x = i;
+            while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
+                i++;
+                if (i != x)
+                    current = current.append(" " + spaceSplit[i]);
+
+            }
+            if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
+            auto *f = new std::string(current.substr(1, current.length() - 2));
+            pItem->returner = new ReturnOperation();
+            pItem->returner->targetReturnItem = new OperatorPart(LITERAL, STRING, f, false);
+
+        }
+
+        if (current[0] == '{' && current[current.length() - 1] == '}') {
+            auto descriptor = skx::Variable::extractNameSafe(current);
+            pItem->returner = new ReturnOperation();
+            pItem->returner->targetReturnItem= new OperatorPart(DESCRIPTOR, UNDEFINED, descriptor, false);
+        }
+
+    }
 }

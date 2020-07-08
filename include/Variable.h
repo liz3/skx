@@ -30,9 +30,10 @@ class Context;
         SPOILED,
         RUNTIME_CR
     };
-    struct VariableDescriptor {
+    struct ValueDescriptor {
         std::string name;
         AccessType type;
+
     };
 
     class Variable {
@@ -44,7 +45,7 @@ class Context;
         void* value;
         bool isDouble = false; // specific to number;
         static void createVarFromOption(std::string item, skx::Context* targetContext, bool isStatic);
-        static VariableDescriptor* extractNameSafe(std::string in);
+        static ValueDescriptor* extractNameSafe(std::string in);
         VarState state = SPOILED;
 
     };

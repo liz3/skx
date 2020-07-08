@@ -24,6 +24,14 @@ skx::Script *skx::Script::parse(char *input) {
     result->baseContext->global = result->baseContext;
     for (auto & walkItem : parseResult->rootItems) {
         auto baseType = skx::BaseAction::getBaseType(walkItem->actualContent);
+        if(baseType == OPTIONS) {
+            for(auto& opt : walkItem->children) {
+                Variable::createVarFromOption(opt->actualContent, result->baseContext, true);
+            }
+        }
+    }
+    for (auto & walkItem : parseResult->rootItems) {
+        auto baseType = skx::BaseAction::getBaseType(walkItem->actualContent);
         if(baseType == FUNCTION) {
             skx::TreeCompiler::compileTreeFunction(walkItem, result->baseContext);
         }
@@ -42,12 +50,6 @@ void skx::Script::walk(PreParserItem *item, Context *itemContext, Script *script
     if(item->level == 0) {
         auto baseType = skx::BaseAction::getBaseType(item->actualContent);
         switch (baseType) {
-            case OPTIONS: {
-                for(auto& opt : item->children) {
-                    Variable::createVarFromOption(opt->actualContent, itemContext, true);
-                }
-                break;
-            }
             case PRE_RUNTIME_EVENT: {
                 script->compiledPreRuntimeEvents.push_back(skx::TreeCompiler::compileTree(item, itemContext));
             }

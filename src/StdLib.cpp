@@ -9,44 +9,43 @@
 
 
 namespace skx {
-    Variable* Print::execute(Context *target) {
-        for (auto current : dependencies) {
-            Variable *sourceVar;
-            if (current->type == STATIC || current->type == GLOBAL) {
-                sourceVar = skx::Utils::searchRecursive(current->name, target->global);
-            } else {
-                sourceVar = skx::Utils::searchRecursive(current->name, target);
+    OperatorPart* Print::execute(Context *target) {
+        for (auto raw : dependencies) {
+            void* value = nullptr;
+            VarType type;
+            if(raw->operatorType == LITERAL) {
+                type = raw->type;
+                value = raw->value;
+            } else if(raw->operatorType == DESCRIPTOR) {
+                ValueDescriptor* current = static_cast<ValueDescriptor*>(raw->value);
+                Variable *sourceVar;
+                if (current->type == STATIC || current->type == GLOBAL) {
+                    sourceVar = skx::Utils::searchRecursive(current->name, target->global);
+                } else {
+                    sourceVar = skx::Utils::searchRecursive(current->name, target);
+                }
+                if(!sourceVar) {
+                    return nullptr;
+                }
+                value = sourceVar->value;
+                type = sourceVar->type;
             }
-            if(!sourceVar) {
-                return nullptr;
+            if(value == nullptr) return nullptr;
+            if(type == STRING) {
+                std::string* val = static_cast<std::string*>(value);
+                std::cout << (*val) << "\n";
+            } else if(type == BOOLEAN) {
+                bool * v = static_cast<bool *>(value);
+                std::string val((*v) ? "true" : "false");
+                std::cout << (val) << "\n";
             }
-           if(sourceVar->type == STRING) {
-               std::string* val = static_cast<std::string*>(sourceVar->value);
-               std::cout << (*val) << "\n";
-           } else if(sourceVar->type == BOOLEAN) {
-               bool * v = static_cast<bool *>(sourceVar->value);
-               std::string val((*v) ? "true" : "false");
-               std::cout << (val) << "\n";
-           }
         }
         return nullptr;
     }
 
-    Variable *FunctionInvoker::execute(Context *target) {
-        std::vector<Variable*> invokeVars;
-        for (auto current : dependencies) {
-            Variable *sourceVar;
-            if (current->type == STATIC || current->type == GLOBAL) {
-                sourceVar = skx::Utils::searchRecursive(current->name, target->global);
-            } else {
-                sourceVar = skx::Utils::searchRecursive(current->name, target);
-            }
-            if(!sourceVar) {
-                return nullptr;
-            }
-            invokeVars.push_back(sourceVar);
-        }
-        auto result = function->run(invokeVars);
+    OperatorPart *FunctionInvoker::execute(Context *target) {
+        auto result = function->run(dependencies, target);
+
         return result;
     }
 }

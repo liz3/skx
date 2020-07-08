@@ -28,7 +28,8 @@ namespace skx {
     enum OperatorType {
         LITERAL,
         VARIABLE,
-        EXECUTION
+        EXECUTION,
+        DESCRIPTOR
     };
     enum TriggerType {
         EVENT,
@@ -54,7 +55,7 @@ namespace skx {
     };
     class ReturnOperation {
     public:
-        VariableDescriptor* targetReturnItem = nullptr;
+        OperatorPart* targetReturnItem = nullptr;
     };
     class Assigment {
     public:
@@ -67,8 +68,8 @@ namespace skx {
     class Execution {
     public:
         std::string name;
-        std::vector<VariableDescriptor*> dependencies;
-        virtual Variable* execute(Context* target);
+        std::vector<OperatorPart*> dependencies;
+        virtual OperatorPart* execute(Context* target);
     };
     class Trigger {
     public:

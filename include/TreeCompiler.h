@@ -26,7 +26,7 @@ namespace skx {
         //item flags
         bool isElseIf = false;
         bool isElse = false;
-        ReturnOperation* returner; // this is specific to functions ofc
+        ReturnOperation* returner = nullptr; // this is specific to functions ofc
     };
 
     class TreeCompiler {
@@ -41,6 +41,7 @@ namespace skx {
 
         void compileAssigment(std::string basicString, Context *pContext, CompileItem *pItem);
         void compileExecution(std::string& basicString, Context *pContext, CompileItem *pItem);
+        void compileReturn(std::string& basicString, Context *pContext, CompileItem *pItem);
         void setupFunctionMeta(std::string& content, Function* target);
     };
 }
