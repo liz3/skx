@@ -18,7 +18,7 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
         } else if (targetVar->operatorType == DESCRIPTOR) {
             Variable *funcVar = functionItem->ctx->vars[currentTarget->name];
             Variable *tVar = nullptr;
-            ValueDescriptor *descriptor = static_cast<ValueDescriptor *>(targetVar->value);
+            VariableDescriptor *descriptor = static_cast<VariableDescriptor *>(targetVar->value);
             if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                 tVar = skx::Utils::searchRecursive(descriptor->name, callingContext->global);
             } else {
@@ -43,7 +43,7 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
     if (returnVal != nullptr) {
         if (returnVal->descriptor->targetReturnItem->operatorType == DESCRIPTOR) {
             Variable *var = nullptr;
-            auto *descriptor = static_cast<ValueDescriptor *>(returnVal->descriptor->targetReturnItem->value);
+            auto *descriptor = static_cast<VariableDescriptor *>(returnVal->descriptor->targetReturnItem->value);
             if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                 var = skx::Utils::searchRecursive(descriptor->name, callingContext->global);
             } else {

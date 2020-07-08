@@ -17,7 +17,7 @@ namespace skx {
                 type = raw->type;
                 value = raw->value;
             } else if(raw->operatorType == DESCRIPTOR) {
-                ValueDescriptor* current = static_cast<ValueDescriptor*>(raw->value);
+                VariableDescriptor* current = static_cast<VariableDescriptor*>(raw->value);
                 Variable *sourceVar;
                 if (current->type == STATIC || current->type == GLOBAL) {
                     sourceVar = skx::Utils::searchRecursive(current->name, target->global);

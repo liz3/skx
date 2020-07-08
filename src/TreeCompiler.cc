@@ -285,7 +285,7 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
     std::string params = base.substr(paramsStart + 1, paramsEnd - paramsStart - 1);
     for (auto const &param : skx::Utils::split(params, ",")) {
         auto trimmed = skx::Utils::trim(param);
-        ValueDescriptor *descriptor = new ValueDescriptor();
+        VariableDescriptor *descriptor = new VariableDescriptor();
         if (trimmed.find(':') == std::string::npos) {
             descriptor->type = CONTEXT;
             descriptor->name = trimmed;
