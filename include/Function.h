@@ -25,10 +25,12 @@ namespace skx {
         bool lastFailed = false;
         uint16_t lastFailLevel = 0;
     public:
+        virtual ~Function();
+
         std::string name;
         std::vector<VariableDescriptor*> targetParams;
         OperatorPart *run(std::vector<OperatorPart *> execVars, Context *callingContext);
-        CompileItem* functionItem;
+        CompileItem* functionItem = nullptr;
         VarType returnType = UNDEFINED;
 
     };

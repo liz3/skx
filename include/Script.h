@@ -14,8 +14,9 @@
 
 namespace skx {
     class Script {
-    private:
     public:
+        virtual ~Script();
+
         Context* baseContext;
         PreParseResult* preParseResult;
         std::vector<CompileItem*> compiledPreRuntimeEvents;

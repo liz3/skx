@@ -13,6 +13,8 @@
 namespace skx {
     class CompileItem {
     public:
+        virtual ~CompileItem();
+
         uint16_t level = 0;
         uint32_t line = 0;
         Context* ctx;

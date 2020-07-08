@@ -21,7 +21,7 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
             funcVar->value = targetVar->value;
         }
     }
-    ReturnOpWithCtx *returnVal;
+    ReturnOpWithCtx *returnVal = nullptr;
     CompileItem *item = functionItem;
 
     //Execute func
@@ -35,6 +35,7 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
         returnValue = returnVal->descriptor->targetReturnItem;
     }
 
+    delete returnVal;
     return returnValue;
 }
 
@@ -75,4 +76,12 @@ skx::ReturnOpWithCtx *skx::Function::walk(skx::CompileItem *item) {
         }
     }
     return nullptr;
+}
+
+skx::Function::~Function() {
+    for (auto & targetParam : targetParams) {
+        delete targetParam;
+    }
+    targetParams.clear();
+    delete functionItem;
 }

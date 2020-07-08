@@ -40,14 +40,18 @@ namespace skx {
     struct OperatorPart {
         OperatorType operatorType;
         VarType type;
-        void* value;
+        void* value = nullptr;
         bool isDouble = false;
+
+        virtual ~OperatorPart();
 
         OperatorPart(OperatorType operatorType, VarType type, void *value, bool isDouble);
     };
     class Comparison {
     public:
-       OperatorPart* source;
+        virtual ~Comparison();
+
+        OperatorPart* source;
        OperatorPart* target;
        InstructionOperator type;
        bool execute(Context* context);
@@ -59,6 +63,8 @@ namespace skx {
     };
     class Assigment {
     public:
+        virtual ~Assigment();
+
         OperatorPart* source;
         OperatorPart* target;
         InstructionOperator type;
@@ -67,6 +73,8 @@ namespace skx {
     };
     class Execution {
     public:
+        virtual ~Execution();
+
         std::string name;
         std::vector<OperatorPart*> dependencies;
         virtual OperatorPart* execute(Context* target);

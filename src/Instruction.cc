@@ -124,6 +124,11 @@ bool skx::Comparison::execute(skx::Context *context) {
     return false;
 }
 
+skx::Comparison::~Comparison() {
+    delete source;
+    delete target;
+}
+
 bool skx::Assigment::execute(skx::Context *context) {
     if (target->operatorType == LITERAL) return false; // something went wrong here
     auto *targetVar = static_cast<Variable *>(target->value);
@@ -284,9 +289,58 @@ bool skx::Assigment::execute(skx::Context *context) {
     return true;
 }
 
+skx::Assigment::~Assigment() {
+
+    delete source;
+    delete target;
+}
+
 skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, void *value, bool isDouble)
         : operatorType(operatorType), type(type), value(value), isDouble(isDouble) {}
 
+skx::OperatorPart::~OperatorPart() {
+    if(value == nullptr) return;
+    switch (operatorType) {
+        case EXECUTION: {
+            delete (static_cast<Execution*>(value));
+            break;
+        }
+        case LITERAL: {
+            if(type == STRING) {
+                std::string * target = static_cast<std::string*>(value);
+                delete target;
+
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+//skx::OperatorPart::~OperatorPart() {
+////    if(operatorType == LITERAL) {
+////       if(value != nullptr) {
+////           switch (type) {
+////               case STRING: {
+////                   delete static_cast<std::string*>(value);
+////               }
+////               default:
+////                   break;
+////           }
+////       }
+////    }
+//    value = nullptr;
+//}
+
 skx::OperatorPart *skx::Execution::execute(skx::Context *target) {
     return nullptr;
+}
+
+skx::Execution::~Execution() {
+    for (auto & dependencie : dependencies) {
+
+        delete dependencie;
+    }
+    dependencies.clear();
 }

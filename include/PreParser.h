@@ -11,6 +11,8 @@
 namespace skx {
     class PreParserItem {
     public:
+        virtual ~PreParserItem();
+
         std::string itemRaw;
         PreParserItem* parent;
         uint32_t pos;
@@ -21,6 +23,8 @@ namespace skx {
     };
     class PreParseResult {
     public:
+        virtual ~PreParseResult();
+
         std::vector<PreParserItem*> rootItems;
     };
     struct PreParserState {

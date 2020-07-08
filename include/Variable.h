@@ -35,9 +35,9 @@ class Context;
         AccessType type;
 
     };
-
     class Variable {
     public:
+        virtual ~Variable();
         AccessType accessType;
         VarType type;
         Context* ctx;
@@ -48,6 +48,7 @@ class Context;
         static VariableDescriptor* extractNameSafe(std::string in);
         VarState state = SPOILED;
 
+        bool created = false;
     };
 }
 

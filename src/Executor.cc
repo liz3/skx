@@ -15,7 +15,7 @@ void skx::Executor::executeStandalone(skx::CompileItem *item) {
         exec->walk(current);
     }
     skx::Utils::updateVarState(item->ctx, SPOILED);
-
+    delete exec;
 }
 
 void skx::Executor::walk(skx::CompileItem *item) {

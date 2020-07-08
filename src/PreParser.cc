@@ -34,6 +34,7 @@ skx::PreParseResult *skx::PreParser::preParse(std::vector<std::string> base) {
         else
             delete entry;
     }
+    delete state;
     return result;
 }
 
@@ -82,4 +83,18 @@ void skx::PreParser::advance(skx::PreParserItem *baseItem, skx::PreParserState *
             delete entry;
 
     }
+}
+
+skx::PreParseResult::~PreParseResult() {
+    for (auto & rootItem : rootItems) {
+        delete rootItem;
+    }
+    rootItems.clear();
+}
+
+skx::PreParserItem::~PreParserItem() {
+    for (auto & i : children) {
+        delete i;
+    }
+    children.clear();
 }

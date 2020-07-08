@@ -1,0 +1,39 @@
+options:
+	prefix: &f&lVanish &7> 
+
+	#example: "{@prefix} &6playername &aenabled {@modename} &emode"
+	modename: &fVanish
+
+	#currently supported languages are Italian and English
+	language: english
+
+	#leave it to "true" if you won't that in-vanish players can hit others and vice versa
+	nodamage: false
+
+	#leave it to "true" if you want in-vanish players' join message to be hidden
+	hide-join: true
+
+	#leave it to "true" if you want in-vanish players' quit message to be hidden
+	hide-quit: true
+
+	#leave it to "true" if you want in-vanish players' death message to be hidden
+	hide-death: false
+
+	#leave it to "true" if you want in-vanish players to be hidden from the server list
+	hide-from-serverlist: true
+
+function Vanish(p: player, e: player=" self "):
+	set {test2} to "this is a global var test"
+	if {@language} is {test2}:
+		set {_xx} to "ths will be returned"
+		if {@modename} is not "&fVanish":
+			return "WTF"
+		return {_xx}
+	send {_p} to console
+	return "Nope"
+
+on load:
+	send "this is a test, because this is cool" to console
+	set {_callResult} to Vanish({@nodamage}, {@language})
+	send {test2} to console
+	send {_callResult} to console

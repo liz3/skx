@@ -9,6 +9,7 @@
 #include "../include/BaseTypeParser.h"
 
 #include <algorithm>
+#include <iostream>
 
 /**
  * Walk over script tree like when pre parsing and passing down subsequential contexts
@@ -59,4 +60,11 @@ void skx::Script::walk(PreParserItem *item, Context *itemContext, Script *script
         }
     }
 
+}
+
+skx::Script::~Script() {
+    for (auto & compiledPreRuntimeEvent : compiledPreRuntimeEvents) {
+        delete compiledPreRuntimeEvent;
+    }
+    delete baseContext;
 }

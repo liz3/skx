@@ -147,6 +147,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
                     currentOperator = nullptr;
                 }
             }
+            delete descriptor;
         }
         if (currentOperator != nullptr) {
             if (current == "is") {
@@ -228,6 +229,7 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
                     else
                         std::cout << "[WARNING] Assigment Variable not found: " << descriptor->name << " at: "
                                   << target->line << "\n";
+                    delete descriptor;
                 }
                 assigment->source = new OperatorPart(EXECUTION, UNDEFINED, call, false);
                 target->assignments.push_back(assigment);
@@ -248,13 +250,20 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
             }
             if (currentVar == nullptr) {
                 created = true;
+                Context* targetCtx = descriptor->type == CONTEXT ? ctx : ctx->global;
+                created = true;
                 currentVar = new Variable();
                 currentVar->name = descriptor->name;
+                if(descriptor->name == "test2") {
+                  int x = 22;
+                }
                 currentVar->accessType = descriptor->type;
                 currentVar->value = nullptr;
-                currentVar->ctx = ctx;
-                ctx->vars[descriptor->name] = currentVar;
+                currentVar->ctx = targetCtx;
+                currentVar->created = created;
+                targetCtx->vars[descriptor->name] = currentVar;
             }
+            delete descriptor;
             if (assigment == nullptr || assigment->target == nullptr) {
                 assigment = new Assigment();
                 assigment->target = new OperatorPart(VARIABLE, currentVar->type, currentVar, currentVar->isDouble);
@@ -270,6 +279,11 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
                     assigment = nullptr;
                     step = 0;
                     created = false;
+                }else {
+                    if(currentVar != nullptr) {
+                        currentVar->ctx->vars.erase(currentVar->name);
+                        delete currentVar;
+                    }
                 }
             }
         }
@@ -344,6 +358,7 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
                 else
                     std::cout << "[WARNING] Exec Variable not found: " << descriptor->name << " at: " << target->line
                               << "\n";
+                delete descriptor;
             }
             pos += current.length();
         }
@@ -372,8 +387,10 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
             }
             if (!var) {
                 std::cout << "[WARNING] Call Param not found: " << descriptor->name << " at: " << target->line << "\n";
+                delete descriptor;
                 continue;
             }
+            delete descriptor;
             call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
         }
         target->executions.push_back(call);
@@ -415,8 +432,35 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
                 std::cout << "[WARNING] Variable in return not found: " << descriptor->name << " at: " << pItem->line
                           << "\n";
             }
-
+            delete descriptor;
         }
 
     }
+}
+
+skx::CompileItem::~CompileItem() {
+    for (auto & i : children) {
+        delete i;
+    }
+    children.clear();
+    for (auto & assignment : assignments) {
+        delete assignment;
+    }
+    assignments.clear();
+    for (auto & execution : executions) {
+        delete execution;
+    }
+    executions.clear();
+    for (auto & comparison : comparisons) {
+        delete comparison;
+    }
+    for (auto & trigger : triggers) {
+        delete trigger;
+    }
+    triggers.clear();
+    if(returner) {
+        delete returner->targetReturnItem;
+       delete returner;
+    }
+    comparisons.clear();
 }
