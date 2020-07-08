@@ -15,17 +15,6 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
             Variable *tVar = static_cast<Variable *>(targetVar->value);
             Variable *funcVar = functionItem->ctx->vars[currentTarget->name];
             skx::Utils::copyVariableValue(tVar, funcVar);
-        } else if (targetVar->operatorType == DESCRIPTOR) {
-            Variable *funcVar = functionItem->ctx->vars[currentTarget->name];
-            Variable *tVar = nullptr;
-            VariableDescriptor *descriptor = static_cast<VariableDescriptor *>(targetVar->value);
-            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
-                tVar = skx::Utils::searchRecursive(descriptor->name, callingContext->global);
-            } else {
-                tVar = skx::Utils::searchRecursive(descriptor->name, callingContext);
-            }
-            if (!tVar) return nullptr;
-            skx::Utils::copyVariableValue(tVar, funcVar);
         } else if (targetVar->operatorType == LITERAL) {
             Variable *funcVar = functionItem->ctx->vars[currentTarget->name];
             funcVar->type = targetVar->type;
@@ -41,17 +30,17 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
     }
     skx::Utils::updateVarState(item->ctx, SPOILED);
     if (returnVal != nullptr) {
-        if (returnVal->descriptor->targetReturnItem->operatorType == DESCRIPTOR) {
-            Variable *var = nullptr;
-            auto *descriptor = static_cast<VariableDescriptor *>(returnVal->descriptor->targetReturnItem->value);
-            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
-                var = skx::Utils::searchRecursive(descriptor->name, callingContext->global);
-            } else {
-                var = skx::Utils::searchRecursive(descriptor->name, returnVal->ctx);
-            }
-            if (!var) return nullptr;
-            return new OperatorPart(VARIABLE, var->type, var, var->isDouble);
-        }
+//        if (returnVal->descriptor->targetReturnItem->operatorType == DESCRIPTOR) {
+//            Variable *var = nullptr;
+//            auto *descriptor = static_cast<VariableDescriptor *>(returnVal->descriptor->targetReturnItem->value);
+//            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
+//                var = skx::Utils::searchRecursive(descriptor->name, callingContext->global);
+//            } else {
+//                var = skx::Utils::searchRecursive(descriptor->name, returnVal->ctx);
+//            }
+//            if (!var) return nullptr;
+//            return new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+//        }
         returnValue = returnVal->descriptor->targetReturnItem;
 
     }

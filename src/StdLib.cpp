@@ -16,19 +16,10 @@ namespace skx {
             if(raw->operatorType == LITERAL) {
                 type = raw->type;
                 value = raw->value;
-            } else if(raw->operatorType == DESCRIPTOR) {
-                VariableDescriptor* current = static_cast<VariableDescriptor*>(raw->value);
-                Variable *sourceVar;
-                if (current->type == STATIC || current->type == GLOBAL) {
-                    sourceVar = skx::Utils::searchRecursive(current->name, target->global);
-                } else {
-                    sourceVar = skx::Utils::searchRecursive(current->name, target);
-                }
-                if(!sourceVar) {
-                    return nullptr;
-                }
-                value = sourceVar->value;
-                type = sourceVar->type;
+            }else if (raw->operatorType == VARIABLE) {
+                Variable* var = static_cast<Variable*>(raw->value);
+                value = var->value;
+                type = var->type;
             }
             if(value == nullptr) return nullptr;
             if(type == STRING) {
