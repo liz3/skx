@@ -11,6 +11,7 @@
 #include "../include/Function.h"
 
 #include <exception>
+#include <iostream>
 
 skx::CompileItem *skx::TreeCompiler::compileTree(skx::PreParserItem *item, skx::Context *ctx) {
     TreeCompiler compiler;
@@ -63,7 +64,7 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
             compileCondition(actualContent, context, target);
         } else if (actualContent.rfind("set", 0) == 0) {
             compileAssigment(actualContent, context, target);
-        }  else if (actualContent.rfind("return", 0) == 0) {
+        } else if (actualContent.rfind("return", 0) == 0) {
             compileReturn(actualContent, context, target);
         } else {
             compileExecution(actualContent, context, target);
@@ -81,6 +82,7 @@ void skx::TreeCompiler::advance(skx::CompileItem *parent, skx::PreParserItem *pa
         CompileItem *next = new CompileItem();
         next->ctx = thisCtx;
         next->level = parent->level + 1;
+        next->line = item->pos;
         compileExpression(item, thisCtx, next);
         advance(next, item);
         parent->children.push_back(next);
@@ -96,7 +98,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
     std::string last = "";
     for (int i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
-        if(current[current.length() -1] == ':') {
+        if (current[current.length() - 1] == ':') {
             current = current.substr(0, current.length() - 1);
         }
         if (current.rfind('"', 0) == 0 && state == 2) {
@@ -122,31 +124,28 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             currentOperator = nullptr;
         }
         if (current[0] == '{' && current[current.length() - 1] == '}') {
-            if (state == 0) {
-                state++;
-                currentOperator = new Comparison();
-                auto descriptor = skx::Variable::extractNameSafe(current);
-                Variable *sourceVar = nullptr;
-                if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
-                    sourceVar = skx::Utils::searchRecursive(descriptor->name, ctx->global);
-                } else {
-                    sourceVar = skx::Utils::searchRecursive(descriptor->name, ctx);
-                }
-                currentOperator->source = new OperatorPart(VARIABLE, sourceVar->type, sourceVar, sourceVar->isDouble);
-            } else if (state == 2) {
-                auto descriptorTwo = skx::Variable::extractNameSafe(current);
-                Variable *targetVar = nullptr;
-                if (descriptorTwo->type == STATIC || descriptorTwo->type == GLOBAL) {
-                    targetVar = skx::Utils::searchRecursive(descriptorTwo->name, ctx->global);
-                } else {
-                    targetVar = skx::Utils::searchRecursive(descriptorTwo->name, ctx);
-                }
-                currentOperator->target = new OperatorPart(VARIABLE, targetVar->type, targetVar, targetVar->isDouble);
-                target->comparisons.push_back(currentOperator);
-                state = 0;
-                currentOperator = nullptr;
+            auto descriptor = skx::Variable::extractNameSafe(current);
+            Variable *var = nullptr;
+            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
+                var = skx::Utils::searchRecursive(descriptor->name, ctx->global);
+            } else {
+                var = skx::Utils::searchRecursive(descriptor->name, ctx);
+            }
+            if (!var) {
+                std::cout << "[WARNING] Condition Variable not found: " << descriptor->name << " at: " << target->line
+                          << "\n";
+            } else {
 
-
+                if (state == 0) {
+                    state++;
+                    currentOperator = new Comparison();
+                    currentOperator->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                } else if (state == 2) {
+                    currentOperator->target = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                    target->comparisons.push_back(currentOperator);
+                    state = 0;
+                    currentOperator = nullptr;
+                }
             }
         }
         if (currentOperator != nullptr) {
@@ -203,7 +202,7 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
             step = 0;
             assigment = nullptr;
         }
-        if(step == 2) {
+        if (step == 2) {
             auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
             if (!(funcCallMatches).empty()) {
                 auto entry = funcCallMatches[0];
@@ -218,13 +217,17 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
                 for (auto const &param : skx::Utils::split(params, ",")) {
                     auto trimmed = skx::Utils::trim(param);
                     auto descriptor = skx::Variable::extractNameSafe(trimmed);
-                    Variable* var = nullptr;
-                    if(descriptor->type == STATIC || descriptor->type == GLOBAL) {
+                    Variable *var = nullptr;
+                    if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                         var = skx::Utils::searchRecursive(descriptor->name, ctx->global);
                     } else {
                         var = skx::Utils::searchRecursive(descriptor->name, ctx);
                     }
-                    call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                    if (var)
+                        call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                    else
+                        std::cout << "[WARNING] Assigment Variable not found: " << descriptor->name << " at: "
+                                  << target->line << "\n";
                 }
                 assigment->source = new OperatorPart(EXECUTION, UNDEFINED, call, false);
                 target->assignments.push_back(assigment);
@@ -262,7 +265,6 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
                     if (created) {
                         static_cast<Variable *>(assigment->target->value)->type = currentVar->type;
                         assigment->target->type = currentVar->type;
-
                     }
                     target->assignments.push_back(assigment);
                     assigment = nullptr;
@@ -331,13 +333,17 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
 
             if (current[0] == '{' && current[current.length() - 1] == '}') {
                 auto descriptor = skx::Variable::extractNameSafe(current);
-                Variable* var = nullptr;
-                if(descriptor->type == STATIC || descriptor->type == GLOBAL) {
+                Variable *var = nullptr;
+                if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                     var = skx::Utils::searchRecursive(descriptor->name, context->global);
                 } else {
                     var = skx::Utils::searchRecursive(descriptor->name, context);
                 }
-                pr->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                if (var)
+                    pr->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                else
+                    std::cout << "[WARNING] Exec Variable not found: " << descriptor->name << " at: " << target->line
+                              << "\n";
             }
             pos += current.length();
         }
@@ -358,11 +364,15 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
         for (auto const &param : skx::Utils::split(params, ",")) {
             auto trimmed = skx::Utils::trim(param);
             auto descriptor = skx::Variable::extractNameSafe(trimmed);
-            Variable* var = nullptr;
-            if(descriptor->type == STATIC || descriptor->type == GLOBAL) {
+            Variable *var = nullptr;
+            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                 var = skx::Utils::searchRecursive(descriptor->name, context->global);
             } else {
                 var = skx::Utils::searchRecursive(descriptor->name, context);
+            }
+            if (!var) {
+                std::cout << "[WARNING] Call Param not found: " << descriptor->name << " at: " << target->line << "\n";
+                continue;
             }
             call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
         }
@@ -392,14 +402,20 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
         }
         if (current[0] == '{' && current[current.length() - 1] == '}') {
             auto descriptor = skx::Variable::extractNameSafe(current);
-            Variable* var = nullptr;
-            if(descriptor->type == STATIC || descriptor->type == GLOBAL) {
+            Variable *var = nullptr;
+            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                 var = skx::Utils::searchRecursive(descriptor->name, pContext->global);
             } else {
                 var = skx::Utils::searchRecursive(descriptor->name, pContext);
             }
-            pItem->returner = new ReturnOperation();
-            pItem->returner->targetReturnItem= new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+            if (var) {
+                pItem->returner = new ReturnOperation();
+                pItem->returner->targetReturnItem = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+            } else {
+                std::cout << "[WARNING] Variable in return not found: " << descriptor->name << " at: " << pItem->line
+                          << "\n";
+            }
+
         }
 
     }

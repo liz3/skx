@@ -23,6 +23,8 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
     }
     ReturnOpWithCtx *returnVal;
     CompileItem *item = functionItem;
+
+    //Execute func
     skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
     for (auto current : item->children) {
         returnVal = walk(current);
@@ -30,19 +32,7 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
     }
     skx::Utils::updateVarState(item->ctx, SPOILED);
     if (returnVal != nullptr) {
-//        if (returnVal->descriptor->targetReturnItem->operatorType == DESCRIPTOR) {
-//            Variable *var = nullptr;
-//            auto *descriptor = static_cast<VariableDescriptor *>(returnVal->descriptor->targetReturnItem->value);
-//            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
-//                var = skx::Utils::searchRecursive(descriptor->name, callingContext->global);
-//            } else {
-//                var = skx::Utils::searchRecursive(descriptor->name, returnVal->ctx);
-//            }
-//            if (!var) return nullptr;
-//            return new OperatorPart(VARIABLE, var->type, var, var->isDouble);
-//        }
         returnValue = returnVal->descriptor->targetReturnItem;
-
     }
 
     return returnValue;
