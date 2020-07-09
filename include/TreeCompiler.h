@@ -44,11 +44,11 @@ namespace skx {
         void compileExpression(PreParserItem* item, Context* context, CompileItem* target);
         void advance(CompileItem* parent, PreParserItem* parentItem, bool isFuncSuperContext = false);
         void compileCondition(std::string& content, Context* ctx, CompileItem* target, bool isElseIf = false);
-        void compileAssigment(std::string basicString, Context *pContext, CompileItem *pItem);
+        void compileAssigment(const std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileExecution(std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileReturn(std::string& basicString, Context *pContext, CompileItem *pItem);
         void setupFunctionMeta(std::string& content, Function* target);
-        void compileLoop(std::string content, skx::Context *ctx, skx::CompileItem *target);
+        void compileLoop(const std::string& content, skx::Context *ctx, skx::CompileItem *target);
     };
 }
 

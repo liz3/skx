@@ -181,7 +181,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
     }
 }
 
-void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx, skx::CompileItem *target) {
+void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Context *ctx, skx::CompileItem *target) {
     auto spaceSplit = skx::Utils::split(content.substr(4), " ");
     Assigment *assigment = nullptr;
     uint8_t step = 0;
@@ -433,7 +433,7 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
     }
 }
 
-void skx::TreeCompiler::compileLoop(std::string content, skx::Context *ctx, skx::CompileItem *target) {
+void skx::TreeCompiler::compileLoop(const std::string& content, skx::Context *ctx, skx::CompileItem *target) {
 
     Loop *loop = new Loop();
     loop->rootItem = target;
