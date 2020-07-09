@@ -12,3 +12,15 @@ std::string *skx::Literal::extractQuoteValue(std::string base, size_t start) {
     }
     return new std::string (base.substr(start, n));
 }
+
+skx::OperatorPart *skx::Literal::extractNumber(std::string &base) {
+    bool isDouble = base.find('.') != std::string::npos;
+    if(isDouble){
+        auto *f = new double (std::stod(base));
+       return new OperatorPart(LITERAL, NUMBER, f, true);
+    } else {
+        auto *f = new int32_t (std::stoi(base));
+       return new OperatorPart(LITERAL, NUMBER, f, false);
+
+    }
+}

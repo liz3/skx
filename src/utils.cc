@@ -66,3 +66,10 @@ void skx::Utils::updateVarState(skx::Context *ctx, skx::VarState state) {
        item.second->state = state;
     }
 }
+skx::Variable *skx::Utils::searchVar(skx::VariableDescriptor *descriptor, skx::Context *ctx) {
+    if(descriptor->type == GLOBAL || descriptor->type == STATIC) {
+        return Utils::searchRecursive(descriptor->name, ctx->global);
+    }
+    return Utils::searchRecursive(descriptor->name, ctx);
+
+}

@@ -17,7 +17,9 @@ namespace skx {
         static Variable* searchRecursive(std::string what, Context* ctx);
         static void copyVariableValue(Variable* source, Variable* target);
         static void updateVarState(Context* ctx, VarState state);
-       static std::string ltrim(const std::string& s)
+        static Variable* searchVar(VariableDescriptor* descriptor, Context* ctx);
+
+        static std::string ltrim(const std::string& s)
         {
             size_t start = s.find_first_not_of(WHITESPACE);
             return (start == std::string::npos) ? "" : s.substr(start);
