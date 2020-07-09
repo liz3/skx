@@ -27,8 +27,8 @@ add_library(skx SHARED
         include/TreeCompiler.h
         src/Executor.cc
         include/Executor.h
-        include/stdlib.h
-        src/StdLib.cpp
+        include/BasicInstructions.h
+        src/BasicInstructions.cpp
         src/RegexUtils.cc
         include/RegexUtils.h
         src/Literal.cc

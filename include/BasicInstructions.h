@@ -2,8 +2,8 @@
 // Created by liz3 on 01/07/2020.
 //
 
-#ifndef SKX_STDLIB_H
-#define SKX_STDLIB_H
+#ifndef SKX_BASICINSTRUCTIONS_H
+#define SKX_BASICINSTRUCTIONS_H
 
 #include "Instruction.h"
 #include "Variable.h"
@@ -42,4 +42,4 @@ namespace skx {
     };
 }
 
-#endif //SKX_STDLIB_H
+#endif //SKX_BASICINSTRUCTIONS_H
