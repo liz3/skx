@@ -7,6 +7,7 @@
 
 #include "Instruction.h"
 #include "Variable.h"
+#include "TreeCompiler.h"
 
 
 namespace skx {
@@ -24,6 +25,19 @@ namespace skx {
             name = "std::invoke";
         }
         Function* function;
+        OperatorPart* execute(Context *target) override;
+    };
+    class Loop : public Execution {
+    public:
+        Loop() : Execution() {
+            name = "std::loop";
+        }
+        int32_t loopTarget = 0;
+        Variable* loopTargetVar = nullptr;
+        CompileItem* rootItem;
+        bool hasCondition = false;
+        Comparison* comparison = nullptr;
+        Variable* loopCounter = nullptr;
         OperatorPart* execute(Context *target) override;
     };
 }

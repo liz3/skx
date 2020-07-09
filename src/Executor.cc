@@ -8,6 +8,7 @@
 
 void skx::Executor::executeStandalone(skx::CompileItem *item) {
     Executor *exec = new Executor();
+    exec->isLoop = item->isLoop;
     skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
     exec->root = item;
     for (int i = 0; i < item->children.size(); ++i) {
@@ -27,6 +28,13 @@ void skx::Executor::walk(skx::CompileItem *item) {
         lastFailed = false;
         return;
     }
+    if(item->isBreak && isLoop) {
+        if(!stopLoop)
+            stopLoop = true;
+        return;
+    } else if(stopLoop) {
+        return;
+    }
     if(item->level > lastFailLevel && lastFailed) {
         lastFailed = false;
     }
@@ -42,6 +50,7 @@ void skx::Executor::walk(skx::CompileItem *item) {
             }
         }
         for (auto child : item->children) {
+            if(stopLoop) return;
             walk(child);
         }
 
@@ -67,4 +76,16 @@ void skx::Executor::walk(skx::CompileItem *item) {
     }
     skx::Utils::updateVarState(item->ctx, SPOILED);
 
+}
+
+void skx::Executor::execute(skx::CompileItem *item) {
+    isLoop = item->isLoop;
+    skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
+    root = item;
+    for (int i = 0; i < item->children.size(); ++i) {
+        auto current = item->children[i];
+        if(stopLoop) break;
+        walk(current);
+    }
+    skx::Utils::updateVarState(item->ctx, SPOILED);
 }

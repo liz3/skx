@@ -31,8 +31,9 @@ void skx::Variable::createVarFromOption(std::string item, skx::Context *targetCo
 }
 
 skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
-    auto trim = in.substr(1, in.length() - 2);
     auto *descriptor = new VariableDescriptor();
+    descriptor->isFromContext = in[0] == '%' && in[in.length()-1] == '%';
+    auto trim = in.substr(1, in.length() - 2);
     if (trim.rfind('@', 0) == 0) {
         descriptor->type = STATIC;
         trim = trim.substr(1);
@@ -40,7 +41,7 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
         descriptor->type = CONTEXT;
         trim = trim.substr(1);
     } else {
-        descriptor->type = GLOBAL;
+        descriptor->type = descriptor->isFromContext ? CONTEXT : GLOBAL;
     }
     descriptor->name = trim;
     return descriptor;

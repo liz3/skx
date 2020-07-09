@@ -11,11 +11,12 @@ namespace skx {
     class Executor {
     public:
         static void executeStandalone(CompileItem* item);
-
-    private:
+        void execute(CompileItem* item);
+        bool stopLoop = false;
         CompileItem* root = nullptr;
         void walk(CompileItem* item);
         bool lastFailed = false;
+        bool isLoop = false;
         uint16_t lastFailLevel = 0;
     };
 }

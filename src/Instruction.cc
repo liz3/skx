@@ -311,6 +311,16 @@ skx::OperatorPart::~OperatorPart() {
                 delete target;
 
             }
+            if(type == NUMBER) {
+                if (isDouble) {
+                    auto *val = static_cast<double *>(value);
+                    delete val;
+                } else {
+                    auto *val = static_cast<int32_t *>(value);
+                    delete val;
+                }
+
+            }
             break;
         }
         default:

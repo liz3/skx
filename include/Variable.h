@@ -33,6 +33,7 @@ class Context;
     struct VariableDescriptor {
         std::string name;
         AccessType type;
+        bool isFromContext = false;
 
     };
     class Variable {
@@ -47,7 +48,7 @@ class Context;
         static void createVarFromOption(std::string item, skx::Context* targetContext, bool isStatic);
         static VariableDescriptor* extractNameSafe(std::string in);
         VarState state = SPOILED;
-
+        bool contextValue = false;
         bool created = false;
     };
 }

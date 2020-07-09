@@ -58,12 +58,19 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
             target->isElse = true;
             return;
         }
+        if (actualContent == "break") {
+            target->isBreak = true;
+            return;
+        }
+        //ik this is messy, will change later
         if (actualContent.rfind("if", 0) == 0) {
             compileCondition(actualContent, context, target);
         } else if (actualContent.rfind("else if", 0) == 0) {
             compileCondition(actualContent, context, target);
         } else if (actualContent.rfind("set", 0) == 0) {
             compileAssigment(actualContent, context, target);
+        } else if (actualContent.rfind("loop", 0) == 0) {
+            compileLoop(actualContent, context, target);
         } else if (actualContent.rfind("return", 0) == 0) {
             compileReturn(actualContent, context, target);
         } else {
@@ -123,7 +130,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             state = 0;
             currentOperator = nullptr;
         }
-        if (current[0] == '{' && current[current.length() - 1] == '}') {
+        if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *var = nullptr;
             if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
@@ -202,8 +209,24 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
             target->assignments.push_back(assigment);
             step = 0;
             assigment = nullptr;
-        }
-        if (step == 2) {
+        } else if(isNumber(current[0])) {
+            bool isDouble = current.find('.') != std::string::npos;
+            if(isDouble){
+                auto *f = new double (std::stod(current));
+                assigment->source = new OperatorPart(LITERAL, NUMBER, f, true);
+            } else {
+                auto *f = new int32_t (std::stoi(current));
+                assigment->source = new OperatorPart(LITERAL, NUMBER, f, false);
+
+            }
+            if (created) {
+                static_cast<Variable *>(assigment->target->value)->type = NUMBER;
+                assigment->target->type = NUMBER;
+            }
+            target->assignments.push_back(assigment);
+            step = 0;
+            assigment = nullptr;
+        }if (step == 2) {
             auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
             if (!(funcCallMatches).empty()) {
                 auto entry = funcCallMatches[0];
@@ -240,7 +263,7 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
 
         }
 
-        if (current[0] == '{' && current[current.length() - 1] == '}') {
+        if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *currentVar = nullptr;
             if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
@@ -250,13 +273,10 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
             }
             if (currentVar == nullptr) {
                 created = true;
-                Context* targetCtx = descriptor->type == CONTEXT ? ctx : ctx->global;
+                Context *targetCtx = descriptor->type == CONTEXT ? ctx : ctx->global;
                 created = true;
                 currentVar = new Variable();
                 currentVar->name = descriptor->name;
-                if(descriptor->name == "test2") {
-                  int x = 22;
-                }
                 currentVar->accessType = descriptor->type;
                 currentVar->value = nullptr;
                 currentVar->ctx = targetCtx;
@@ -279,15 +299,14 @@ void skx::TreeCompiler::compileAssigment(std::string content, skx::Context *ctx,
                     assigment = nullptr;
                     step = 0;
                     created = false;
-                }else {
-                    if(currentVar != nullptr) {
+                } else {
+                    if (currentVar != nullptr) {
                         currentVar->ctx->vars.erase(currentVar->name);
                         delete currentVar;
                     }
                 }
             }
         }
-
         if (assigment != nullptr) {
             if (current == "to") {
                 assigment->type = ASSIGN;
@@ -345,7 +364,7 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
 
             }
 
-            if (current[0] == '{' && current[current.length() - 1] == '}') {
+            if (isVar(current)) {
                 auto descriptor = skx::Variable::extractNameSafe(current);
                 Variable *var = nullptr;
                 if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
@@ -417,7 +436,7 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
             pItem->returner->targetReturnItem = new OperatorPart(LITERAL, STRING, f, false);
 
         }
-        if (current[0] == '{' && current[current.length() - 1] == '}') {
+        if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *var = nullptr;
             if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
@@ -438,29 +457,88 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
     }
 }
 
+void skx::TreeCompiler::compileLoop(std::string content, skx::Context *ctx, skx::CompileItem *target) {
+
+    Loop *loop = new Loop();
+    loop->rootItem = target;
+    target->isLoop = true;
+    auto spaceSplit = skx::Utils::split(content.substr(5, content.length() - 6), " ");
+    if (spaceSplit[0] == "while") {
+        loop->hasCondition = true;
+        loop->comparison = new Comparison();
+    } else if (spaceSplit[1] == "times") {
+        if (isVar(spaceSplit[0])) {
+            VariableDescriptor *descriptor = skx::Variable::extractNameSafe(spaceSplit[0]);
+            Variable *var = nullptr;
+            if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
+                var = skx::Utils::searchRecursive(descriptor->name, ctx->global);
+            } else {
+                var = skx::Utils::searchRecursive(descriptor->name, ctx);
+            }
+            if (var) {
+                loop->loopTargetVar = var;
+            } else {
+                std::cout << "[WARNING] Variable for loop target not found: " << descriptor->name << " at: "
+                          << target->line
+                          << "\n";
+                delete loop;
+                return;
+            }
+        } else {
+            loop->loopTarget = std::stoi(spaceSplit[0]);
+        }
+        std::string loopIndexName = spaceSplit.size() == 4 && spaceSplit[2] == "as" ? spaceSplit[3] : "loop-value";
+        Variable *loopValue = new Variable();
+        loopValue->name = loopIndexName;
+        loopValue->type = NUMBER;
+        loopValue->isDouble = false;
+        loopValue->accessType = CONTEXT;
+        loopValue->contextValue = true;
+        loopValue->value = new int32_t(0);
+        ctx->vars[loopIndexName] = loopValue;
+        loop->loopCounter = loopValue;
+        target->executions.push_back(loop);
+    } else {
+        std::cout << "[WARNING] Invalid loop: " << content << " at: " << target->line
+                  << "\n";
+        delete loop;
+        target->isLoop = false;
+    }
+
+}
+
+bool skx::TreeCompiler::isVar(std::string &val) {
+    return (val[0] == '{' && val[val.length() - 1] == '}') || (val[0] == '%' && val[val.length() - 1] == '%');
+}
+
+bool skx::TreeCompiler::isNumber(char c) {
+    return c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' ||
+           c == '9';
+}
+
 skx::CompileItem::~CompileItem() {
-    for (auto & i : children) {
+    for (auto &i : children) {
         delete i;
     }
     children.clear();
-    for (auto & assignment : assignments) {
+    for (auto &assignment : assignments) {
         delete assignment;
     }
     assignments.clear();
-    for (auto & execution : executions) {
+    for (auto &execution : executions) {
         delete execution;
     }
     executions.clear();
-    for (auto & comparison : comparisons) {
+    for (auto &comparison : comparisons) {
         delete comparison;
     }
-    for (auto & trigger : triggers) {
+    for (auto &trigger : triggers) {
         delete trigger;
     }
     triggers.clear();
-    if(returner) {
+    if (returner) {
         delete returner->targetReturnItem;
-       delete returner;
+        delete returner;
     }
     comparisons.clear();
 }

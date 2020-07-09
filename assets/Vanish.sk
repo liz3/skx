@@ -24,7 +24,7 @@ options:
 
 function Vanish(p: player, e: player=" self "):
 	set {test2} to "this is a global var test"
-	if {@language} is {test2}:
+	if {@language} is not {test2}:
 		set {_xx} to "ths will be returned"
 		if {@modename} is not "&fVanish":
 			return "WTF"
@@ -33,7 +33,14 @@ function Vanish(p: player, e: player=" self "):
 	return "Nope"
 
 on load:
-	send "this is a test, because this is cool" to console
-	set {_callResult} to Vanish({@nodamage}, {@language})
-	send {test2} to console
-	send {_callResult} to console
+#	send "this is a test, because this is cool" to console
+#	set {_callResult} to Vanish({@nodamage}, {@language})
+#	send {test2} to console
+#	send {_callResult} to console
+	set {_loopX} to 25
+	set {_loopX} to 15
+	set {_bVal} to 5
+	loop 2 times:
+		if %loop-value% is {_bVal}:
+			send "at 5" to console
+		send %loop-value% to console
