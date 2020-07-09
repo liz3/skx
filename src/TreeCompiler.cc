@@ -481,9 +481,11 @@ void skx::TreeCompiler::compileLoop(std::string content, skx::Context *ctx, skx:
                 std::cout << "[WARNING] Variable for loop target not found: " << descriptor->name << " at: "
                           << target->line
                           << "\n";
+                delete descriptor;
                 delete loop;
                 return;
             }
+            delete descriptor;
         } else {
             loop->loopTarget = std::stoi(spaceSplit[0]);
         }

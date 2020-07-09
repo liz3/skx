@@ -44,3 +44,9 @@ on load:
 		if %loop-value% is {_bVal}:
 			send "at 5" to console
 		send %loop-value% to console
+	send "next loop" to console
+	loop {_loopX} times as i:
+		if %i% is {_bVal}:
+			send "at 5" to console
+			break
+		send %i% to console
