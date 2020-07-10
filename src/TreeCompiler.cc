@@ -204,17 +204,11 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
             if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
             TString* f = new TString(current.substr(1, current.length() - 2));
             assigment->source = new OperatorPart(LITERAL, STRING, f, false);
-            if(created) {
-                static_cast<Variable *>(assigment->target->value)->value = new TString();
-            }
             target->assignments.push_back(assigment);
             step = 0;
             assigment = nullptr;
         } else if((current == "true" || current == "false") && step == 2) {
             assigment->source = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(current == "true"), false);
-            if(created) {
-                Variable::createVarValue(BOOLEAN, static_cast<Variable *>(assigment->target->value));
-            }
             target->assignments.push_back(assigment);
             assigment = nullptr;
             step = 0;
@@ -225,12 +219,6 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
             OperatorPart* num = skx::Literal::extractNumber(current);
             if(num != nullptr) {
                 assigment->source = num;
-            }
-            if (created) {
-                static_cast<Variable *>(assigment->target->value)->type = NUMBER;
-                static_cast<Variable *>(assigment->target->value)->value = new TNumber();
-                static_cast<Variable *>(assigment->target->value)->isDouble = num->isDouble;
-                assigment->target->type = NUMBER;
             }
             target->assignments.push_back(assigment);
             step = 0;
@@ -246,20 +234,19 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
                 std::string params = base.substr(paramsStart + 1, paramsEnd - paramsStart - 1);
                 auto *call = new FunctionInvoker();
                 call->function = ctx->global->functions[name];
-                if(created) {
-                    skx::Variable::createVarValue(call->function->returnType, static_cast<Variable *>(assigment->target->value));
-                }
 
-                for (auto const &param : skx::Utils::split(params, ",")) {
-                    auto trimmed = skx::Utils::trim(param);
-                    auto descriptor = skx::Variable::extractNameSafe(trimmed);
-                    Variable *var = skx::Utils::searchVar(descriptor, ctx);
-                    if (var)
-                        call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
-                    else
-                        std::cout << "[WARNING] Assigment Variable not found: " << descriptor->name << " at: "
-                                  << target->line << "\n";
-                    delete descriptor;
+                if(skx::Utils::trim(params).length() > 0) {
+                    for (auto const &param : skx::Utils::split(params, ",")) {
+                        auto trimmed = skx::Utils::trim(param);
+                        auto descriptor = skx::Variable::extractNameSafe(trimmed);
+                        Variable *var = skx::Utils::searchVar(descriptor, ctx);
+                        if (var)
+                            call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                        else
+                            std::cout << "[WARNING] Assigment Variable not found: " << descriptor->name << " at: "
+                                      << target->line << "\n";
+                        delete descriptor;
+                    }
                 }
                 assigment->source = new OperatorPart(EXECUTION, UNDEFINED, call, false);
                 target->assignments.push_back(assigment);
@@ -299,7 +286,6 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
                 if (step == 2) {
                     assigment->source = new OperatorPart(VARIABLE, currentVar->type, currentVar, currentVar->isDouble);
                     if (created) {
-                        skx::Variable::createVarValue(currentVar->type, static_cast<Variable *>(assigment->target->value), currentVar->isDouble);
                         assigment->target->type = currentVar->type;
                     }
                     target->assignments.push_back(assigment);
@@ -341,21 +327,23 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
         }
     }
     std::string params = base.substr(paramsStart + 1, paramsEnd - paramsStart - 1);
-    for (auto const &param : skx::Utils::split(params, ",")) {
-        auto trimmed = skx::Utils::trim(param);
-        VariableDescriptor *descriptor = new VariableDescriptor();
-        if (trimmed.find(':') == std::string::npos) {
-            descriptor->type = CONTEXT;
-            descriptor->name = trimmed;
-        } else {
-            auto typeSplit = skx::Utils::split(trimmed, ":");
-            auto actualName = skx::Utils::trim(typeSplit[0]);
-            //TODO implement actual param type & default value, also what if the default value has a ,?
-            //auto actualType = skx::Utils::trim(typeSplit[1]);
-            descriptor->type = CONTEXT;
-            descriptor->name = actualName;
+    if(!params.empty()) {
+        for (auto const &param : skx::Utils::split(params, ",")) {
+            auto trimmed = skx::Utils::trim(param);
+            VariableDescriptor *descriptor = new VariableDescriptor();
+            if (trimmed.find(':') == std::string::npos) {
+                descriptor->type = CONTEXT;
+                descriptor->name = trimmed;
+            } else {
+                auto typeSplit = skx::Utils::split(trimmed, ":");
+                auto actualName = skx::Utils::trim(typeSplit[0]);
+                //TODO implement actual param type & default value, also what if the default value has a ,?
+                //auto actualType = skx::Utils::trim(typeSplit[1]);
+                descriptor->type = CONTEXT;
+                descriptor->name = actualName;
+            }
+            target->targetParams.push_back(descriptor);
         }
-        target->targetParams.push_back(descriptor);
     }
     target->name = name;
     int x = 22;
@@ -449,8 +437,12 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
             pItem->returner = new ReturnOperation();
             pItem->returner->targetReturnItem = new OperatorPart(LITERAL, STRING, f, false);
 
-        }
-        if (isVar(current)) {
+        } else if(current == "true" || current == "false") {
+            TBoolean* f = new TBoolean(current == "true");
+            pItem->returner = new ReturnOperation();
+            pItem->returner->targetReturnItem = new OperatorPart(LITERAL, BOOLEAN, f, false);
+
+        } else if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *var = skx::Utils::searchVar(descriptor, pContext);
             if (var) {

@@ -8,9 +8,9 @@
 #include "../include/types/TString.h"
 #include "../include/types/TNumber.h"
 #include "../include/types/TBoolean.h"
+#include "../include/types/TCharacter.h"
 
 bool skx::Comparison::execute(skx::Context *context) {
-    if (source->type != target->type && target->type != UNDEFINED) return false;
     if (type == ASSIGN || type == SUBTRACT || type == ADD || type == MULTIPLY || type == DIVIDE)
         return false;
     if (source->type == STRING && type != EQUAL && type != NOT_EQUAL) return false;
@@ -37,6 +37,9 @@ bool skx::Comparison::execute(skx::Context *context) {
         targetValue = nullptr;
     }
     if (targetValue == nullptr || sourceValue == nullptr) return false;
+    if (sourceValue->type != targetValue->type && target->type != UNDEFINED) {
+    return false;
+    }
 
     //this is a bit special case
     if (target->type == UNDEFINED) {
@@ -81,7 +84,7 @@ bool skx::Assigment::execute(skx::Context *context) {
         targetVar->value = nullptr;
         return true;
     }
-    if (source->type != target->type && source->operatorType != EXECUTION) return false;
+  //  if (source->type != target->type && source->operatorType != EXECUTION) return false;
     VariableValue *sourceValue;
     if (source->operatorType == LITERAL) {
         sourceValue = static_cast<VariableValue *>(source->value);
@@ -108,6 +111,38 @@ bool skx::Assigment::execute(skx::Context *context) {
             return false;
         }
         sourceValue = sourceVar->value;
+    }
+    if(sourceValue == nullptr)
+        return false;
+    if(targetVar->value == nullptr || sourceValue->type != targetVar->type) {
+        if(targetVar->value != nullptr) {
+            switch (targetVar->type) {
+                case STRING: {
+                    auto *val = dynamic_cast<TString*>(targetVar->value);
+
+                    delete val;
+                    break;
+                }
+                case NUMBER: {
+                    auto *val = dynamic_cast<TNumber*>(targetVar->value);
+                    delete val;
+                    break;
+                }
+                case CHARACTER: {
+                    auto *val = dynamic_cast<TCharacter*>(targetVar->value);
+                    delete val;
+                    break;
+                }
+                case BOOLEAN: {
+                    auto *val = dynamic_cast<TBoolean*>(targetVar->value);
+                    delete val;
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        Variable::createVarValue(sourceValue->type, targetVar, sourceValue->type == NUMBER && dynamic_cast<TNumber*>(sourceValue)->isDouble);
     }
     switch (type) {
         case ASSIGN:

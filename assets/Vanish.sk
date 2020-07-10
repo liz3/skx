@@ -22,11 +22,16 @@ options:
 	#leave it to "true" if you want in-vanish players to be hidden from the server list
 	hide-from-serverlist: true
 
+function testFunc() :: bool:
+	loop 3 times:
+		send "in func" to console
+	return true
+
 function Vanish(p: player, e: player=" self ") :: text:
 	set {test2} to "this is a global var test"
 	if {@language} is not {test2}:
 		set {_xx} to "ths will be returned"
-		if {@modename} is "&fVanish":
+		if {@modename} is not "&fVanish":
 			return "WTF"
 		return {_xx}
 	send {_p} to console
@@ -37,18 +42,21 @@ on load:
 	set {_callResult} to Vanish({@nodamage}, {@language})
 #	send {test2} to console
 	send {_callResult} to console
+	set {_callResult} to testFunc()
+	send {_callResult} to console
 	set {_loopX} to 25
 	set {_loopX} to 15
 	set {_bVal} to 7
 	set {boolVal} to false
 	send {boolVal} to console
-	loop 2 times:
+	loop 300 times:
 		if %loop-value% is {_bVal}:
-			send "at 5" to console
-		send %loop-value% to console
-	send "next loop" to console
-	loop {_loopX} times as i:
-		if %i% is {_bVal}:
-			send "at" %i% to console
-			break
-		send %i% to console
+			send "at 555" to console
+		send "next loop" to console
+		loop {_loopX} times as i:
+			set {_callResult} to testFunc()
+			send {_callResult} to console
+			send %i% to console
+			if %i% is {_bVal}:
+				send "at" %i% to console
+				break

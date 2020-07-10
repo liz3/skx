@@ -5,7 +5,8 @@
 #include "../include/Function.h"
 
 skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Context *callingContext) {
-    if (execVars.size() != targetParams.size()) return nullptr; //param len mismatch
+    if (execVars.size() != targetParams.size())
+        return nullptr; //param len mismatch
     OperatorPart *returnValue = nullptr;
     //setup stack
     for (int i = 0; i < targetParams.size(); ++i) {
