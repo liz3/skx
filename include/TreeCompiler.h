@@ -48,6 +48,8 @@ namespace skx {
         void compileExecution(std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileReturn(std::string& basicString, Context *pContext, CompileItem *pItem);
         void setupFunctionMeta(std::string& content, Function* target);
+        bool isOperator(std::string& in);
+        InstructionOperator getOperator(std::string& in);
         void compileLoop(const std::string& content, skx::Context *ctx, skx::CompileItem *target);
     };
 }

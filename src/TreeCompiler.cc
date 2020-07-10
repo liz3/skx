@@ -193,6 +193,15 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
     bool created = false;
     for (int i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
+        if(step == 0 && !target->assignments.empty() && isOperator(current)) {
+            assigment = new Assigment();
+            auto* last = target->assignments[target->assignments.size() -1];
+            Variable* lastVar =  static_cast<Variable*>(last->target->value);
+            assigment->target = new OperatorPart(VARIABLE, lastVar->type, lastVar, lastVar->isDouble);
+            step = 2;
+            assigment->type = getOperator(current);
+            continue;
+        }
         if (current.rfind('"', 0) == 0 && step == 2) {
             int x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
@@ -513,6 +522,19 @@ bool skx::TreeCompiler::isVar(std::string &val) {
 bool skx::TreeCompiler::isNumber(char c) {
     return c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' ||
            c == '9';
+}
+
+bool skx::TreeCompiler::isOperator(std::string& in) {
+    return in == "+" || in == "-" || in == "*" || in == "/"
+    || in == "plus" || in == "minus" || in == "multiply" || in == "divided";
+}
+
+skx::InstructionOperator skx::TreeCompiler::getOperator(std::string& in) {
+    if(in == "+" || in == "plus") return ADD;
+    if(in == "-" || in == "minus") return SUBTRACT;
+    if(in == "*" || in == "multiply") return MULTIPLY;
+    if(in == "/" || in == "divided") return DIVIDE;
+    return NOT_EQUAL;
 }
 
 skx::CompileItem::~CompileItem() {

@@ -46,12 +46,14 @@ on load:
 	send {_callResult} to console
 	set {_loopX} to 25
 	set {_loopX} to 15
-	set {_bVal} to 7
+	set {_loopX} to {_loopX}
+	set {_bVal} to {_loopX} - {_loopX} - 5 + 10
+	send {_bVal} to console
 	set {boolVal} to false
 	send {boolVal} to console
-	loop 300 times:
+	loop 4 times:
 		if %loop-value% is {_bVal}:
-			send "at 555" to console
+			send "at bVal" to console
 		send "next loop" to console
 		loop {_loopX} times as i:
 			set {_callResult} to testFunc()
