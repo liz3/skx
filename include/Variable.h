@@ -36,6 +36,25 @@ class Context;
         bool isFromContext = false;
 
     };
+    class VariableValue {
+    public:
+        bool isReadOnly = false;
+        VarType type;
+        Variable* varRef = nullptr;
+        //comparison
+        virtual bool isEqual(VariableValue* other);
+        virtual bool isSmaller(VariableValue* other);
+        virtual bool isBigger(VariableValue* other);
+        virtual bool isSmallerOrEquals(VariableValue* other);
+        virtual bool isBiggerOrEquals(VariableValue* other);
+
+        //assignments
+        virtual bool assign(VariableValue* source);
+        virtual bool add(VariableValue* source);
+        virtual bool subtract(VariableValue* source);
+        virtual bool multiply(VariableValue* source);
+        virtual bool divide(VariableValue* source);
+    };
     class Variable {
     public:
         virtual ~Variable();
@@ -43,14 +62,17 @@ class Context;
         VarType type;
         Context* ctx;
         std::string name;
-        void* value;
+        VariableValue* value;
         bool isDouble = false; // specific to number;
         static void createVarFromOption(std::string item, skx::Context* targetContext, bool isStatic);
         static VariableDescriptor* extractNameSafe(std::string in);
+        static void createVarValue(VarType type, Variable* target, bool isDouble = false);
         VarState state = SPOILED;
         bool contextValue = false;
         bool created = false;
     };
+
+
 }
 
 

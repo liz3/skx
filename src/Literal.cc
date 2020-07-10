@@ -3,6 +3,7 @@
 //
 
 #include "../include/Literal.h"
+#include "../include/types/TNumber.h"
 
 std::string *skx::Literal::extractQuoteValue(std::string base, size_t start) {
     size_t n = 0;
@@ -16,11 +17,9 @@ std::string *skx::Literal::extractQuoteValue(std::string base, size_t start) {
 skx::OperatorPart *skx::Literal::extractNumber(std::string &base) {
     bool isDouble = base.find('.') != std::string::npos;
     if(isDouble){
-        auto *f = new double (std::stod(base));
-       return new OperatorPart(LITERAL, NUMBER, f, true);
+       return new OperatorPart(LITERAL, NUMBER, new TNumber(std::stod(base)), true);
     } else {
-        auto *f = new int32_t (std::stoi(base));
-       return new OperatorPart(LITERAL, NUMBER, f, false);
+       return new OperatorPart(LITERAL, NUMBER, new TNumber(std::stoi(base)), false);
 
     }
 }

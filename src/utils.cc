@@ -3,7 +3,11 @@
 //
 
 #include "../include/utils.h"
-#include "../include/Array.h"
+#include "../include/types/TBoolean.h"
+#include "../include/types/TCharacter.h"
+#include "../include/types/TNumber.h"
+#include "../include/types/TString.h"
+#include "../include/types/TArray.h"
 
 std::vector<std::string> skx::Utils::split(std::string base, std::string delimiter) {
     std::vector<std::string> final;
@@ -32,32 +36,35 @@ skx::Variable *skx::Utils::searchRecursive(std::string what, Context *ctx) {
 void skx::Utils::copyVariableValue(skx::Variable *source, skx::Variable *target) {
     switch (source->type) {
         case BOOLEAN:
-            target->value = new bool(*(static_cast<bool *>(source->value)));
+            target->value = new TBoolean(dynamic_cast<TBoolean*>(source->value)->value);
             break;
         case CHARACTER:
-            target->value = new char(*(static_cast<char *>(source->value)));
+            target->value = new TCharacter(dynamic_cast<TCharacter*>(source->value)->value);
             break;
         case NUMBER:
             if (source->isDouble) {
-                target->value = new double(*(static_cast<double *>(source->value)));
+                target->value = new TNumber(dynamic_cast<TNumber*>(source->value)->doubleValue);
             } else {
-                target->value = new int32_t(*(static_cast<int32_t *>(source->value)));
+                target->value = new TNumber(dynamic_cast<TNumber*>(source->value)->intValue);
             }
             break;
         case UNDEFINED:
             target->value = nullptr;
             break;
         case STRING:
-            target->value = new std::string(*(static_cast<std::string *>(source->value)));
+            target->value = new TString(dynamic_cast<TString*>(source->value)->value);
             break;
         case ARRAY:
             //THIS IS NOT A DEEP COPY
-            auto *array = static_cast<Array *>(source->value);
-            auto *copy = new Array();
-            copy->entries = std::vector<Variable *>(array->entries);
-            target->value = copy;
+            TArray* sourceArray = dynamic_cast<TArray*>(source->value);
+            TArray* out = new TArray();
+            out->assign(sourceArray);
+            target->value = out;
             break;
+
     }
+    if(target->value != nullptr)
+        target->value->varRef = target;
     target->type = source->type;
 }
 

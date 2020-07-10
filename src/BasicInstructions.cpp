@@ -8,43 +8,45 @@
 #include "../include/Executor.h"
 
 #include "../include/Function.h"
+#include "../include/types/TNumber.h"
+#include "../include/types/TString.h"
+#include "../include/types/TBoolean.h"
 
 
 namespace skx {
-    OperatorPart* Print::execute(Context *target) {
+    OperatorPart *Print::execute(Context *target) {
         for (auto raw : dependencies) {
-            if(raw != dependencies[0]) {
+            if (raw != dependencies[0]) {
                 std::cout << " ";
             }
-            void* value = nullptr;
+            VariableValue *value = nullptr;
             bool isDouble = false;
             VarType type;
-            if(raw->operatorType == LITERAL) {
+            if (raw->operatorType == LITERAL) {
                 type = raw->type;
-                value = raw->value;
+                value = static_cast<VariableValue *>(raw->value);
                 isDouble = raw->isDouble;
-            }else if (raw->operatorType == VARIABLE) {
-                auto* var = static_cast<Variable*>(raw->value);
+            } else if (raw->operatorType == VARIABLE) {
+                auto *var = static_cast<Variable *>(raw->value);
                 value = var->value;
                 type = var->type;
                 isDouble = raw->isDouble;
 
             }
-            if(value == nullptr) return nullptr;
-            if(type == STRING) {
-                auto* val = static_cast<std::string*>(value);
-                std::cout << (*val);
-            } else if(type == BOOLEAN) {
-                bool * v = static_cast<bool *>(value);
-                std::string val((*v) ? "true" : "false");
+            if (value == nullptr) return nullptr;
+            if (type == STRING) {
+                auto val = dynamic_cast<TString *>(value)->value;
+                std::cout << val;
+            } else if (type == BOOLEAN) {
+                auto v = dynamic_cast<TBoolean *>(value)->value;
+                std::string val(v ? "true" : "false");
                 std::cout << (val);
             } else if (type == NUMBER) {
-                if(isDouble) {
-                    auto * val = static_cast<double *>(value);
-                    std::cout << (*val);
+                auto *val = dynamic_cast<TNumber *>(value);
+                if (isDouble) {
+                    std::cout << val->doubleValue;
                 } else {
-                    auto * val = static_cast<int32_t *>(value);
-                    std::cout << (*val);
+                    std::cout << val->intValue;
                 }
             }
         }
@@ -59,26 +61,29 @@ namespace skx {
     }
 
     OperatorPart *Loop::execute(Context *target) {
-        Executor* exec = new Executor();
-        if(hasCondition) {
-           if(comparison != nullptr) {
-               while (comparison->execute(target)) {
-                   exec->execute(rootItem);
-               }
-           }
+        Executor *exec = new Executor();
+        if (hasCondition) {
+            if (comparison != nullptr) {
+                while (comparison->execute(target)) {
+                    exec->execute(rootItem);
+                }
+            }
         } else {
-            if(loopCounter) {
-                delete static_cast<int32_t*>(loopCounter->value);
-                loopCounter->value = new int32_t (0);
+            TNumber* num = nullptr;
+            if (loopCounter) {
+              num = new TNumber(0);
+                if (loopCounter->value)
+                    delete dynamic_cast<TNumber *>(loopCounter->value);
+                loopCounter->value = num;
             }
             int32_t localLoopTarget = loopTargetVar != nullptr
-                    ? (*static_cast<int32_t*>(loopTargetVar->value))
-                    : loopTarget;
+                                      ? dynamic_cast<TNumber *>(loopTargetVar->value)->intValue
+                                      : loopTarget;
             for (int32_t i = 0; i < localLoopTarget; ++i) {
                 exec->execute(rootItem);
-                if(exec->stopLoop) break;
-                i = (*static_cast<int32_t*>(loopCounter->value));
-                (*static_cast<int32_t*>(loopCounter->value))++;
+                if (exec->stopLoop) break;
+                i = num->intValue;
+                num->intValue++;
             }
         }
         delete exec;

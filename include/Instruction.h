@@ -23,13 +23,11 @@ namespace skx {
         MULTIPLY,
         DIVIDE,
         INVERT,
-        NOOP
     };
     enum OperatorType {
         LITERAL,
         VARIABLE,
         EXECUTION,
-        DESCRIPTOR
     };
     enum TriggerType {
         EVENT,
