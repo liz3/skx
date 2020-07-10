@@ -23,8 +23,8 @@ int main() {
     buffer[length ] = '\0';
     // read data as a block:
     stream.read (buffer,length);
-    std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 
+    std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
     auto result = skx::Script::parse(buffer);
     delete result->preParseResult;
     skx::Executor::executeStandalone(result->compiledPreRuntimeEvents[0]);

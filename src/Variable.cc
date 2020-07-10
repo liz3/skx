@@ -106,8 +106,25 @@ void skx::Variable::createVarValue(VarType type, Variable* target, bool isDouble
         case BOOLEAN:
             target->value = new TBoolean();
             break;
+        case POINTER:
+            target->value = nullptr;
+            break;
         default:
             break;
+    }
+}
+
+skx::VariableValue *skx::Variable::getValue() const {
+    return value;
+}
+
+void skx::Variable::setValue(skx::VariableValue *value) {
+    this->value = value;
+    if(value != nullptr) {
+        if(value->varRef != nullptr) {
+            this->customTypeName = value->varRef->customTypeName;
+        }
+        this->value->varRef = this;
     }
 }
 

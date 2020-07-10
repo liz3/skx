@@ -14,6 +14,7 @@
 #include "../include/types/TBoolean.h"
 #include "../include/types/TCharacter.h"
 #include "../include/types/TArray.h"
+#include "../include/api/Json.h"
 
 #include <exception>
 #include <iostream>
@@ -39,7 +40,7 @@ skx::CompileItem *skx::TreeCompiler::compileTreeFunction(skx::PreParserItem *ite
         Variable *param = new Variable();
         param->name = current->name;
         param->accessType = current->type;
-        param->value = nullptr;
+        param->setValue(nullptr);
         param->type = UNDEFINED;
         functionCtx->vars[param->name] = param;
     }
@@ -75,6 +76,8 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
             compileAssigment(actualContent, context, target);
         } else if (actualContent.rfind("loop", 0) == 0) {
             compileLoop(actualContent, context, target);
+        } else if (actualContent.rfind("add", 0) == 0 || actualContent.rfind("subtract", 0) == 0 || actualContent.rfind("multiply", 0) == 0 || actualContent.rfind("divide", 0) == 0) {
+            compileOperator(actualContent, context, target);
         } else if (actualContent.rfind("return", 0) == 0) {
             compileReturn(actualContent, context, target);
         } else {
@@ -281,7 +284,7 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
                 currentVar = new Variable();
                 currentVar->name = descriptor->name;
                 currentVar->accessType = descriptor->type;
-                currentVar->value = nullptr;
+                currentVar->setValue(nullptr);
                 currentVar->ctx = targetCtx;
              //   currentVar->created = created;
                 targetCtx->vars[descriptor->name] = currentVar;
@@ -318,13 +321,30 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
     }
 }
 
+void skx::TreeCompiler::compileOperator(std::string &content, skx::Context *pContext, skx::CompileItem *pItem) {
+    auto spaceSplit = skx::Utils::split(content, " ");
+    auto* assigment = new Assigment();
+   if(spaceSplit[0] == "add") assigment->type = ADD;
+   if(spaceSplit[0] == "subtract") assigment->type = SUBTRACT;
+   if(spaceSplit[0] == "multiply") assigment->type = MULTIPLY;
+   if(spaceSplit[0] == "divide") assigment->type = DIVIDE;
+
+   OperatorPart* source = skx::Literal::extractNumber(spaceSplit[1]);
+   auto varName = spaceSplit[2];
+   auto* var = skx::Utils::searchVar(skx::Variable::extractNameSafe(spaceSplit[3]), pContext);
+   if(var == nullptr) return;
+   assigment->source = source;
+   assigment->target = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+   pItem->assignments.push_back(assigment);
+}
+
 void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *target) {
     auto base = content.substr(8);
     std::string name = skx::Utils::ltrim(base);
     name = name.substr(0, name.find_first_of(" \n\r\t\f\v("));
     size_t paramsStart = base.find_first_of('(');
     size_t paramsEnd = base.find_last_of(')');
-    if(base.find_last_of("::") != std::string::npos) {
+    if(base.find("::") != std::string::npos) {
         auto returnType = base.substr(base.find("::"));
         returnType = skx::Utils::trim(returnType.substr(2, returnType.length() -3));
         if(returnType == "text" || returnType == "string") {
@@ -424,6 +444,10 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
                 call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
             }
             target->executions.push_back(call);
+        } else {
+            if(content.find("json") != std::string::npos) {
+                Json::compileRequest(content, context, target);
+            }
         }
     }
 }
@@ -501,8 +525,7 @@ void skx::TreeCompiler::compileLoop(const std::string& content, skx::Context *ct
         loopValue->isDouble = false;
         loopValue->accessType = CONTEXT;
         loopValue->contextValue = true;
-        loopValue->value = new TNumber(0);
-        loopValue->value->varRef = loopValue;
+        loopValue->setValue(new TNumber(0));
         ctx->vars[loopIndexName] = loopValue;
         loop->loopCounter = loopValue;
         target->executions.push_back(loop);

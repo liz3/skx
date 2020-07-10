@@ -37,28 +37,25 @@ function Vanish(p: player, e: player=" self ") :: text:
 	send {_p} to console
 	return "Nope"
 
+function createJsonArray():
+	create json array as {_array}
+	loop 5 times:
+		put json value %loop-value% as %loop-value% in {_array}
+	return {_array}
+
 on load:
-#	send "this is a test, because this is cool" to console
-	set {_callResult} to Vanish({@nodamage}, {@language})
-#	send {test2} to console
-	send {_callResult} to console
-	set {_callResult} to testFunc()
-	send {_callResult} to console
-	set {_loopX} to 25
-	set {_loopX} to 15
-	set {_loopX} to {_loopX}
-	set {_bVal} to {_loopX} - {_loopX} - 5 + 10
-	send {_bVal} to console
-	set {boolVal} to false
-	send {boolVal} to console
-	loop 4 times:
-		if %loop-value% is {_bVal}:
-			send "at bVal" to console
-		send "next loop" to console
-		loop {_loopX} times as i:
-			set {_callResult} to testFunc()
-			send {_callResult} to console
-			send %i% to console
-			if %i% is {_bVal}:
-				send "at" %i% to console
-				break
+	create json object as {_json}
+	put json value "Yann" as "name" in {_json}
+	put json value "Holme Nielsen" as "last_name" in {_json}
+	remove json value "last_name" from {_json}
+	put json value 20 as "age" in {_json}
+	set {_arr} to createJsonArray()
+	put json value {_arr} as "array" in {_json}
+	set {_arr} to createJsonArray()
+	put json value {_arr} as "array2" in {_json}
+	stringify json {_json} to {_asString}
+	send {_asString} to console
+	#reparse the thing and extract a value
+	parse json {_asString} into {_json2}
+	extract json value "name" from {_json2} to {_name}
+	send {_name} to console

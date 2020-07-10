@@ -40,8 +40,9 @@ add_library(skx SHARED
         src/types/TCharacter.cc
         include/types/TCharacter.h
         src/types/TArray.cc
-        include/types/TArray.h)
+        include/types/TArray.h src/api/Http.cpp include/api/Http.h src/api/Json.cpp include/api/Json.h)
 
+target_link_libraries(skx curl)
 add_executable(skx-example tests/main.cc)
 configure_file(assets/Vanish.sk . COPYONLY)
 target_link_libraries(skx-example skx)

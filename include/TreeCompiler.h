@@ -37,16 +37,17 @@ namespace skx {
     public:
         static CompileItem* compileTree(PreParserItem* item, Context* ctx);
         static CompileItem* compileTreeFunction(PreParserItem* item, Context* ctx);
+        static bool isNumber(char c);
+        static bool isVar(std::string& val);
 
     private:
-        bool isNumber(char c);
-        bool isVar(std::string& val);
         void compileExpression(PreParserItem* item, Context* context, CompileItem* target);
         void advance(CompileItem* parent, PreParserItem* parentItem, bool isFuncSuperContext = false);
         void compileCondition(std::string& content, Context* ctx, CompileItem* target, bool isElseIf = false);
         void compileAssigment(const std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileExecution(std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileReturn(std::string& basicString, Context *pContext, CompileItem *pItem);
+        void compileOperator(std::string& basicString, Context *pContext, CompileItem *pItem);
         void setupFunctionMeta(std::string& content, Function* target);
         bool isOperator(std::string& in);
         InstructionOperator getOperator(std::string& in);

@@ -28,7 +28,7 @@ namespace skx {
                 isDouble = raw->isDouble;
             } else if (raw->operatorType == VARIABLE) {
                 auto *var = static_cast<Variable *>(raw->value);
-                value = var->value;
+                value = var->getValue();
                 type = var->type;
                 isDouble = raw->isDouble;
 
@@ -72,12 +72,12 @@ namespace skx {
             TNumber* num = nullptr;
             if (loopCounter) {
               num = new TNumber(0);
-                if (loopCounter->value)
-                    delete dynamic_cast<TNumber *>(loopCounter->value);
-                loopCounter->value = num;
+                if (loopCounter->getValue())
+                    delete dynamic_cast<TNumber *>(loopCounter->getValue());
+                loopCounter->setValue(num);
             }
             int32_t localLoopTarget = loopTargetVar != nullptr
-                                      ? dynamic_cast<TNumber *>(loopTargetVar->value)->intValue
+                                      ? dynamic_cast<TNumber *>(loopTargetVar->getValue())->intValue
                                       : loopTarget;
             for (int32_t i = 0; i < localLoopTarget; ++i) {
                 exec->execute(rootItem);

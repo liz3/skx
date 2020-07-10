@@ -22,7 +22,7 @@ bool skx::Comparison::execute(skx::Context *context) {
         sourceValue = static_cast<VariableValue *>(source->value);
     } else if (source->operatorType == VARIABLE) {
         auto *out = static_cast<Variable *>(source->value);
-        sourceValue = out->value;
+        sourceValue = out->getValue();
         sourceVar = out;
     } else {
         sourceValue = nullptr;
@@ -31,7 +31,7 @@ bool skx::Comparison::execute(skx::Context *context) {
         targetValue = static_cast<VariableValue *>(target->value);
     } else if (target->operatorType == VARIABLE) {
         auto *out = static_cast<Variable *>(target->value);
-        targetValue = out->value;
+        targetValue = out->getValue();
         targetVar = out;
     } else {
         targetValue = nullptr;
@@ -81,11 +81,12 @@ bool skx::Assigment::execute(skx::Context *context) {
     }
     if (source->type == UNDEFINED && source->operatorType != EXECUTION) {
         targetVar->type = UNDEFINED;
-        targetVar->value = nullptr;
+        targetVar->setValue(nullptr);
         return true;
     }
   //  if (source->type != target->type && source->operatorType != EXECUTION) return false;
     VariableValue *sourceValue;
+
     if (source->operatorType == LITERAL) {
         sourceValue = static_cast<VariableValue *>(source->value);
     } else if (source->operatorType == EXECUTION) {
@@ -95,7 +96,7 @@ bool skx::Assigment::execute(skx::Context *context) {
             sourceValue = nullptr;
         } else {
             if (executionResult->operatorType == VARIABLE) {
-                sourceValue = static_cast<Variable *>(executionResult->value)->value;
+                sourceValue = static_cast<Variable *>(executionResult->value)->getValue();
                 source->type = static_cast<Variable *>(executionResult->value)->type;
             } else {
                 if (executionResult->operatorType == LITERAL) {
@@ -110,31 +111,31 @@ bool skx::Assigment::execute(skx::Context *context) {
         if (sourceVar->state == SPOILED) {
             return false;
         }
-        sourceValue = sourceVar->value;
+        sourceValue = sourceVar->getValue();
     }
     if(sourceValue == nullptr)
         return false;
-    if(targetVar->value == nullptr || sourceValue->type != targetVar->type) {
-        if(targetVar->value != nullptr) {
+    if(targetVar->getValue() == nullptr || sourceValue->type != targetVar->type) {
+        if(targetVar->getValue() != nullptr) {
             switch (targetVar->type) {
                 case STRING: {
-                    auto *val = dynamic_cast<TString*>(targetVar->value);
+                    auto *val = dynamic_cast<TString*>(targetVar->getValue());
 
                     delete val;
                     break;
                 }
                 case NUMBER: {
-                    auto *val = dynamic_cast<TNumber*>(targetVar->value);
+                    auto *val = dynamic_cast<TNumber*>(targetVar->getValue());
                     delete val;
                     break;
                 }
                 case CHARACTER: {
-                    auto *val = dynamic_cast<TCharacter*>(targetVar->value);
+                    auto *val = dynamic_cast<TCharacter*>(targetVar->getValue());
                     delete val;
                     break;
                 }
                 case BOOLEAN: {
-                    auto *val = dynamic_cast<TBoolean*>(targetVar->value);
+                    auto *val = dynamic_cast<TBoolean*>(targetVar->getValue());
                     delete val;
                     break;
                 }
@@ -144,17 +145,24 @@ bool skx::Assigment::execute(skx::Context *context) {
         }
         Variable::createVarValue(sourceValue->type, targetVar, sourceValue->type == NUMBER && dynamic_cast<TNumber*>(sourceValue)->isDouble);
     }
+    if((targetVar->getValue() == nullptr || targetVar->type != source->type) && source->type == POINTER) {
+        targetVar->setValue(sourceValue);
+        targetVar->type = source->type;
+        if(sourceValue->varRef != nullptr) {
+            targetVar->customTypeName = sourceValue->varRef->customTypeName;
+        }
+    }
     switch (type) {
         case ASSIGN:
-            return targetVar->value->assign(sourceValue);
+            return targetVar->getValue()->assign(sourceValue);
         case ADD:
-            return targetVar->value->add(sourceValue);
+            return targetVar->getValue()->add(sourceValue);
         case SUBTRACT:
-            return targetVar->value->subtract(sourceValue);
+            return targetVar->getValue()->subtract(sourceValue);
         case MULTIPLY:
-            return targetVar->value->multiply(sourceValue);
+            return targetVar->getValue()->multiply(sourceValue);
         case DIVIDE:
-            return targetVar->value->divide(sourceValue);
+            return targetVar->getValue()->divide(sourceValue);
         default:
             break;
     }

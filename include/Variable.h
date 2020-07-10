@@ -56,13 +56,20 @@ class Context;
         virtual bool divide(VariableValue* source);
     };
     class Variable {
+    private:
+        VariableValue* value;
+    public:
+        VariableValue *getValue() const;
+
+        void setValue(VariableValue *value);
+
     public:
         virtual ~Variable();
         AccessType accessType;
         VarType type;
         Context* ctx;
         std::string name;
-        VariableValue* value;
+        std::string customTypeName; // when pointer
         bool isDouble = false; // specific to number;
         static void createVarFromOption(std::string item, skx::Context* targetContext, bool isStatic);
         static VariableDescriptor* extractNameSafe(std::string in);
