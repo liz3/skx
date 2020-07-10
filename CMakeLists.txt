@@ -31,7 +31,16 @@ add_library(skx SHARED
         include/RegexUtils.h
         src/Literal.cc
         include/Literal.h
-        src/types/TString.cc include/types/TString.h src/types/TBoolean.cc include/types/TBoolean.h src/types/TNumber.cc include/types/TNumber.h src/types/TCharacter.cc include/types/TCharacter.h src/types/TArray.cc include/types/TArray.h)
+        src/types/TString.cc
+        include/types/TString.h
+        src/types/TBoolean.cc
+        include/types/TBoolean.h
+        src/types/TNumber.cc
+        include/types/TNumber.h
+        src/types/TCharacter.cc
+        include/types/TCharacter.h
+        src/types/TArray.cc
+        include/types/TArray.h)
 
 add_executable(skx-example tests/main.cc)
 configure_file(assets/Vanish.sk . COPYONLY)
