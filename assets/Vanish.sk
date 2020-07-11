@@ -57,7 +57,7 @@ function extractProp(p,prop):
 	extract json value {_prop} from {_person} to {_value}
 	if {_prop} is "age":
 		return 21
-	return 21
+	return {_value}
 
 on load:
 	create json object as {_json}
@@ -76,6 +76,6 @@ on load:
 	set {_ageS} to "age"
 	set {_name} to extractProp({_json2}, {_nn})
 	set {_age} to extractProp({_json2}, {_ageS})
-	if {_name} is not 21:
+	if {_name} is "Liz3":
 		send {_name} to console
 		send {_age} to console

@@ -40,9 +40,19 @@ add_library(skx SHARED
         src/types/TCharacter.cc
         include/types/TCharacter.h
         src/types/TArray.cc
-        include/types/TArray.h src/api/Http.cpp include/api/Http.h src/api/Json.cpp include/api/Json.h)
-
+        include/types/TArray.h
+        src/api/Http.cpp
+        include/api/Http.h
+        src/api/Json.cpp
+        include/api/Json.h
+        src/ApiBridge.cc
+        include/ApiBridge.h
+        plugin/build/net_liz3_skx_SkxApi.h
+        )
+if (UNIX)
+include_directories(/usr/lib/jvm/java-11-openjdk/include /usr/lib/jvm/java-11-openjdk/include/linux)
 target_link_libraries(skx curl)
+endif ()
 add_executable(skx-example tests/main.cc)
 configure_file(assets/Vanish.sk . COPYONLY)
 target_link_libraries(skx-example skx)
