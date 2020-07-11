@@ -51,6 +51,9 @@ void skx::Utils::copyVariableValue(skx::Variable *source, skx::Variable *target)
         case UNDEFINED:
             target->setValue(nullptr);
             break;
+        case POINTER:
+            target->setValue(source->getValue());
+            break;
         case STRING:
             target->setValue(new TString(dynamic_cast<TString*>(source->getValue())->value));
             break;

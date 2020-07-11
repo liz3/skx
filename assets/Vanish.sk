@@ -40,15 +40,30 @@ function Vanish(p: player, e: player=" self ") :: text:
 function createJsonArray():
 	create json array as {_array}
 	loop 5 times:
-		put json value %loop-value% as %loop-value% in {_array}
+		set {_count} to %loop-value% + 1
+		put json value {_count} as %loop-value% in {_array}
 	return {_array}
+
+function createJsonObject():
+	create json object as {_obj}
+	put json value "Liz3" as "name" in {_obj}
+	put json value "Holme Nielsen" as "last_name" in {_obj}
+	put json value 20 as "age" in {_obj}
+	remove json value "last_name" from {_obj}
+	return {_obj}
+
+function extractProp(p,prop):
+	extract json value "person1" from {_p} to {_person}
+	extract json value {_prop} from {_person} to {_value}
+	if {_prop} is "age":
+		return 21
+	return 21
 
 on load:
 	create json object as {_json}
-	put json value "Yann" as "name" in {_json}
-	put json value "Holme Nielsen" as "last_name" in {_json}
-	remove json value "last_name" from {_json}
-	put json value 20 as "age" in {_json}
+	set {_obj} to createJsonObject()
+	put json value {_obj} as "person1" in {_json}
+	put json value {_obj} as "person2" in {_json}
 	set {_arr} to createJsonArray()
 	put json value {_arr} as "array" in {_json}
 	set {_arr} to createJsonArray()
@@ -57,5 +72,10 @@ on load:
 	send {_asString} to console
 	#reparse the thing and extract a value
 	parse json {_asString} into {_json2}
-	extract json value "name" from {_json2} to {_name}
-	send {_name} to console
+	set {_nn} to "name"
+	set {_ageS} to "age"
+	set {_name} to extractProp({_json2}, {_nn})
+	set {_age} to extractProp({_json2}, {_ageS})
+	if {_name} is not 21:
+		send {_name} to console
+		send {_age} to console

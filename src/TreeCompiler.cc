@@ -137,6 +137,12 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             state = 0;
             currentOperator = nullptr;
         }
+        if (isNumber(current[0]) && state == 2) {
+            currentOperator->target = skx::Literal::extractNumber(current);
+            target->comparisons.push_back(currentOperator);
+            state = 0;
+            currentOperator = nullptr;
+        }
         if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *var = skx::Utils::searchVar(descriptor, ctx);
@@ -474,6 +480,10 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
             TBoolean* f = new TBoolean(current == "true");
             pItem->returner = new ReturnOperation();
             pItem->returner->targetReturnItem = new OperatorPart(LITERAL, BOOLEAN, f, false);
+
+        }  else if(isNumber(current[0])) {
+            pItem->returner = new ReturnOperation();
+            pItem->returner->targetReturnItem = skx::Literal::extractNumber(current);
 
         } else if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);

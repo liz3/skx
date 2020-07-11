@@ -13,7 +13,8 @@
 bool skx::Comparison::execute(skx::Context *context) {
     if (type == ASSIGN || type == SUBTRACT || type == ADD || type == MULTIPLY || type == DIVIDE)
         return false;
-    if (source->type == STRING && type != EQUAL && type != NOT_EQUAL) return false;
+    if (source->type == STRING && type != EQUAL && type != NOT_EQUAL)
+        return false;
     VariableValue *sourceValue;
     VariableValue *targetValue;
     Variable *sourceVar = nullptr;
@@ -38,7 +39,7 @@ bool skx::Comparison::execute(skx::Context *context) {
     }
     if (targetValue == nullptr || sourceValue == nullptr) return false;
     if (sourceValue->type != targetValue->type && target->type != UNDEFINED) {
-    return false;
+    return type == NOT_EQUAL;
     }
 
     //this is a bit special case
