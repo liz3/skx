@@ -1,3 +1,6 @@
 build
 cmake-build-debug
 plugin/build
+.idea
+plugin/.gradle
+plugin/.idea
