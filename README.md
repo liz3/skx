@@ -31,7 +31,7 @@ You will need cmake and the JDK 11 with the headers.
 2. run ```build.sh```
 
 ### windows
-1. same as for 5### macOS & gnu/linux
+1. same as for macOS & gnu/linux.
 2. either use the `git bash` to run the script or recreate what it does. for the `make` command use `cmake --build build`
 
 ## Running
