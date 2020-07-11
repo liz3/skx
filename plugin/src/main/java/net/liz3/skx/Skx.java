@@ -12,7 +12,7 @@ public class Skx extends JavaPlugin {
     public void onLoad() {
 
         apiInstance = new SkxApi(this);
-        apiInstance.setLibPath("/home/liz3/CLionProjects/skx/cmake-build-debug/libskx.so");
+        apiInstance.setLibPath(System.getenv("SKXLIBPATH"));
         initResponse = apiInstance.initApi();
         if(!initResponse.isSuccess()) {
             System.err.println(initResponse.getMsg());

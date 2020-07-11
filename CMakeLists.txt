@@ -51,7 +51,7 @@ add_library(skx SHARED
         )
 if (UNIX)
 include_directories(/usr/lib/jvm/java-11-openjdk/include /usr/lib/jvm/java-11-openjdk/include/linux)
-target_link_libraries(skx curl)
+#target_link_libraries(skx curl)
 endif ()
 add_executable(skx-example tests/main.cc)
 configure_file(assets/Vanish.sk . COPYONLY)
