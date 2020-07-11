@@ -1,5 +1,5 @@
 #!/bin/sh
-git submodules update --init
+git submodule update --init
 cd plugin
 ./gradlew shadowJar
 cd ..
