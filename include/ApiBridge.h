@@ -1,6 +1,7 @@
 //
 // Created by liz3 on 11/07/2020.
 //
+#ifdef SKX_BUILD_API
 
 #ifndef SKX_APIBRIDGE_H
 #define SKX_APIBRIDGE_H
@@ -48,3 +49,5 @@ namespace skx {
 
 
 #endif //SKX_APIBRIDGE_H
+
+#endif

@@ -1,10 +1,16 @@
 cmake_minimum_required(VERSION 3.16)
 project(skx)
 
+option(SKX_BUILD_API "Build Java" ON)
+option(SKX_BUILD_EXAMPLE "Build Example Executable" ON)
+
+if (SKX_BUILD_API)
+    add_definitions(-DSKX_BUILD_API)
+endif ()
+
 set(CMAKE_CXX_STANDARD 14)
 
-add_library(skx SHARED
-        src/Script.cc
+set(SKX_SOURCES src/Script.cc
         include/Script.h
         src/Context.cc
         include/Context.h
@@ -45,17 +51,27 @@ add_library(skx SHARED
         include/api/Http.h
         src/api/Json.cpp
         include/api/Json.h
+        src/AsyncExecutor.cc
+        include/AsyncExecutor.h
         src/ApiBridge.cc
-        include/ApiBridge.h
-        plugin/build/net_liz3_skx_SkxApi.h
-        src/AsyncExecutor.cc include/AsyncExecutor.h)
-if (UNIX)
-include_directories(/usr/lib/jvm/java-11-openjdk/include /usr/lib/jvm/java-11-openjdk/include/linux)
-#target_link_libraries(skx curl)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pthread")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pthread")
-
+        include/ApiBridge.h )
+if (SKX_BUILD_API)
+    list(APPEND ${SKX_SOURCES} plugin/build/net_liz3_skx_SkxApi.h)
 endif ()
-add_executable(skx-example tests/main.cc)
-configure_file(assets/Vanish.sk . COPYONLY)
-target_link_libraries(skx-example skx)
+
+add_library(skx SHARED
+        ${SKX_SOURCES})
+
+if (SKX_BUILD_API)
+    include_directories(/usr/lib/jvm/java-11-openjdk/include /usr/lib/jvm/java-11-openjdk/include/linux)
+endif ()
+
+if (NOT WIN32)
+    #target_link_libraries(skx curl)
+    target_link_libraries(skx pthread)
+endif ()
+if (SKX_BUILD_EXAMPLE)
+    add_executable(skx-example tests/main.cc)
+    configure_file(assets/Vanish.sk . COPYONLY)
+    target_link_libraries(skx-example skx)
+endif ()

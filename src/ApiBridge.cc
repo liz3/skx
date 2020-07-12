@@ -1,7 +1,7 @@
 //
 // Created by liz3 on 11/07/2020.
 //
-
+#ifdef SKX_BUILD_API
 #include <iostream>
 #include "../include/ApiBridge.h"
 #include "../plugin/build/net_liz3_skx_SkxApi.h"
@@ -194,3 +194,5 @@ JNIEXPORT jboolean JNICALL Java_net_liz3_skx_SkxApi_fireDisable
     if (skx::apiInstance == nullptr) return false;
     return skx::apiInstance->runShutdown();
 }
+
+#endif
