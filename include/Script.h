@@ -27,7 +27,7 @@ namespace skx {
         std::map<TriggerCommand*, CompileItem*> mc_commands;
         std::map<TriggerEvent*, CompileItem*> mc_events;
 
-        static Script* parse(char* input);
+        static Script* parse(const char* input);
         Script(Context *baseContext);
     };
 }

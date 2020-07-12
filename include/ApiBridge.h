@@ -8,8 +8,19 @@
 #include <jni.h>
 #include <string>
 #include <vector>
+#include <map>
+#include "Script.h"
+#include "AsyncExecutor.h"
 
 namespace skx {
+    struct EventPair {
+        jobject object;
+        CompileItem* item;
+        TriggerEvent* event = nullptr;
+        AsyncExecutor* executor;
+    };
+
+
     class ApiBridge {
 
     public:
@@ -18,15 +29,19 @@ namespace skx {
         bool shutdown();
         void setStringValue(const char* fieldName, const char* value);
         void handleEventTrigger(jobject handlerHook, jobject eventInstance);
-
-        void registerEventHook();
-        jobject generateEventHook(const char* name);
-
+        jobject registerEventHook(const char *evId, long id, jobject pJobject);
+        jobject generateEventHook(const char* name, long id);
+        bool loadScript(jobject file, jstring value, jobject pJobject, JNIEnv *pEnv);
+        bool runReady();
+        bool runShutdown();
+        JNIEnv_ *env;
     private:
-        std::vector<jobject> hooks;
+        std::map<long, EventPair> hooks;
+        void executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, const char *const string);
+        std::vector<Script*> scripts;
+        std::map<Script*, AsyncExecutor*> executors;
         jclass classType;
         jclass eventHookClassType;
-        JNIEnv_ *env;
         _jobject *thisInstance;
     };
 }

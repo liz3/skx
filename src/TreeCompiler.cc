@@ -413,7 +413,10 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
             }
             pos += current.length();
         }
-        target->executions.push_back(pr);
+        if(pr->dependencies.size() > 0)
+           target->executions.push_back(pr);
+        else
+            delete pr;
         return;
     } else {
         auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
@@ -577,7 +580,14 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
     if(content.find("command") == 0) {
         // COmmand
     } else if (content.find("on ") == 0) {
-        //event
+        Variable* playerName = new Variable();
+        playerName->name = "player-name";
+        playerName->contextValue = true;
+        playerName->type = STRING;
+        playerName->accessType = CONTEXT;
+        context->vars["player-name"] = playerName;
+
+        target->triggers.push_back(new TriggerEvent());
     }
 }
 

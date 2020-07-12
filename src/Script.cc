@@ -16,7 +16,7 @@
  */
 
 
-skx::Script *skx::Script::parse(char *input) {
+skx::Script *skx::Script::parse(const char *input) {
     std::string base(input);
     base.erase(std::remove(base.begin(), base.end(), '\r'), base.end());
     auto lines = skx::Utils::split(base, "\n");

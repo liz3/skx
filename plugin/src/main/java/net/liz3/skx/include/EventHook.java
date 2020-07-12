@@ -12,10 +12,6 @@ public class EventHook {
         this.clazzName = clazzName;
     }
 
-    public EventHook() {
-        id = System.currentTimeMillis();
-    }
-
     public String getName() {
         return name;
     }

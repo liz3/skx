@@ -48,10 +48,13 @@ add_library(skx SHARED
         src/ApiBridge.cc
         include/ApiBridge.h
         plugin/build/net_liz3_skx_SkxApi.h
-        )
+        src/AsyncExecutor.cc include/AsyncExecutor.h)
 if (UNIX)
 include_directories(/usr/lib/jvm/java-11-openjdk/include /usr/lib/jvm/java-11-openjdk/include/linux)
 #target_link_libraries(skx curl)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pthread")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -pthread")
+
 endif ()
 add_executable(skx-example tests/main.cc)
 configure_file(assets/Vanish.sk . COPYONLY)

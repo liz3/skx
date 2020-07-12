@@ -97,7 +97,7 @@ namespace skx {
         TriggerEvent() : Trigger() {
             type = MC_EVENT;
         }
-        std::string eventClass;
+        std::string eventClass = "org.bukkit.event.player.PlayerJoinEvent";
 
     };
     class TriggerSignal : public Trigger {

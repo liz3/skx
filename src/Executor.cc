@@ -7,7 +7,7 @@
 
 
 void skx::Executor::executeStandalone(skx::CompileItem *item) {
-    Executor *exec = new Executor();
+    auto *exec = new Executor();
     exec->isLoop = item->isLoop;
     skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
     exec->root = item;
