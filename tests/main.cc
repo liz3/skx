@@ -27,10 +27,14 @@ int main() {
     std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
     auto result = skx::Script::parse(buffer);
     delete result->preParseResult;
-    skx::Executor::executeStandalone(result->compiledPreRuntimeEvents[0]);
+    for(const auto& entry : result->signals) {
+        if(entry.first->signalType == skx::TriggerSignal::LOAD) {
+            skx::Executor::executeStandalone(entry.second);
+        }
+    }
     std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-    auto t = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "everything took: " << t << " microseonds";
+    auto t = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    std::cout << "everything took: " << t << " ms";
 
     //clean up
     delete[] buffer;

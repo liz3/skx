@@ -25,6 +25,7 @@ namespace skx {
         bool subtract(VariableValue *source) override;
         bool multiply(VariableValue *source) override;
         bool divide(VariableValue *source) override;
+        VariableValue * copyValue() override;
 
     };
 }

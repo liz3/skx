@@ -72,8 +72,6 @@ namespace skx {
             TNumber* num = nullptr;
             if (loopCounter) {
               num = new TNumber(0);
-                if (loopCounter->getValue())
-                    delete dynamic_cast<TNumber *>(loopCounter->getValue());
                 loopCounter->setValue(num);
             }
             int32_t localLoopTarget = loopTargetVar != nullptr

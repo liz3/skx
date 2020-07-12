@@ -41,3 +41,7 @@ skx::TCharacter::TCharacter(char value) : value(value) {
 }
 
 skx::TCharacter::TCharacter() {}
+
+skx::VariableValue *skx::TCharacter::copyValue() {
+    return new TCharacter(value);
+}

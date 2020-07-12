@@ -38,6 +38,8 @@ class Context;
     };
     class VariableValue {
     public:
+        virtual ~VariableValue();
+
         bool isReadOnly = false;
         VarType type;
         Variable* varRef = nullptr;
@@ -54,6 +56,8 @@ class Context;
         virtual bool subtract(VariableValue* source);
         virtual bool multiply(VariableValue* source);
         virtual bool divide(VariableValue* source);
+
+        virtual VariableValue* copyValue();
     };
     class Variable {
     private:

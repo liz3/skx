@@ -63,3 +63,7 @@ bool skx::TBoolean::multiply(skx::VariableValue *source) {
 bool skx::TBoolean::divide(skx::VariableValue *source) {
     return VariableValue::divide(source);
 }
+
+skx::VariableValue *skx::TBoolean::copyValue() {
+    return new TBoolean(value);
+}

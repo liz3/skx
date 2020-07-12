@@ -146,7 +146,7 @@ bool skx::Assigment::execute(skx::Context *context) {
         }
         Variable::createVarValue(sourceValue->type, targetVar, sourceValue->type == NUMBER && dynamic_cast<TNumber*>(sourceValue)->isDouble);
     }
-    if((targetVar->getValue() == nullptr || targetVar->type != source->type) && source->type == POINTER) {
+    if( source->type == POINTER) {
         targetVar->setValue(sourceValue);
         targetVar->type = source->type;
         if(sourceValue->varRef != nullptr) {
@@ -217,4 +217,8 @@ skx::Execution::~Execution() {
         delete dependencie;
     }
     dependencies.clear();
+}
+
+skx::Trigger::~Trigger() {
+
 }

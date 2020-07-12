@@ -55,11 +55,11 @@ function createJsonObject():
 function extractProp(p,prop):
 	extract json value "person1" from {_p} to {_person}
 	extract json value {_prop} from {_person} to {_value}
-	if {_prop} is "age":
+	if {_prop} is not "age":
 		return 21
 	return {_value}
 
-on load:
+function jsonTest():
 	create json object as {_json}
 	set {_obj} to createJsonObject()
 	put json value {_obj} as "person1" in {_json}
@@ -76,6 +76,17 @@ on load:
 	set {_ageS} to "age"
 	set {_name} to extractProp({_json2}, {_nn})
 	set {_age} to extractProp({_json2}, {_ageS})
-	if {_name} is "Liz3":
+	if {_name} is not "Liz3":
 		send {_name} to console
 		send {_age} to console
+
+on load:
+	set {counter} to 1
+	set {num} to 5000000
+	loop {num} times:
+		if {counter} is 10:
+			add 25 to {counter}
+			send "its 10" to console
+		else:
+			add 1 to {counter}
+	send {counter} to console

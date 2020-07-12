@@ -30,15 +30,40 @@ skx::Script *skx::Script::parse(char *input) {
                 Variable::createVarFromOption(opt->actualContent, result->baseContext, true);
             }
         }
-    }
-    for (auto & walkItem : parseResult->rootItems) {
-        auto baseType = skx::BaseAction::getBaseType(walkItem->actualContent);
         if(baseType == FUNCTION) {
             skx::TreeCompiler::compileTreeFunction(walkItem, result->baseContext);
         }
     }
+
     for (auto & walkItem : parseResult->rootItems) {
-        result->walk(walkItem, result->baseContext, result);
+        auto baseType = skx::BaseAction::getBaseType(walkItem->actualContent);
+        if(baseType == FUNCTION || baseType == OPTIONS) continue;
+        CompileItem* compileItem = skx::TreeCompiler::compileTree(walkItem, result->baseContext);
+        if(compileItem->triggers.size() == 0) {
+            std::cout << "[Warning] Empty trigger found? " << walkItem->actualContent << " at " << walkItem->pos << "\n";
+            continue;
+        }
+        Trigger* trigger = compileItem->triggers[0];
+        switch (trigger->type) {
+            case SIGNAL: {
+                TriggerSignal* signal = dynamic_cast<TriggerSignal*>(trigger);
+                result->signals[signal] = compileItem;
+                break;
+            }
+            case MC_COMMAND: {
+                TriggerCommand* command = dynamic_cast<TriggerCommand*>(trigger);
+                result->mc_commands[command] = compileItem;
+                break;
+            }
+            case MC_EVENT: {
+                TriggerEvent* event = dynamic_cast<TriggerEvent*>(trigger);
+                result->mc_events[event] = compileItem;
+                break;
+            }
+
+            default:
+                break;
+        }
         result->baseContext->stepPointer++;
     }
     result->preParseResult = parseResult;
@@ -47,24 +72,18 @@ skx::Script *skx::Script::parse(char *input) {
 
 skx::Script::Script(Context *baseContext) : baseContext(baseContext) {}
 
-void skx::Script::walk(PreParserItem *item, Context *itemContext, Script *script) {
-    if(item->level == 0) {
-        auto baseType = skx::BaseAction::getBaseType(item->actualContent);
-        switch (baseType) {
-            case PRE_RUNTIME_EVENT: {
-                script->compiledPreRuntimeEvents.push_back(skx::TreeCompiler::compileTree(item, itemContext));
-            }
-
-            default:
-                break;
-        }
-    }
-
-}
-
 skx::Script::~Script() {
-    for (auto & compiledPreRuntimeEvent : compiledPreRuntimeEvents) {
-        delete compiledPreRuntimeEvent;
+    for(const auto& entry : signals) {
+        delete entry.second;
+
+    }
+    for(const auto& entry : mc_events) {
+        delete entry.second;
+
+    }
+    for(const auto& entry : mc_commands) {
+        delete entry.second;
+
     }
     delete baseContext;
 }

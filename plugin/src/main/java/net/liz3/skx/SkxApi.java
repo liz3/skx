@@ -2,6 +2,7 @@ package net.liz3.skx;
 
 import net.liz3.skx.bootstrap.InitResponse;
 import net.liz3.skx.include.EventHook;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -40,7 +41,9 @@ public class SkxApi {
     public native boolean shutdownApi();
 
     public void generateListener(EventHook hook) {
-        System.out.println("CALLLED " + hook.getName());
+        Bukkit.getPluginManager().registerEvent(
+
+        );
         handleEvent(hook, null);
     }
 

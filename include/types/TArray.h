@@ -22,6 +22,8 @@ namespace skx {
         bool isBigger(VariableValue *other) override;
         bool isSmallerOrEquals(VariableValue *other) override;
         bool isBiggerOrEquals(VariableValue *other) override;
+
+        VariableValue * copyValue() override;
     };
 }
 

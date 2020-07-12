@@ -66,3 +66,8 @@ bool skx::TString::multiply(skx::VariableValue *source) {
 bool skx::TString::divide(skx::VariableValue *source) {
     return VariableValue::divide(source);
 }
+
+skx::VariableValue *skx::TString::copyValue() {
+    TString* str = new TString(value);
+    return str;
+}

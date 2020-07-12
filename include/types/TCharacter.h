@@ -16,13 +16,14 @@ namespace skx {
 
         TCharacter(char value);
 
-    private:
         bool assign(VariableValue *source) override;
         bool isEqual(VariableValue *other) override;
         bool isBigger(VariableValue *other) override;
         bool isSmaller(VariableValue *other) override;
         bool isBiggerOrEquals(VariableValue *other) override;
         bool isSmallerOrEquals(VariableValue *other) override;
+
+        VariableValue * copyValue() override;
     };
 }
 

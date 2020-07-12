@@ -12,8 +12,6 @@
 #include "../include/types/TNumber.h"
 #include "../include/types/TString.h"
 #include "../include/types/TBoolean.h"
-#include "../include/types/TCharacter.h"
-#include "../include/types/TArray.h"
 #include "../include/api/Json.h"
 
 #include <exception>
@@ -54,9 +52,7 @@ skx::CompileItem *skx::TreeCompiler::compileTreeFunction(skx::PreParserItem *ite
 void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *context, CompileItem *target) {
 
     if (item->level == 0) {
-        Trigger *trigger = new Trigger();
-        trigger->type = item->actualContent == "on load:" ? BOOT : EVENT;
-        target->triggers.push_back(trigger);
+       compileTrigger(item->actualContent, context, target);
     } else {
         auto actualContent = item->actualContent;
         if (actualContent == "else:") {
@@ -68,17 +64,17 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
             return;
         }
         //ik this is messy, will change later
-        if (actualContent.rfind("if", 0) == 0) {
+        if (actualContent.find("if") == 0) {
             compileCondition(actualContent, context, target);
-        } else if (actualContent.rfind("else if", 0) == 0) {
+        } else if (actualContent.find("else if") == 0) {
             compileCondition(actualContent, context, target);
-        } else if (actualContent.rfind("set", 0) == 0) {
+        } else if (actualContent.find("set") == 0) {
             compileAssigment(actualContent, context, target);
-        } else if (actualContent.rfind("loop", 0) == 0) {
+        } else if (actualContent.find("loop") == 0) {
             compileLoop(actualContent, context, target);
-        } else if (actualContent.rfind("add", 0) == 0 || actualContent.rfind("subtract", 0) == 0 || actualContent.rfind("multiply", 0) == 0 || actualContent.rfind("divide", 0) == 0) {
+        } else if (actualContent.find("add") == 0 || actualContent.find("subtract") == 0 || actualContent.find("multiply") == 0 || actualContent.find("divide") == 0) {
             compileOperator(actualContent, context, target);
-        } else if (actualContent.rfind("return", 0) == 0) {
+        } else if (actualContent.find("return") == 0) {
             compileReturn(actualContent, context, target);
         } else {
             compileExecution(actualContent, context, target);
@@ -115,7 +111,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
         if (current[current.length() - 1] == ':') {
             current = current.substr(0, current.length() - 1);
         }
-        if (current.rfind('"', 0) == 0 && state == 2) {
+        if (current.find('"') == 0 && state == 2) {
             int x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                 i++;
@@ -211,7 +207,7 @@ void skx::TreeCompiler::compileAssigment(const std::string& content, skx::Contex
             assigment->type = getOperator(current);
             continue;
         }
-        if (current.rfind('"', 0) == 0 && step == 2) {
+        if (current.find('"') == 0 && step == 2) {
             int x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                 i++;
@@ -391,7 +387,7 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
         size_t pos = 0;
         for (int i = 0; i < spaceSplit.size(); i++) {
             auto current = spaceSplit[i];
-            if (current.rfind('"', 0) == 0) {
+            if (current.find('"') == 0) {
                 int x = i;
                 while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                     i++;
@@ -431,6 +427,7 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
             auto *call = new FunctionInvoker();
             call->function = context->global->functions[name];
 
+            if(params.length() > 0)
             for (auto const &param : skx::Utils::split(params, ",")) {
                 auto trimmed = skx::Utils::trim(param);
                 auto descriptor = skx::Variable::extractNameSafe(trimmed);
@@ -463,7 +460,7 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
 
     for (int i = 0; i < spaceSplit.size(); i++) {
         auto current = spaceSplit[i];
-        if (current.rfind('"', 0) == 0) {
+        if (current.find('"') == 0) {
             int x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                 i++;
@@ -568,6 +565,20 @@ skx::InstructionOperator skx::TreeCompiler::getOperator(std::string& in) {
     if(in == "*" || in == "multiply") return MULTIPLY;
     if(in == "/" || in == "divided") return DIVIDE;
     return NOT_EQUAL;
+}
+
+void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *context, skx::CompileItem *target) {
+    if(content == "on load:" || content == "on unload:") {
+        TriggerSignal* signal = new TriggerSignal();
+        signal->signalType =  content == "on unload:" ? TriggerSignal::UN_LOAD : TriggerSignal::LOAD;
+        target->triggers.push_back(signal);
+        return;
+    }
+    if(content.find("command") == 0) {
+        // COmmand
+    } else if (content.find("on ") == 0) {
+        //event
+    }
 }
 
 skx::CompileItem::~CompileItem() {

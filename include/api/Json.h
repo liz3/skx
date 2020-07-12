@@ -13,10 +13,12 @@ namespace skx {
     class TJson : public VariableValue {
     public:
         TJson(const nlohmann::json &value);
-
         TJson();
-        nlohmann::json value;
 
+        virtual ~TJson();
+
+        nlohmann::json value;
+        VariableValue * copyValue() override;
     };
     class JsonInterface : public Execution {
     public:

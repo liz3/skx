@@ -10,17 +10,23 @@
 #include "../include/TreeCompiler.h"
 
 #include <vector>
+#include <map>
 
 
 namespace skx {
     class Script {
     public:
         virtual ~Script();
-
+        //base context holding functions & options vars and so on
         Context* baseContext;
+        //self explaining
         PreParseResult* preParseResult;
-        std::vector<CompileItem*> compiledPreRuntimeEvents;
-        void walk(PreParserItem *item, Context *itemContext, Script *script);
+
+        //actual compiled trees
+        std::map<TriggerSignal*, CompileItem*> signals;
+        std::map<TriggerCommand*, CompileItem*> mc_commands;
+        std::map<TriggerEvent*, CompileItem*> mc_events;
+
         static Script* parse(char* input);
         Script(Context *baseContext);
     };

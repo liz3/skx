@@ -94,7 +94,9 @@ skx::OperatorPart *skx::JsonInterface::execute(skx::Context *target) {
         if (val.is_array() || val.is_object()) {
             targetVar->type = POINTER;
             targetVar->customTypeName = "data::jsonValue";
-            targetVar->setValue( new TJson(val));
+//            if(targetVar->getValue() != nullptr && targetVar->getValue()->varRef == targetVar)
+//                delete targetVar->getValue();
+             targetVar->setValue( new TJson(val));
         } else if (val.is_number()) {
             targetVar->type = NUMBER;
             if (val.is_number_float()) {
@@ -242,7 +244,9 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
             }
             exec->dependencies.push_back(new OperatorPart(LITERAL, STRING, new TString(json), false));
         } else {
-            Variable *var = skx::Utils::searchVar(skx::Variable::extractNameSafe(split[2]), ctx);
+            auto* desc = skx::Variable::extractNameSafe(split[2]);
+            Variable *var = skx::Utils::searchVar(desc, ctx);
+            delete desc;
             if (!var) {
                 return;
             }
@@ -262,13 +266,16 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
         }
         exec->dependencies.push_back(new OperatorPart(VARIABLE, POINTER, var, false));
         target->executions.push_back(exec);
+        delete descriptor;
     }
     if (split[0] == "stringify") {
         //stringify json {x} to {wtf}
         JsonInterface *exec = new JsonInterface();
         exec->type = JsonInterface::STRINGIFY;
         {
-            Variable *var = skx::Utils::searchVar(skx::Variable::extractNameSafe(split[2]), ctx);
+            auto* desc = skx::Variable::extractNameSafe(split[2]);
+            Variable *var = skx::Utils::searchVar(desc, ctx);
+            delete desc;
             if (!var) {
                 return;
             }
@@ -286,6 +293,7 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
             var->ctx = c;
             c->vars[descriptor->name] = var;
         }
+        delete descriptor;
         exec->dependencies.push_back(new OperatorPart(VARIABLE, STRING, var, false));
         target->executions.push_back(exec);
     } else if (split[0] == "create") {
@@ -308,6 +316,7 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
             var->ctx = c;
             c->vars[descriptor->name] = var;
         }
+        delete descriptor;
         exec->dependencies.push_back(new OperatorPart(VARIABLE, POINTER, var, false));
         target->executions.push_back(exec);
     }  else if (split[0] == "remove") {
@@ -329,6 +338,7 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
         }
         auto *descriptor = skx::Variable::extractNameSafe(targetName);
         Variable *var = skx::Utils::searchVar(descriptor, ctx);
+        delete descriptor;
         if (!var) {
             return;
         }
@@ -342,7 +352,9 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
         auto from = split[5];
         auto to = split[7];
         if (property.rfind('{', 0) == 0) {
-            Variable *propVar = skx::Utils::searchVar(skx::Variable::extractNameSafe(property), ctx);
+            auto* desc = skx::Variable::extractNameSafe(property);
+            Variable *propVar = skx::Utils::searchVar(desc, ctx);
+            delete desc;
             if (!propVar) return;
             exec->dependencies.push_back(new OperatorPart(VARIABLE, propVar->type, propVar, propVar->isDouble));
         } else if (TreeCompiler::isNumber(property[0])) {
@@ -352,7 +364,9 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
             exec->dependencies.push_back(
                     new OperatorPart(LITERAL, STRING, new TString(property.substr(1, property.length() - 2)), false));
         }
-        Variable *fromVar = skx::Utils::searchVar(skx::Variable::extractNameSafe(from), ctx);
+        auto* desc = skx::Variable::extractNameSafe(from);
+        Variable *fromVar = skx::Utils::searchVar(desc, ctx);
+        delete desc;
         if (!fromVar) return;
         exec->dependencies.push_back(new OperatorPart(VARIABLE, POINTER, fromVar, false));
         auto *descriptor = skx::Variable::extractNameSafe(to);
@@ -368,6 +382,7 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
         }
         exec->dependencies.push_back(new OperatorPart(VARIABLE, POINTER, var, false));
         target->executions.push_back(exec);
+        delete descriptor;
 
     } else if (split[0] == "put") {
         // put json value {sourceVal} as "name/index" in {jsonObject}
@@ -378,7 +393,9 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
         auto to = split[split.size() - 1];
         {
             if (TreeCompiler::isVar(property)) {
-                Variable *propVar = skx::Utils::searchVar(skx::Variable::extractNameSafe(property), ctx);
+                auto* desc = skx::Variable::extractNameSafe(property);
+                Variable *propVar = skx::Utils::searchVar(desc, ctx);
+                delete desc;
                 if (!propVar) return;
                 exec->dependencies.push_back(new OperatorPart(VARIABLE, propVar->type, propVar, propVar->isDouble));
             } else if (TreeCompiler::isNumber(property[0])) {
@@ -402,7 +419,9 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
         }
         {
             if (TreeCompiler::isVar(asVal)) {
-                Variable *propVar = skx::Utils::searchVar(skx::Variable::extractNameSafe(asVal), ctx);
+                auto* desc = skx::Variable::extractNameSafe(asVal);
+                Variable *propVar = skx::Utils::searchVar(desc, ctx);
+                delete desc;
                 if (!propVar) return;
                 exec->dependencies.push_back(new OperatorPart(VARIABLE, propVar->type, propVar, propVar->isDouble));
             } else if (TreeCompiler::isNumber(asVal[0])) {
@@ -414,7 +433,9 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
             }
         }
         {
-            Variable *fromVar = skx::Utils::searchVar(skx::Variable::extractNameSafe(to), ctx);
+            auto* desc = skx::Variable::extractNameSafe(to);
+            Variable *fromVar = skx::Utils::searchVar(desc, ctx);
+            delete desc;
             if (!fromVar) return;
             exec->dependencies.push_back(new OperatorPart(VARIABLE, POINTER, fromVar, false));
         }
@@ -430,4 +451,12 @@ skx::TJson::TJson(const nlohmann::json &value) : value(value) {
 
 skx::TJson::TJson() {
     type = POINTER;
+}
+
+skx::TJson::~TJson() {
+
+}
+
+skx::VariableValue *skx::TJson::copyValue() {
+    return this;
 }

@@ -44,3 +44,9 @@ bool skx::TArray::add(skx::VariableValue *source) {
 skx::TArray::TArray() {
     type = ARRAY;
 }
+
+skx::VariableValue *skx::TArray::copyValue() {
+    TArray* arr = new TArray();
+    arr->entries = std::vector<VariableValue*>(entries);
+    return arr;
+}

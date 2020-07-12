@@ -30,9 +30,9 @@ namespace skx {
         EXECUTION,
     };
     enum TriggerType {
-        EVENT,
+        MC_EVENT,
         MC_COMMAND,
-        BOOT
+        SIGNAL
 
     };
     struct OperatorPart {
@@ -79,9 +79,42 @@ namespace skx {
     };
     class Trigger {
     public:
+        virtual ~Trigger();
+
         TriggerType type;
     };
 
+    class TriggerCommand : public Trigger {
+    public:
+        TriggerCommand() : Trigger() {
+          type = MC_COMMAND;
+        }
+        std::string name;
+        // more to come
+    };
+    class TriggerEvent : public Trigger {
+    public:
+        TriggerEvent() : Trigger() {
+            type = MC_EVENT;
+        }
+        std::string eventClass;
+
+    };
+    class TriggerSignal : public Trigger {
+    public:
+        TriggerSignal() : Trigger() {
+            type = SIGNAL;
+        }
+
+        virtual ~TriggerSignal() {
+
+        }
+        enum TriggerTypeSignal {
+            LOAD,
+            UN_LOAD
+        };
+        TriggerTypeSignal signalType;
+    };
 
 }
 

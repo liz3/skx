@@ -34,38 +34,7 @@ skx::Variable *skx::Utils::searchRecursive(std::string what, Context *ctx) {
 }
 
 void skx::Utils::copyVariableValue(skx::Variable *source, skx::Variable *target) {
-    switch (source->type) {
-        case BOOLEAN:
-            target->setValue( new TBoolean(dynamic_cast<TBoolean*>(source->getValue())->value));
-            break;
-        case CHARACTER:
-            target->setValue(new TCharacter(dynamic_cast<TCharacter*>(source->getValue())->value));
-            break;
-        case NUMBER:
-            if (source->isDouble) {
-                target->setValue(new TNumber(dynamic_cast<TNumber*>(source->getValue())->doubleValue));
-            } else {
-                target->setValue(new TNumber(dynamic_cast<TNumber*>(source->getValue())->intValue));
-            }
-            break;
-        case UNDEFINED:
-            target->setValue(nullptr);
-            break;
-        case POINTER:
-            target->setValue(source->getValue());
-            break;
-        case STRING:
-            target->setValue(new TString(dynamic_cast<TString*>(source->getValue())->value));
-            break;
-        case ARRAY:
-            //THIS IS NOT A DEEP COPY
-            TArray* sourceArray = dynamic_cast<TArray*>(source->getValue());
-            TArray* out = new TArray();
-            out->assign(sourceArray);
-            target->setValue(out);
-            break;
-
-    }
+    target->setValue(source->getValue()->copyValue());
     target->type = source->type;
 }
 

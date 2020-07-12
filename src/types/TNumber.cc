@@ -146,3 +146,7 @@ bool skx::TNumber::multiply(skx::VariableValue *source) {
     }
     return true;
 }
+
+skx::VariableValue *skx::TNumber::copyValue() {
+    return new TNumber(isDouble ? doubleValue : intValue);
+}

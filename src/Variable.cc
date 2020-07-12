@@ -9,6 +9,7 @@
 #include "../include/types/TNumber.h"
 #include "../include/types/TCharacter.h"
 #include "../include/types/TArray.h"
+#include "../include/api/Json.h"
 
 
 void skx::Variable::createVarFromOption(std::string item, skx::Context *targetContext, bool isStatic) {
@@ -55,33 +56,36 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
 }
 
 skx::Variable::~Variable() {
-    if (value != nullptr && !created) {
-        switch (type) {
-            case STRING: {
-                auto *val = dynamic_cast<TString*>(value);
-
-                delete val;
-                break;
-            }
-            case NUMBER: {
-                auto *val = dynamic_cast<TNumber*>(value);
-                delete val;
-                break;
-            }
-            case CHARACTER: {
-                auto *val = dynamic_cast<TCharacter*>(value);
-                delete val;
-                break;
-            }
-            case BOOLEAN: {
-                auto *val = dynamic_cast<TBoolean*>(value);
-                delete val;
-                break;
-            }
-            default:
-                break;
-        }
-    }
+    if(value != nullptr && value->varRef == this)
+        delete value;
+//    if (value != nullptr && !created) {
+//        switch (type) {
+//            case STRING: {
+//                auto *val = dynamic_cast<TString*>(value);
+//
+//                delete val;
+//                break;
+//            }
+//            case NUMBER: {
+//                auto *val = dynamic_cast<TNumber*>(value);
+//                delete val;
+//                break;
+//            }
+//            case CHARACTER: {
+//                auto *val = dynamic_cast<TCharacter*>(value);
+//                delete val;
+//                break;
+//            }
+//            case BOOLEAN: {
+//                auto *val = dynamic_cast<TBoolean*>(value);
+//                delete val;
+//                break;
+//            }
+//            default:
+//                delete value;
+//                break;
+//        }
+//    }
     value = nullptr;
 }
 
@@ -89,25 +93,25 @@ void skx::Variable::createVarValue(VarType type, Variable* target, bool isDouble
     target->type = type;
     switch (type) {
         case STRING:
-            target->value = new TString();
+            target->setValue( new TString());
             break;
         case NUMBER: {
             TNumber* v = new TNumber();
             v->isDouble = isDouble;
-            target->value = v;
+            target->setValue(v);
         }
             break;
         case ARRAY:
-            target->value = new TArray();
+            target->setValue(new TArray());
             break;
         case CHARACTER:
-            target->value = new TCharacter();
+            target->setValue(new TCharacter());
             break;
         case BOOLEAN:
-            target->value = new TBoolean();
+            target->setValue(new TBoolean());
             break;
         case POINTER:
-            target->value = nullptr;
+            target->setValue(nullptr);
             break;
         default:
             break;
@@ -119,12 +123,17 @@ skx::VariableValue *skx::Variable::getValue() const {
 }
 
 void skx::Variable::setValue(skx::VariableValue *value) {
+    if(this->getValue() != nullptr && this->getValue()->varRef == this) {
+        delete this->getValue();
+        this->value = nullptr;
+    }
     this->value = value;
     if(value != nullptr) {
         if(value->varRef != nullptr) {
             this->customTypeName = value->varRef->customTypeName;
         }
-        this->value->varRef = this;
+        if(value->varRef == nullptr)
+            this->value->varRef = this;
     }
 }
 
@@ -166,4 +175,12 @@ bool skx::VariableValue::multiply(skx::VariableValue *source) {
 
 bool skx::VariableValue::divide(skx::VariableValue *source) {
     return false;
+}
+
+skx::VariableValue::~VariableValue() {
+
+}
+
+skx::VariableValue *skx::VariableValue::copyValue() {
+    return nullptr;
 }
