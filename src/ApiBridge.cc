@@ -12,7 +12,7 @@ namespace skx {
 
     ApiBridge::ApiBridge(JNIEnv_ *pEnv, _jobject *pJobject) {
         this->env = pEnv;
-        this->thisInstance = pJobject;
+        this->thisInstance = env->NewGlobalRef(pJobject);
         this->classType = env->FindClass("net/liz3/skx/SkxApi");
         this->eventHookClassType = env->FindClass("net/liz3/skx/include/EventHook");
     }
@@ -57,7 +57,8 @@ namespace skx {
         jmethodID nameMethod = env->GetMethodID(env->FindClass("org/bukkit/entity/Player"), "getName", "()Ljava/lang/String;");
         jstring entry = static_cast<jstring>(env->CallObjectMethod(player, nameMethod));
         const char* val = env->GetStringUTFChars(entry, NULL);
-//        env->NewGlobalRef()
+
+
         pair.executor->queueFunc([this, pair, entry, val]() {
             executeEventHook(pair.item, pair.event, entry, val);
         });
