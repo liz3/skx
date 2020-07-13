@@ -63,10 +63,15 @@ add_library(skx SHARED
         ${SKX_SOURCES})
 
 if (SKX_BUILD_API)
+   if(APPLE)
+       include_directories(/Library/Java/JavaVirtualMachines/jdk-12.0.2.jdk/Contents/Home/include /Library/Java/JavaVirtualMachines/jdk-12.0.2.jdk/Contents/Home/include/darwin)
+   elseif(UNIX)
     include_directories(/usr/lib/jvm/java-11-openjdk/include /usr/lib/jvm/java-11-openjdk/include/linux)
-endif ()
+   elseif(WIN32)
 
-if (NOT WIN32)
+    endif ()
+endif()
+if (NOT WIN32 AND NOT APPLE)
     #target_link_libraries(skx curl)
     target_link_libraries(skx pthread)
 endif ()
