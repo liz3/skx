@@ -6,6 +6,7 @@
 #define SKX_INSTRUCTION_H
 
 #include <vector>
+#include <jni.h>
 #include "Variable.h"
 
 namespace skx {
@@ -97,7 +98,16 @@ namespace skx {
         TriggerEvent() : Trigger() {
             type = MC_EVENT;
         }
-        std::string eventClass = "org.bukkit.event.player.PlayerJoinEvent";
+
+        TriggerEvent(const std::string &eventClass) : eventClass(eventClass) {
+            type = MC_EVENT;
+        }
+
+        std::string eventClass;
+#ifdef SKX_BUILD_API
+        jobject currEventRef = nullptr;
+        JNIEnv* env = nullptr;
+#endif
 
     };
     class TriggerSignal : public Trigger {

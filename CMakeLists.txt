@@ -54,7 +54,10 @@ set(SKX_SOURCES src/Script.cc
         src/AsyncExecutor.cc
         include/AsyncExecutor.h
         src/ApiBridge.cc
-        include/ApiBridge.h )
+        include/ApiBridge.h
+        src/api/McEvents.cpp
+        include/api/McEvents.h
+        include/EventInfo.h)
 if (SKX_BUILD_API)
     list(APPEND ${SKX_SOURCES} plugin/build/net_liz3_skx_SkxApi.h)
 endif ()

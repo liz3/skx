@@ -43,7 +43,7 @@ namespace skx {
         env->SetObjectField(thisInstance, testField, env->NewStringUTF(value));
     }
 
-    void ApiBridge::handleEventTrigger(jobject handlerHook, jobject eventInstance) {
+    void ApiBridge::handleEventTrigger(jobject handlerHook, jobject eventInstanceRaw) {
         eventHookClassType = env->FindClass("net/liz3/skx/include/EventHook");
         jfieldID idField = env->GetFieldID(eventHookClassType, "id", "J");
         long id = env->GetLongField(handlerHook, idField);
@@ -52,16 +52,21 @@ namespace skx {
            std::cout << "returning not same\n";
            return;
        }
+        jobject eventInstance = env->NewGlobalRef(eventInstanceRaw);
+//        JavaVM* jvm = nullptr;
+//        env->GetJavaVM(&jvm);
+//        JNIEnv* ownEnv = nullptr;
+//        jvm->AttachCurrentThread(reinterpret_cast<void **>(&ownEnv), nullptr);
         jfieldID playerId = env->GetFieldID(env->FindClass("org/bukkit/event/player/PlayerEvent"),"player", "Lorg/bukkit/entity/Player;");
         jobject player = env->GetObjectField(eventInstance, playerId);
         jmethodID nameMethod = env->GetMethodID(env->FindClass("org/bukkit/entity/Player"), "getName", "()Ljava/lang/String;");
         jstring entry = static_cast<jstring>(env->CallObjectMethod(player, nameMethod));
         const char* val = env->GetStringUTFChars(entry, NULL);
-
-
-        pair.executor->queueFunc([this, pair, entry, val]() {
-            executeEventHook(pair.item, pair.event, entry, val);
-        });
+        executeEventHook(pair.item, pair.event, eventInstance, val, env);
+        env->DeleteGlobalRef(eventInstance);
+//        pair.executor->queueFunc([this, pair, eventInstance, jvm]() {
+//
+//        });
     }
 
     jobject ApiBridge::generateEventHook(const char *name, long id) {
@@ -105,8 +110,11 @@ namespace skx {
     }
 
     void
-    ApiBridge::executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, const char *const name) {
-         target->ctx->vars["player-name"]->setValue(new TString(std::string(name)));
+    ApiBridge::executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, const char *const string,
+                                JNIEnv *pEnv) {
+         target->ctx->vars["player-name"]->setValue(new TString(std::string(string)));
+         ev->currEventRef = instance;
+         ev->env = pEnv;
         Executor::executeStandalone(target);
     }
 

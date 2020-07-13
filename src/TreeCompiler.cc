@@ -13,6 +13,7 @@
 #include "../include/types/TString.h"
 #include "../include/types/TBoolean.h"
 #include "../include/api/Json.h"
+#include "../include/api/McEvents.h"
 
 #include <exception>
 #include <iostream>
@@ -93,6 +94,7 @@ void skx::TreeCompiler::advance(skx::CompileItem *parent, skx::PreParserItem *pa
         next->ctx = thisCtx;
         next->level = parent->level + 1;
         next->line = item->pos;
+        next->parent = parent;
         compileExpression(item, thisCtx, next);
         advance(next, item);
         parent->children.push_back(next);
@@ -381,6 +383,23 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
 }
 
 void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *context, skx::CompileItem *target) {
+    if(content == "cancel event" || content == "cancel the event") {
+        CancelEvent* cancel = new CancelEvent();
+        CompileItem* t = target;
+        while (true) {
+            if(t->parent == nullptr) {
+                if(t->triggers.size() == 1) {
+                    cancel->ref = dynamic_cast<TriggerEvent*>(t->triggers[0]);
+                    target->executions.push_back(cancel);
+                    return;
+                }
+                break;
+            }
+            t = t->parent;
+        }
+        delete cancel;
+        return;
+    }
     if (content.find("to console") != std::string::npos) {
         auto *pr = new Print();
         auto spaceSplit = skx::Utils::split(content, " ");
@@ -580,6 +599,11 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
     if(content.find("command") == 0) {
         // COmmand
     } else if (content.find("on ") == 0) {
+        std::string type = skx::Utils::getEventClassFromExpression(content.substr(0, content.length() - 1));
+        if(type.length() == 0) {
+            std::cout << "Unknown event: " << content << " at: " << target->line << "\n";
+            return;
+        }
         Variable* playerName = new Variable();
         playerName->name = "player-name";
         playerName->contextValue = true;
@@ -587,7 +611,7 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
         playerName->accessType = CONTEXT;
         context->vars["player-name"] = playerName;
 
-        target->triggers.push_back(new TriggerEvent());
+        target->triggers.push_back(new TriggerEvent(type));
     }
 }
 
