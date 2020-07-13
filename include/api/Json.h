@@ -7,7 +7,7 @@
 
 #include "../Instruction.h"
 #include "../TreeCompiler.h"
-#include "../../third-party/json/single_include/nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 namespace skx {
     class TJson : public VariableValue {

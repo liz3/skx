@@ -64,7 +64,7 @@ endif ()
 
 add_library(skx SHARED
         ${SKX_SOURCES})
-
+include_directories(third-party/json/single_include)
 if (SKX_BUILD_API)
    if(APPLE)
        include_directories(/Library/Java/JavaVirtualMachines/jdk-12.0.2.jdk/Contents/Home/include /Library/Java/JavaVirtualMachines/jdk-12.0.2.jdk/Contents/Home/include/darwin)
