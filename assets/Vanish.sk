@@ -69,25 +69,33 @@ function jsonTest():
 	set {_arr} to createJsonArray()
 	put json value {_arr} as "array2" in {_json}
 	stringify json {_json} to {_asString}
-	send {_asString} to console
+#	send {_asString} to console
 	#reparse the thing and extract a value
 	parse json {_asString} into {_json2}
+
+	if json contains "person1" in {_json2} is json contains "person11" in {_json2}:
+		send "its contained, two expressions" to console
+
+	if json contains "person1" in {_json2} is not false:
+		send "its contained, expression vs literal" to console
+
 	set {_nn} to "name"
 	set {_ageS} to "age"
 	set {_name} to extractProp({_json2}, {_nn})
 	set {_age} to extractProp({_json2}, {_ageS})
 	if {_name} is not "Liz3":
-		send {_name} to console
-		send {_age} to console
+	#	send {_name} to console
+	#	send {_age} to console
 
 on load:
-	set {counter} to 1
-	set {num} to 5000000
-	loop {num} times:
-		if {counter} is 10:
-			add 25 to {counter}
-			send "its 10" to console
-		else:
-			add 1 to {counter}
-	send {counter} to console
-	send {_wtf} to console
+	jsonTest()
+#	set {counter} to 1
+#	set {num} to 5000000
+#	loop {num} times:
+#		if {counter} is 10:
+#			add 25 to {counter}
+#			send "its 10" to console
+#		else:
+#			add 1 to {counter}
+#	send {counter} to console
+#	send {_wtf} to console

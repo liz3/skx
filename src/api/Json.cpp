@@ -21,6 +21,38 @@ skx::OperatorPart *skx::JsonInterface::execute(skx::Context *target) {
 
         return nullptr;
     }
+    if(type == HAS) {
+        std::string targetProp;
+        int32_t extractIndex = 0;
+        bool isIndex = false;
+        if (dependencies[0]->operatorType == LITERAL) {
+            if (dependencies[0]->type != STRING && dependencies[0]->type != NUMBER) return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(false), false);
+            if (dependencies[0]->type == STRING) {
+                TString *toExtract = static_cast<TString *>(dependencies[0]->value);
+                targetProp = toExtract->value;
+            } else {
+                TNumber *toExtract = static_cast<TNumber *>(dependencies[0]->value);
+                extractIndex = toExtract->intValue;
+                isIndex = true;
+            }
+        } else if(dependencies[0]->operatorType == VARIABLE) {
+            Variable* b = static_cast<Variable*>(dependencies[0]->value);
+            if (b->type == STRING) {
+                TString *toExtract = dynamic_cast<TString *>(b->getValue());
+                targetProp = toExtract->value;
+            } else if(b->type == NUMBER) {
+                TNumber *toExtract = dynamic_cast<TNumber *>(b->getValue());
+                extractIndex = toExtract->intValue;
+                isIndex = true;
+            } else {
+                return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(false), false);
+            }
+        }
+        Variable* targetVar = static_cast<Variable *>(dependencies[1]->value);
+        if (targetVar->type != POINTER || targetVar->customTypeName != "data::jsonValue") return nullptr;
+        TJson* j = dynamic_cast<TJson*>(targetVar->getValue());
+        return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(j->value.contains(targetProp)), false);
+    }
     if(type == REMOVE) {
         Variable* targetVar = static_cast<Variable *>(dependencies[1]->value);
         if (targetVar->type != POINTER || targetVar->customTypeName != "data::jsonValue") return nullptr;
@@ -443,6 +475,37 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
     }
 
 
+}
+
+skx::OperatorPart *skx::Json::compileCondition(std::string& content, Context *ctx, CompileItem *pItem) {
+    //if json contains "what" in {elem}
+    auto split = skx::Utils::split(content, " ");
+    if(split[1] == "contains") {
+        JsonInterface *exec = new JsonInterface();
+        exec->type = JsonInterface::HAS;
+        auto property = split[2];
+        auto from = split[4];
+        if (property.rfind('{', 0) == 0) {
+            auto* desc = skx::Variable::extractNameSafe(property);
+            Variable *propVar = skx::Utils::searchVar(desc, ctx);
+            delete desc;
+            if (!propVar) return nullptr;
+            exec->dependencies.push_back(new OperatorPart(VARIABLE, propVar->type, propVar, propVar->isDouble));
+        } else if (TreeCompiler::isNumber(property[0])) {
+            exec->dependencies.push_back(skx::Literal::extractNumber(property));
+
+        } else {
+            exec->dependencies.push_back(
+                    new OperatorPart(LITERAL, STRING, new TString(property.substr(1, property.length() - 2)), false));
+        }
+        auto* desc = skx::Variable::extractNameSafe(from);
+        Variable *fromVar = skx::Utils::searchVar(desc, ctx);
+        delete desc;
+        if (!fromVar) return nullptr;
+        exec->dependencies.push_back(new OperatorPart(VARIABLE, POINTER, fromVar, false));
+        return new OperatorPart(EXECUTION, UNDEFINED, exec, false);
+    }
+    return nullptr;
 }
 
 skx::TJson::TJson(const nlohmann::json &value) : value(value) {

@@ -29,7 +29,8 @@ namespace skx {
             REMOVE,
             CREATE_OBJECT,
             CREATE_ARRAY,
-            EXTRACT
+            EXTRACT,
+            HAS
         };
 
         JsonInterface(): Execution() {
@@ -41,6 +42,7 @@ namespace skx {
     class Json {
     public:
         static void compileRequest(std::string& content, Context *pContext, CompileItem *pItem);
+        static OperatorPart* compileCondition(std::string& content, Context *pContext, CompileItem *pItem);
     };
 }
 

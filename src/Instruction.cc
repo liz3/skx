@@ -19,13 +19,27 @@ bool skx::Comparison::execute(skx::Context *context) {
     VariableValue *targetValue;
     Variable *sourceVar = nullptr;
     Variable *targetVar = nullptr;
+
+
     if (source->operatorType == LITERAL) {
         sourceValue = static_cast<VariableValue *>(source->value);
     } else if (source->operatorType == VARIABLE) {
         auto *out = static_cast<Variable *>(source->value);
         sourceValue = out->getValue();
         sourceVar = out;
-    } else {
+    } else if(source->operatorType == EXECUTION) {
+        auto* result = static_cast<Execution*>(source->value)->execute(context);
+        if(result == nullptr) {
+            sourceValue = nullptr;
+        } else {
+            if(result->operatorType == LITERAL) {
+                sourceValue = static_cast<VariableValue*>(result->value);
+            } else if(result->operatorType == VARIABLE) {
+                Variable* tVar = static_cast<Variable*>(result->value);
+                sourceValue = tVar->getValue();
+            }
+        }
+    }else {
         sourceValue = nullptr;
     }
     if (target->operatorType == LITERAL) {
@@ -34,7 +48,19 @@ bool skx::Comparison::execute(skx::Context *context) {
         auto *out = static_cast<Variable *>(target->value);
         targetValue = out->getValue();
         targetVar = out;
-    } else {
+    } else if(target->operatorType == EXECUTION) {
+        auto* result = static_cast<Execution*>(target->value)->execute(context);
+        if(result == nullptr) {
+            targetValue = nullptr;
+        } else {
+            if(result->operatorType == LITERAL) {
+                targetValue = static_cast<VariableValue*>(result->value);
+            } else if(result->operatorType == VARIABLE) {
+                Variable* tVar = static_cast<Variable*>(result->value);
+                targetValue = tVar->getValue();
+            }
+        }
+    }else {
         targetValue = nullptr;
     }
     if (targetValue == nullptr || sourceValue == nullptr) return false;
@@ -43,7 +69,7 @@ bool skx::Comparison::execute(skx::Context *context) {
     }
 
     //this is a bit special case
-    if (target->type == UNDEFINED) {
+    if (target->type == UNDEFINED && target->operatorType != EXECUTION) {
         if (type != EQUAL && type != NOT_EQUAL) return false;
         return type == EQUAL ? sourceVar->type == UNDEFINED : sourceVar->type != UNDEFINED;
     }
