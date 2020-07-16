@@ -30,7 +30,9 @@ set(SKX_SOURCES
         src/types/TCharacter.cc
         src/types/TArray.cc
         src/api/Http.cpp
-        src/api/Json.cpp)
+        src/api/Json.cpp
+        src/Assembler.cc
+        src/Disassembler.cc)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
     list(APPEND SKX_SOURCES

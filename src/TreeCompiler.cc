@@ -429,7 +429,6 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
         }
     }
     target->name = name;
-    int x = 22;
 }
 
 void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *context, skx::CompileItem *target) {
