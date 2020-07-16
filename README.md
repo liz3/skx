@@ -20,7 +20,7 @@ Currently those can only operate on variables OR literals.
  ## Current issues i know of/things which need to be done for a MVP
  * i dont think `else if` works.
  * Effects. theres the print effect and the JSON api. but thats it
- * Making commands/event work which ultimately also means getting the bridge to the mc plugin(which im currently working on).
+ * A couple of events are working without conditions(i discovered earlier that on click and a couple of others do have that). Commands are not implemented but im honestly not too worried about these.
  
  ## Building
  
