@@ -6,7 +6,9 @@
 #define SKX_INSTRUCTION_H
 
 #include <vector>
+#ifdef SKX_BUILD_API
 #include <jni.h>
+#endif
 #include "Variable.h"
 
 namespace skx {

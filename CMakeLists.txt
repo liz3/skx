@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(skx)
 
-option(SKX_BUILD_API "Build Java" ON)
+option(SKX_BUILD_API "Build Java" OFF)
 option(SKX_BUILD_EXAMPLE "Build Example Executable" ON)
 
 if (SKX_BUILD_API)
@@ -10,56 +10,30 @@ endif ()
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SKX_SOURCES src/Script.cc
-        include/Script.h
+set(SKX_SOURCES
+        src/Script.cc
         src/Context.cc
-        include/Context.h
         src/Variable.cc
-        include/Variable.h
         src/Step.cc
-        include/Step.h
         src/PreParser.cc
-        include/PreParser.h
         src/utils.cc
-        include/utils.h
-        include/BaseTypeParser.h
         src/Function.cc
-        include/Function.h
         src/Instruction.cc
-        include/Instruction.h
         src/TreeCompiler.cc
-        include/TreeCompiler.h
         src/Executor.cc
-        include/Executor.h
-        include/BasicInstructions.h
         src/BasicInstructions.cpp
         src/RegexUtils.cc
-        include/RegexUtils.h
         src/Literal.cc
-        include/Literal.h
         src/types/TString.cc
-        include/types/TString.h
         src/types/TBoolean.cc
-        include/types/TBoolean.h
         src/types/TNumber.cc
-        include/types/TNumber.h
         src/types/TCharacter.cc
-        include/types/TCharacter.h
         src/types/TArray.cc
-        include/types/TArray.h
         src/api/Http.cpp
-        include/api/Http.h
-        src/api/Json.cpp
-        include/api/Json.h
-        src/AsyncExecutor.cc
-        include/AsyncExecutor.h
-        src/ApiBridge.cc
-        include/ApiBridge.h
-        src/api/McEvents.cpp
-        include/api/McEvents.h
-        include/EventInfo.h src/api/McEventValues.cc include/api/McEventValues.h)
+        src/api/Json.cpp)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
+    list(APPEND SKX_SOURCES src/AsyncExecutor.cc src/ApiBridge.cc src/api/McEvents.cpp src/api/McEventValues.cc)
 endif ()
 
 add_library(skx SHARED
@@ -81,5 +55,5 @@ endif ()
 if (SKX_BUILD_EXAMPLE)
     add_executable(skx-example tests/main.cc)
     configure_file(assets/Vanish.sk . COPYONLY)
-    target_link_libraries(skx-example asan skx)
+    target_link_libraries(skx-example skx)
 endif ()

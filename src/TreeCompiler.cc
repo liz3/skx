@@ -13,9 +13,11 @@
 #include "../include/types/TString.h"
 #include "../include/types/TBoolean.h"
 #include "../include/api/Json.h"
+
+#ifdef SKX_BUILD_API
 #include "../include/api/McEvents.h"
 #include "../include/api/McEventValues.h"
-
+#endif
 #include <exception>
 #include <iostream>
 
@@ -504,6 +506,7 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
                 Json::compileRequest(content, context, target);
                 return;
             }
+#ifdef SKX_BUILD_API
             CompileItem *t = target->root;
             if(t->triggers.size() == 1 && t->triggers[0]->type == MC_EVENT) {
                 if (content == "cancel event" || content == "cancel the event") {
@@ -517,6 +520,7 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
                     return;
                 }
             }
+#endif
         }
     }
 }
@@ -660,6 +664,7 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
         return skx::Json::compileCondition(content, ctx, target);
     }
 
+#ifdef SKX_BUILD_API
     CompileItem *t = target->root;
     if(t->triggers.size() == 1 && t->triggers[0]->type == MC_EVENT) {
         if(content == "players name" || content == "player name") {
@@ -668,6 +673,7 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
             return new OperatorPart(EXECUTION, UNDEFINED, name, false);
         }
     }
+#endif
         return nullptr;
 }
 
