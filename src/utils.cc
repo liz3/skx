@@ -58,3 +58,18 @@ std::string skx::Utils::getEventClassFromExpression(std::string content) {
     }
     return "";
 }
+
+std::string skx::Utils::depListToString(std::vector<OperatorPart *> deps) {
+    std::string finalMessage;
+    for(auto & dep : deps) {
+        if(finalMessage.length() != 0) finalMessage += ' ';
+        if(dep->operatorType == LITERAL) {
+            finalMessage += static_cast<VariableValue*>(dep->value)->getStringValue();
+        }
+        if(dep->operatorType == VARIABLE) {
+            auto* v = static_cast<Variable*>(dep->value);
+            finalMessage += v->getValue()->getStringValue();
+        }
+    }
+    return finalMessage;
+}

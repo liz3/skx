@@ -8,12 +8,15 @@
 #include <vector>
 #include <string>
 #include "Variable.h"
+#include "Instruction.h"
+
 const std::string WHITESPACE = " \n\r\t\f\v";
 
 namespace skx {
     class Utils {
     public:
         static std::string getEventClassFromExpression(std::string content);
+        static std::string depListToString(std::vector<OperatorPart*> deps);
         static std::vector<std::string> split(std::string base, std::string delimiter);
         static Variable* searchRecursive(std::string what, Context* ctx);
         static void copyVariableValue(Variable* source, Variable* target);

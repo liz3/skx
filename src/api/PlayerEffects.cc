@@ -20,17 +20,7 @@ skx::OperatorPart *skx::PlayerAction::execute(skx::Context *target) {
             }
         }
         if(player != nullptr) {
-            std::string finalMessage;
-            for(auto & dep : dependencies) {
-                if(finalMessage.length() != 0) finalMessage += ' ';
-                if(dep->operatorType == LITERAL) {
-                    finalMessage += static_cast<VariableValue*>(dep->value)->getStringValue();
-                }
-                if(dep->operatorType == VARIABLE) {
-                    auto* v = static_cast<Variable*>(dep->value);
-                    finalMessage += v->getValue()->getStringValue();
-                }
-            }
+            std::string finalMessage = skx::Utils::depListToString(dependencies);
             jmethodID id = env->GetMethodID(env->FindClass("org/bukkit/entity/Player"), "sendMessage", "(Ljava/lang/String;)V");
             env->CallObjectMethod(player, id, env->NewStringUTF(finalMessage.c_str()));
             if(!id) return nullptr;
@@ -49,17 +39,8 @@ skx::OperatorPart *skx::PlayerAction::execute(skx::Context *target) {
             }
         }
         if(player != nullptr) {
-            std::string finalMessage;
-            for(auto & dep : dependencies) {
-                if(finalMessage.length() != 0) finalMessage += ' ';
-                if(dep->operatorType == LITERAL) {
-                    finalMessage += static_cast<VariableValue*>(dep->value)->getStringValue();
-                }
-                if(dep->operatorType == VARIABLE) {
-                    auto* v = static_cast<Variable*>(dep->value);
-                    finalMessage += v->getValue()->getStringValue();
-                }
-            }
+            std::string finalMessage = skx::Utils::depListToString(dependencies);
+
             jmethodID id = env->GetMethodID(env->FindClass("org/bukkit/entity/Player"), "kickPlayer", "(Ljava/lang/String;)V");
             env->CallObjectMethod(player, id, env->NewStringUTF(finalMessage.c_str()));
             if(!id) return nullptr;
