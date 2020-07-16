@@ -648,13 +648,6 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
             std::cout << "Unknown event: " << content << " at: " << target->line << "\n";
             return;
         }
-        Variable *playerName = new Variable();
-        playerName->name = "player-name";
-        playerName->contextValue = true;
-        playerName->type = STRING;
-        playerName->accessType = CONTEXT;
-        context->vars["player-name"] = playerName;
-
         target->triggers.push_back(new TriggerEvent(type));
     }
 }
