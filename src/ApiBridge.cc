@@ -4,7 +4,7 @@
 #ifdef SKX_BUILD_API
 #include <iostream>
 #include "../include/ApiBridge.h"
-#include "../plugin/build/net_liz3_skx_SkxApi.h"
+#include <net_liz3_skx_SkxApi.h>
 #include "../include/types/TString.h"
 
 namespace skx {
@@ -53,20 +53,8 @@ namespace skx {
            return;
        }
         jobject eventInstance = env->NewGlobalRef(eventInstanceRaw);
-//        JavaVM* jvm = nullptr;
-//        env->GetJavaVM(&jvm);
-//        JNIEnv* ownEnv = nullptr;
-//        jvm->AttachCurrentThread(reinterpret_cast<void **>(&ownEnv), nullptr);
-        jfieldID playerId = env->GetFieldID(env->FindClass("org/bukkit/event/player/PlayerEvent"),"player", "Lorg/bukkit/entity/Player;");
-        jobject player = env->GetObjectField(eventInstance, playerId);
-        jmethodID nameMethod = env->GetMethodID(env->FindClass("org/bukkit/entity/Player"), "getName", "()Ljava/lang/String;");
-        jstring entry = static_cast<jstring>(env->CallObjectMethod(player, nameMethod));
-        const char* val = env->GetStringUTFChars(entry, NULL);
-        executeEventHook(pair.item, pair.event, eventInstance, val, env);
+          executeEventHook(pair.item, pair.event, eventInstance, env);
         env->DeleteGlobalRef(eventInstance);
-//        pair.executor->queueFunc([this, pair, eventInstance, jvm]() {
-//
-//        });
     }
 
     jobject ApiBridge::generateEventHook(const char *name, long id) {
@@ -110,9 +98,7 @@ namespace skx {
     }
 
     void
-    ApiBridge::executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, const char *const string,
-                                JNIEnv *pEnv) {
-         target->ctx->vars["player-name"]->setValue(new TString(std::string(string)));
+    ApiBridge::executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, JNIEnv *pEnv) {
          ev->currEventRef = instance;
          ev->env = pEnv;
         Executor::executeStandalone(target);

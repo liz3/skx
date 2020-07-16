@@ -57,9 +57,9 @@ set(SKX_SOURCES src/Script.cc
         include/ApiBridge.h
         src/api/McEvents.cpp
         include/api/McEvents.h
-        include/EventInfo.h)
+        include/EventInfo.h src/api/McEventValues.cc include/api/McEventValues.h)
 if (SKX_BUILD_API)
-    list(APPEND ${SKX_SOURCES} plugin/build/net_liz3_skx_SkxApi.h)
+    include_directories(plugin/build)
 endif ()
 
 add_library(skx SHARED
@@ -81,5 +81,5 @@ endif ()
 if (SKX_BUILD_EXAMPLE)
     add_executable(skx-example tests/main.cc)
     configure_file(assets/Vanish.sk . COPYONLY)
-    target_link_libraries(skx-example skx)
+    target_link_libraries(skx-example asan skx)
 endif ()

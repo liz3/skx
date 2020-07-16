@@ -38,8 +38,7 @@ namespace skx {
         JNIEnv *env;
     private:
         std::map<long, EventPair> hooks;
-        void executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, const char *const string,
-                              JNIEnv *pEnv);
+        void executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, JNIEnv *pEnv);
         std::vector<Script*> scripts;
         std::map<Script*, AsyncExecutor*> executors;
         jclass classType;

@@ -24,18 +24,35 @@ int main() {
     buffer[length ] = '\0';
     // read data as a block:
     stream.read (buffer,length);
-
-    std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+    std::cout << ">> Parsing script into tree:\n";
+    std::chrono::high_resolution_clock::time_point parseStart = std::chrono::high_resolution_clock::now();
     auto result = skx::Script::parse(buffer);
+    std::chrono::high_resolution_clock::time_point parseEnd = std::chrono::high_resolution_clock::now();
+    std::cout << ">> Parse time: " << (std::chrono::duration_cast<std::chrono::microseconds>(parseEnd - parseStart).count()) << " micro seconds\n";
     delete result->preParseResult;
     for(const auto& entry : result->signals) {
         if(entry.first->signalType == skx::TriggerSignal::LOAD) {
+            std::chrono::high_resolution_clock::time_point onloadStart;
+            std::chrono::high_resolution_clock::time_point onLoadEnd;
+            std::cout << ">> Running onload:\n\n";
+            onloadStart = std::chrono::high_resolution_clock::now();
             skx::Executor::executeStandalone(entry.second);
+            onLoadEnd = std::chrono::high_resolution_clock::now();
+            std::cout << "\n" << ">> Onload Execution time: " << (std::chrono::duration_cast<std::chrono::microseconds>(onLoadEnd - onloadStart).count()) << " micro seconds\n";
         }
     }
-    std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-    auto t = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-    std::cout << "everything took: " << t << " ms";
+    for(const auto& entry : result->signals) {
+        if(entry.first->signalType == skx::TriggerSignal::UN_LOAD) {
+            std::chrono::high_resolution_clock::time_point unloadStart;
+            std::chrono::high_resolution_clock::time_point unloadEnd;
+            std::cout << ">> Running unload:\n\n";
+            unloadStart = std::chrono::high_resolution_clock::now();
+            skx::Executor::executeStandalone(entry.second);
+            unloadEnd = std::chrono::high_resolution_clock::now();
+            std::cout << "\n" << ">> Unload Execution time: " << (std::chrono::duration_cast<std::chrono::microseconds>(unloadEnd - unloadStart).count()) << " micro seconds\n";
+        }
+    }
+
 
     //clean up
     delete[] buffer;

@@ -41,10 +41,10 @@ namespace skx {
         VarType type;
         void* value = nullptr;
         bool isDouble = false;
-
+        bool free = false;
         virtual ~OperatorPart();
 
-        OperatorPart(OperatorType operatorType, VarType type, void *value, bool isDouble);
+        OperatorPart(OperatorType operatorType, VarType type, void *value, bool isDouble, bool free = false);
     };
     class Comparison {
     public:

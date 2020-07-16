@@ -87,6 +87,8 @@ function jsonTest():
 	#	send {_name} to console
 	#	send {_age} to console
 
+on unload:
+	send "unloading" to console
 on load:
 	jsonTest()
 #	set {counter} to 1

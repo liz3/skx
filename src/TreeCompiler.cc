@@ -14,6 +14,7 @@
 #include "../include/types/TBoolean.h"
 #include "../include/api/Json.h"
 #include "../include/api/McEvents.h"
+#include "../include/api/McEventValues.h"
 
 #include <exception>
 #include <iostream>
@@ -23,6 +24,7 @@ skx::CompileItem *skx::TreeCompiler::compileTree(skx::PreParserItem *item, skx::
     CompileItem *root = new CompileItem();
     root->ctx = ctx;
     root->level = 0;
+    root->root = root;
     compiler.compileExpression(item, ctx, root);
     compiler.advance(root, item);
     return root;
@@ -43,6 +45,7 @@ skx::CompileItem *skx::TreeCompiler::compileTreeFunction(skx::PreParserItem *ite
         param->type = UNDEFINED;
         functionCtx->vars[param->name] = param;
     }
+    root->root = root;
     root->ctx = functionCtx;
     compiler.advance(root, item, true);
     func->functionItem = root;
@@ -92,6 +95,7 @@ void skx::TreeCompiler::advance(skx::CompileItem *parent, skx::PreParserItem *pa
     thisCtx->global = parent->ctx->global;
     for (PreParserItem *item : parentItem->children) {
         CompileItem *next = new CompileItem();
+        next->root = parent->root;
         next->ctx = thisCtx;
         next->level = parent->level + 1;
         next->line = item->pos;
@@ -109,7 +113,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
     Comparison *currentOperator = nullptr;
     uint8_t state = 0;
     std::string last;
-    uint32_t len = isElseIf ? 7 :3;
+    uint32_t len = isElseIf ? 7 : 3;
     for (int i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
         if (current[current.length() - 1] == ':') {
@@ -169,18 +173,18 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
 
         if (state == 0) {
             std::string x = content.substr(len);
-            OperatorPart *part = compileExecutionComparison(x, ctx, target, isElseIf);
+            OperatorPart *part = compileExecutionValue(x, ctx, target, isElseIf);
             if (part != nullptr && currentOperator == nullptr) {
-               currentOperator = new Comparison();
+                currentOperator = new Comparison();
                 currentOperator->source = part;
                 state++;
             }
         } else if (state == 2) {
             std::string x = content.substr(len);
-            if(x[x.length() -1] == ':') {
-                x = x.substr(0, x.length() -1);
+            if (x[x.length() - 1] == ':') {
+                x = x.substr(0, x.length() - 1);
             }
-            OperatorPart *part = compileExecutionComparison(x, ctx, target, isElseIf);
+            OperatorPart *part = compileExecutionValue(x, ctx, target, isElseIf);
             if (part != nullptr) {
                 if (currentOperator == nullptr) currentOperator = new Comparison();
                 currentOperator->target = part;
@@ -219,12 +223,16 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
         last = current;
         len += current.length() + 1;
     }
+    if (currentOperator != nullptr) {
+        delete currentOperator;
+    }
 }
 
 void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Context *ctx, skx::CompileItem *target) {
     auto spaceSplit = skx::Utils::split(content.substr(4), " ");
     Assigment *assigment = nullptr;
     uint8_t step = 0;
+    uint32_t pos = 4;
     bool created = false;
     for (int i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
@@ -235,6 +243,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
             assigment->target = new OperatorPart(VARIABLE, lastVar->type, lastVar, lastVar->isDouble);
             step = 2;
             assigment->type = getOperator(current);
+            pos += current.length() + 1;
             continue;
         }
         if (current.find('"') == 0 && step == 2) {
@@ -297,8 +306,17 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
                 assigment = nullptr;
                 step = 0;
                 created = false;
+            } else {
+                std::string x = content.substr(pos);
+                OperatorPart* targetOperator = compileExecutionValue(x, ctx, target);
+                if(targetOperator != nullptr) {
+                    assigment->source = targetOperator;
+                    target->assignments.push_back(assigment);
+                    assigment = nullptr;
+                    step = 0;
+                    created = false;
+                }
             }
-
         }
 
         if (isVar(current)) {
@@ -350,6 +368,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
                 if (step < 2) step++;
             }
         }
+        pos += current.length() + 1;
     }
 }
 
@@ -411,23 +430,6 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
 }
 
 void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *context, skx::CompileItem *target) {
-    if (content == "cancel event" || content == "cancel the event") {
-        CancelEvent *cancel = new CancelEvent();
-        CompileItem *t = target;
-        while (true) {
-            if (t->parent == nullptr) {
-                if (t->triggers.size() == 1) {
-                    cancel->ref = dynamic_cast<TriggerEvent *>(t->triggers[0]);
-                    target->executions.push_back(cancel);
-                    return;
-                }
-                break;
-            }
-            t = t->parent;
-        }
-        delete cancel;
-        return;
-    }
     if (content.find("to console") != std::string::npos) {
         auto *pr = new Print();
         auto spaceSplit = skx::Utils::split(content, " ");
@@ -500,6 +502,20 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
         } else {
             if (content.find("json") != std::string::npos) {
                 Json::compileRequest(content, context, target);
+                return;
+            }
+            CompileItem *t = target->root;
+            if(t->triggers.size() == 1 && t->triggers[0]->type == MC_EVENT) {
+                if (content == "cancel event" || content == "cancel the event") {
+                    CancelEvent *cancel = new CancelEvent();
+                    if (t->triggers.size() == 1) {
+                        cancel->ref = dynamic_cast<TriggerEvent *>(t->triggers[0]);
+                        target->executions.push_back(cancel);
+                        return;
+                    }
+                    delete cancel;
+                    return;
+                }
             }
         }
     }
@@ -626,7 +642,7 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
     }
     if (content.find("command") == 0) {
         // COmmand
-    } else if (content.find("on ") == 0) {
+    } else {
         std::string type = skx::Utils::getEventClassFromExpression(content.substr(0, content.length() - 1));
         if (type.length() == 0) {
             std::cout << "Unknown event: " << content << " at: " << target->line << "\n";
@@ -644,14 +660,22 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
 }
 
 skx::OperatorPart *
-skx::TreeCompiler::compileExecutionComparison(std::string &content, skx::Context *ctx, skx::CompileItem *target,
-                                              bool isElseIf) {
+skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx, skx::CompileItem *target,
+                                         bool isElseIf) {
 
-   if(content.find("json") != std::string::npos) {
-       return skx::Json::compileCondition(content, ctx, target);
-   }
+    if (content.find("json") != std::string::npos) {
+        return skx::Json::compileCondition(content, ctx, target);
+    }
 
-    return nullptr;
+    CompileItem *t = target->root;
+    if(t->triggers.size() == 1 && t->triggers[0]->type == MC_EVENT) {
+        if(content == "players name" || content == "player name") {
+            PlayerName* name = new PlayerName();
+            name->ref = dynamic_cast<TriggerEvent*>(t->triggers[0]);
+            return new OperatorPart(EXECUTION, UNDEFINED, name, false);
+        }
+    }
+        return nullptr;
 }
 
 skx::CompileItem::~CompileItem() {

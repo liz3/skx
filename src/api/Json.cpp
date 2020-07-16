@@ -26,7 +26,7 @@ skx::OperatorPart *skx::JsonInterface::execute(skx::Context *target) {
         int32_t extractIndex = 0;
         bool isIndex = false;
         if (dependencies[0]->operatorType == LITERAL) {
-            if (dependencies[0]->type != STRING && dependencies[0]->type != NUMBER) return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(false), false);
+            if (dependencies[0]->type != STRING && dependencies[0]->type != NUMBER) return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(false), false, true);
             if (dependencies[0]->type == STRING) {
                 TString *toExtract = static_cast<TString *>(dependencies[0]->value);
                 targetProp = toExtract->value;
@@ -45,13 +45,13 @@ skx::OperatorPart *skx::JsonInterface::execute(skx::Context *target) {
                 extractIndex = toExtract->intValue;
                 isIndex = true;
             } else {
-                return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(false), false);
+                return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(false), false, true);
             }
         }
         Variable* targetVar = static_cast<Variable *>(dependencies[1]->value);
         if (targetVar->type != POINTER || targetVar->customTypeName != "data::jsonValue") return nullptr;
         TJson* j = dynamic_cast<TJson*>(targetVar->getValue());
-        return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(j->value.contains(targetProp)), false);
+        return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(j->value.contains(targetProp)), false, true);
     }
     if(type == REMOVE) {
         Variable* targetVar = static_cast<Variable *>(dependencies[1]->value);

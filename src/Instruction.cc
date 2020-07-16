@@ -17,6 +17,10 @@ bool skx::Comparison::execute(skx::Context *context) {
         return false;
     VariableValue *sourceValue;
     VariableValue *targetValue;
+    OperatorPart* sourcePrt = nullptr;
+    OperatorPart* targetPrt = nullptr;
+    bool freeSource = false;
+    bool freeTarget = false;
     Variable *sourceVar = nullptr;
     Variable *targetVar = nullptr;
 
@@ -32,6 +36,8 @@ bool skx::Comparison::execute(skx::Context *context) {
         if(result == nullptr) {
             sourceValue = nullptr;
         } else {
+            freeSource = result->free;
+            sourcePrt = result;
             if(result->operatorType == LITERAL) {
                 sourceValue = static_cast<VariableValue*>(result->value);
             } else if(result->operatorType == VARIABLE) {
@@ -53,6 +59,8 @@ bool skx::Comparison::execute(skx::Context *context) {
         if(result == nullptr) {
             targetValue = nullptr;
         } else {
+            freeTarget = result->free;
+            targetPrt = result;
             if(result->operatorType == LITERAL) {
                 targetValue = static_cast<VariableValue*>(result->value);
             } else if(result->operatorType == VARIABLE) {
@@ -73,26 +81,37 @@ bool skx::Comparison::execute(skx::Context *context) {
         if (type != EQUAL && type != NOT_EQUAL) return false;
         return type == EQUAL ? sourceVar->type == UNDEFINED : sourceVar->type != UNDEFINED;
     }
-
+    bool res = false;
     switch (type) {
         case EQUAL:
-            return sourceValue->isEqual(targetValue);
+            res = sourceValue->isEqual(targetValue);
+            break;
         case NOT_EQUAL:
-            return !sourceValue->isEqual(targetValue);
+            res = !sourceValue->isEqual(targetValue);
+            break;
         case BIGGER:
-            return sourceValue->isBigger(targetValue);
+            res = sourceValue->isBigger(targetValue);
+            break;
         case SMALLER:
-            return sourceValue->isSmaller(targetValue);
+            res = sourceValue->isSmaller(targetValue);
+            break;
         case BIGGER_OR_EQUAL:
-            return sourceValue->isBiggerOrEquals(targetValue);
+            res = sourceValue->isBiggerOrEquals(targetValue);
+            break;
         case SMALLER_OR_EQUAL:
-            return sourceValue->isSmallerOrEquals(targetValue);
+            res = sourceValue->isSmallerOrEquals(targetValue);
+            break;
         default:
             break;
 
     }
-
-    return false;
+    if(freeSource) {
+        delete sourcePrt;
+    }
+    if(freeTarget) {
+        delete targetPrt;
+    }
+    return res;
 }
 
 skx::Comparison::~Comparison() {
@@ -203,8 +222,8 @@ skx::Assigment::~Assigment() {
     target = nullptr;
 }
 
-skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, void *value, bool isDouble)
-        : operatorType(operatorType), type(type), value(value), isDouble(isDouble) {}
+skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, void *value, bool isDouble, bool free)
+        : operatorType(operatorType), type(type), value(value), isDouble(isDouble), free(free) {}
 
 
 skx::OperatorPart::~OperatorPart() {

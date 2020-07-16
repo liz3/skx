@@ -18,7 +18,8 @@ namespace skx {
         uint16_t level = 0;
         uint32_t line = 0;
         Context* ctx;
-        CompileItem* parent;
+        CompileItem* parent = nullptr;
+        CompileItem* root = nullptr;
         std::vector<CompileItem*> children;
         std::vector<Comparison*> comparisons;
         std::vector<Assigment*> assignments;
@@ -44,7 +45,7 @@ namespace skx {
         void compileExpression(PreParserItem* item, Context* context, CompileItem* target);
         void advance(CompileItem* parent, PreParserItem* parentItem, bool isFuncSuperContext = false);
         void compileCondition(std::string& content, Context* ctx, CompileItem* target, bool isElseIf = false);
-        OperatorPart* compileExecutionComparison(std::string& content, Context* ctx, CompileItem* target, bool isElseIf = false);
+        OperatorPart* compileExecutionValue(std::string& content, Context* ctx, CompileItem* target, bool isElseIf = false);
         void compileAssigment(const std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileExecution(std::string& basicString, Context *pContext, CompileItem *pItem);
         void compileReturn(std::string& basicString, Context *pContext, CompileItem *pItem);

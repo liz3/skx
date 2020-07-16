@@ -17,13 +17,18 @@ namespace skx {
     EventInfo eventMap[] = {
             EventInfo{
                 .javaClass = "org.bukkit.event.player.PlayerJoinEvent",
-                .matches = new const char*[2]{"on join", "on player join"},
-                .len = 2
+                .matches = new const char*[4]{"on join", "on player join", "join", "player join"},
+                .len = 4
             },
             EventInfo{
                     .javaClass = "org.bukkit.event.player.PlayerBedEnterEvent",
-                    .matches = new const char*[2]{"on bed enter", "on enter bed"},
-                    .len = 2
+                    .matches = new const char*[4]{"on bed enter", "on enter bed", "bed enter", "enter bed"},
+                    .len = 4
+            },
+            EventInfo{
+                    .javaClass = "org.bukkit.event.player.PlayerBedLeaveEvent",
+                    .matches = new const char*[4]{"on bed leave", "on leave bed", "bed leave", "leave bed"},
+                    .len = 4
             }
     };
 

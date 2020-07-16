@@ -29,7 +29,7 @@ namespace skx {
             if(item.rfind("on load", 0) == 0) return PRE_RUNTIME_EVENT;
             if(item.rfind("on", 0) == 0) return RUNTIME_EVENT;
 
-            return UNKNOWN;
+            return RUNTIME_EVENT;
         }
     };
 }
