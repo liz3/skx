@@ -17,6 +17,7 @@
 #ifdef SKX_BUILD_API
 #include "../include/api/McEvents.h"
 #include "../include/api/McEventValues.h"
+#include "../include/api/PlayerEffects.h"
 #endif
 #include <exception>
 #include <iostream>
@@ -518,6 +519,10 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
                     }
                     delete cancel;
                     return;
+                }
+                if(content.find("player") != std::string::npos) {
+                    Execution* out = PlayerAction::compilePlayerInstruction(content, context, target);
+                    if(out != nullptr) target->executions.push_back(out);
                 }
             }
 #endif

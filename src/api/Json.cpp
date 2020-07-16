@@ -523,3 +523,7 @@ skx::TJson::~TJson() {
 skx::VariableValue *skx::TJson::copyValue() {
     return this;
 }
+
+std::string skx::TJson::getStringValue() {
+    return value.dump();
+}

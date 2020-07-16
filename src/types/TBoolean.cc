@@ -67,3 +67,7 @@ bool skx::TBoolean::divide(skx::VariableValue *source) {
 skx::VariableValue *skx::TBoolean::copyValue() {
     return new TBoolean(value);
 }
+
+std::string skx::TBoolean::getStringValue() {
+    return std::string (value ? "true" : "false");
+}

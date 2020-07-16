@@ -184,3 +184,7 @@ skx::VariableValue::~VariableValue() {
 skx::VariableValue *skx::VariableValue::copyValue() {
     return nullptr;
 }
+
+std::string skx::VariableValue::getStringValue() {
+    return std::string();
+}

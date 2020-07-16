@@ -28,7 +28,7 @@ namespace skx {
         bool subtract(VariableValue *source) override;
         bool divide(VariableValue *source) override;
         bool multiply(VariableValue *source) override;
-
+        std::string getStringValue() override;
         VariableValue * copyValue() override;
     };
 }

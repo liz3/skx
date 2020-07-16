@@ -71,3 +71,7 @@ skx::VariableValue *skx::TString::copyValue() {
     TString* str = new TString(value);
     return str;
 }
+
+std::string skx::TString::getStringValue() {
+    return value;
+}

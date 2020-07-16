@@ -45,3 +45,9 @@ skx::TCharacter::TCharacter() {}
 skx::VariableValue *skx::TCharacter::copyValue() {
     return new TCharacter(value);
 }
+
+std::string skx::TCharacter::getStringValue() {
+    std::string val;
+    val += value;
+    return val;
+}

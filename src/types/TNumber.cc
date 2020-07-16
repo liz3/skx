@@ -150,3 +150,10 @@ bool skx::TNumber::multiply(skx::VariableValue *source) {
 skx::VariableValue *skx::TNumber::copyValue() {
     return new TNumber(isDouble ? doubleValue : intValue);
 }
+
+std::string skx::TNumber::getStringValue() {
+    if(isDouble) {
+        return std::to_string(doubleValue);
+    }
+    return std::to_string(intValue);
+}

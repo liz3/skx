@@ -22,7 +22,7 @@ namespace skx {
         bool isSmaller(VariableValue *other) override;
         bool isBiggerOrEquals(VariableValue *other) override;
         bool isSmallerOrEquals(VariableValue *other) override;
-
+        std::string getStringValue() override;
         VariableValue * copyValue() override;
     };
 }

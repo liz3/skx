@@ -9,9 +9,6 @@
 
 #include "../include/Function.h"
 #include "../include/types/TNumber.h"
-#include "../include/types/TString.h"
-#include "../include/types/TBoolean.h"
-
 
 namespace skx {
     OperatorPart *Print::execute(Context *target) {
@@ -34,21 +31,7 @@ namespace skx {
 
             }
             if (value == nullptr) return nullptr;
-            if (type == STRING) {
-                auto val = dynamic_cast<TString *>(value)->value;
-                std::cout << val;
-            } else if (type == BOOLEAN) {
-                auto v = dynamic_cast<TBoolean *>(value)->value;
-                std::string val(v ? "true" : "false");
-                std::cout << (val);
-            } else if (type == NUMBER) {
-                auto *val = dynamic_cast<TNumber *>(value);
-                if (isDouble) {
-                    std::cout << val->doubleValue;
-                } else {
-                    std::cout << val->intValue;
-                }
-            }
+            std::cout << value->getStringValue();
         }
         std::cout << "\n";
         return nullptr;

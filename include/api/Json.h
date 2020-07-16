@@ -19,6 +19,7 @@ namespace skx {
 
         nlohmann::json value;
         VariableValue * copyValue() override;
+        std::string getStringValue() override;
     };
     class JsonInterface : public Execution {
     public:

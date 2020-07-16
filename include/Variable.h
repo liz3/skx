@@ -56,7 +56,7 @@ class Context;
         virtual bool subtract(VariableValue* source);
         virtual bool multiply(VariableValue* source);
         virtual bool divide(VariableValue* source);
-
+        virtual std::string getStringValue();
         virtual VariableValue* copyValue();
     };
     class Variable {

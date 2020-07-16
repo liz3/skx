@@ -8,7 +8,7 @@ public class SkxEventListener implements Listener {
 
     @EventHandler
     public void wtf(PlayerJoinEvent ev) {
-        ev.getPlayer().getName();
+     
     }
 
 }
