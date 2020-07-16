@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(skx)
 
-option(SKX_BUILD_API "Build Java" OFF)
+option(SKX_BUILD_API "Build Java" ON)
 option(SKX_BUILD_EXAMPLE "Build Example Executable" ON)
 
 if (SKX_BUILD_API)
@@ -21,7 +21,7 @@ set(SKX_SOURCES
         src/Instruction.cc
         src/TreeCompiler.cc
         src/Executor.cc
-        src/BasicInstructions.cpp
+        src/BasicInstructions.cc
         src/RegexUtils.cc
         src/Literal.cc
         src/types/TString.cc
@@ -33,7 +33,13 @@ set(SKX_SOURCES
         src/api/Json.cpp)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
-    list(APPEND SKX_SOURCES src/AsyncExecutor.cc src/ApiBridge.cc src/api/McEvents.cpp src/api/McEventValues.cc)
+    list(APPEND SKX_SOURCES
+            src/AsyncExecutor.cc
+            src/ApiBridge.cc
+            src/api/McEvents.cc
+            src/api/McEventValues.cc
+            src/api/PlayerEffects.cc
+            )
 endif ()
 
 add_library(skx SHARED
