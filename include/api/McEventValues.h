@@ -19,6 +19,17 @@ namespace skx {
         TriggerEvent* ref;
         OperatorPart * execute(Context *target) override;
     };
+    class InteractItem : public Execution {
+    public:
+        InteractItem() : Execution() {
+            name = "mc::event::playerName";
+        }
+
+        virtual ~InteractItem();
+
+        TriggerEvent* ref;
+        OperatorPart * execute(Context *target) override;
+    };
 }
 
 

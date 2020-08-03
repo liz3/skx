@@ -32,7 +32,8 @@ set(SKX_SOURCES
         src/api/Http.cpp
         src/api/Json.cpp
         src/Assembler.cc
-        src/Disassembler.cc)
+        src/Disassembler.cc
+        )
 if (SKX_BUILD_API)
     include_directories(plugin/build)
     list(APPEND SKX_SOURCES
@@ -41,6 +42,8 @@ if (SKX_BUILD_API)
             src/api/McEvents.cc
             src/api/McEventValues.cc
             src/api/PlayerEffects.cc
+            src/api/EventPreconditions.cc
+
             )
 endif ()
 

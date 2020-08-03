@@ -106,6 +106,7 @@ namespace skx {
         }
 
         std::string eventClass;
+        std::vector<Comparison*> preDefinedConditions;
 #ifdef SKX_BUILD_API
         jobject currEventRef = nullptr;
         JNIEnv* env = nullptr;

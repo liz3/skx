@@ -18,6 +18,8 @@
 #include "../include/api/McEvents.h"
 #include "../include/api/McEventValues.h"
 #include "../include/api/PlayerEffects.h"
+#include "../include/api/EventPreconditions.h"
+
 #endif
 #include <exception>
 #include <iostream>
@@ -648,6 +650,7 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
         target->triggers.push_back(signal);
         return;
     }
+#ifdef SKX_BUILD_API
     if (content.find("command") == 0) {
         // COmmand
     } else {
@@ -656,8 +659,11 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
             std::cout << "Unknown event: " << content << " at: " << target->line << "\n";
             return;
         }
-        target->triggers.push_back(new TriggerEvent(type));
+        TriggerEvent* evInstance = new TriggerEvent(type);
+        EventPreconditions::compilePreConditions(type, evInstance, context);
+        target->triggers.push_back(evInstance);
     }
+#endif
 }
 
 skx::OperatorPart *

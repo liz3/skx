@@ -21,6 +21,11 @@ namespace skx {
                 .len = 4
             },
             EventInfo{
+                .javaClass = "org.bukkit.event.player.PlayerInteractEvent",
+                .matches = new const char*[4]{"on click", "on interact", "click", "interact"},
+                .len = 4
+            },
+            EventInfo{
                     .javaClass = "org.bukkit.event.player.PlayerBedEnterEvent",
                     .matches = new const char*[4]{"on bed enter", "on enter bed", "bed enter", "enter bed"},
                     .len = 4

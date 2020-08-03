@@ -51,7 +51,7 @@ skx::Variable *skx::Utils::searchVar(skx::VariableDescriptor *descriptor, skx::C
 std::string skx::Utils::getEventClassFromExpression(std::string content) {
     for(auto& entry : eventMap) {
         for (int i = 0; i < entry.len; ++i) {
-            if(entry.matches[i] == content) {
+            if(content.find(entry.matches[i]) == 0) {
                 return std::string(entry.javaClass);
             }
         }

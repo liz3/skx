@@ -20,3 +20,19 @@ skx::OperatorPart *skx::PlayerName::execute(skx::Context *target) {
 skx::PlayerName::~PlayerName() {
 
 }
+
+skx::InteractItem::~InteractItem() {
+
+}
+
+skx::OperatorPart *skx::InteractItem::execute(skx::Context *target) {
+    if(ref == nullptr) return nullptr;
+    JNIEnv* env = ref->env;
+    jfieldID itemStackField = env->GetFieldID(env->FindClass("org/bukkit/inventory/player/PlayerInteractEvent"),"item", "Lorg/bukkit/inventory/ItemStack;");
+    jobject itemStack = env->GetObjectField(ref->currEventRef, itemStackField);
+    jmethodID methodId = env->GetMethodID(env->FindClass("org/bukkit/inventory/ItemStack"), "getType", "()Lorg/bukkit/Material;");
+    jobject result = env->CallObjectMethod(itemStack, methodId);
+    jmethodID toString = env->GetMethodID(env->FindClass("org/bukkit/Material"), "toString", "()Ljava/lang/String;");
+    jstring resultJString = static_cast<jstring>(env->CallObjectMethod(result, toString));
+    return new OperatorPart(LITERAL, STRING, new TString(env->GetStringUTFChars(resultJString, NULL)), false, true);
+}

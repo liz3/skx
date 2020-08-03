@@ -101,7 +101,17 @@ namespace skx {
     ApiBridge::executeEventHook(CompileItem *target, TriggerEvent *ev, jobject instance, JNIEnv *pEnv) {
          ev->currEventRef = instance;
          ev->env = pEnv;
-        Executor::executeStandalone(target);
+         if(ev->preDefinedConditions.size() > 0) {
+             for(auto comparison : ev->preDefinedConditions) {
+                 if(comparison->execute(target->ctx)) {
+                     Executor::executeStandalone(target);
+                     return;
+                 }
+             }
+         } else {
+         Executor::executeStandalone(target);
+
+         }
     }
 
     bool ApiBridge::runReady() {

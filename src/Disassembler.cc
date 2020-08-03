@@ -123,6 +123,8 @@ skx::VariableValue *skx::Disassembler::readValue(std::ifstream *stream, skx::Var
                 return jsonVal;
             }
         }
+        default:
+            break;
     }
     return nullptr;
 }
