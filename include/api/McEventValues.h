@@ -22,7 +22,7 @@ namespace skx {
     class InteractItem : public Execution {
     public:
         InteractItem() : Execution() {
-            name = "mc::event::playerName";
+            name = "mc::event::interactItem";
         }
 
         virtual ~InteractItem();
