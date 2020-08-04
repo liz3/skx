@@ -375,6 +375,19 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
         }
         pos += current.length() + 1;
     }
+    int count = 1;
+    for (int i = 0; i < target->assignments.size(); ++i) {
+        if(i == 0) continue;
+        if(target->assignments[i]->type == MULTIPLY || target->assignments[i]->type == DIVIDE) {
+            if(target->assignments[count]->type == ADD || target->assignments[count]->type == SUBTRACT) {
+                auto from = target->assignments[count];
+                target->assignments[count] = target->assignments[i];
+                target->assignments[i] = from;
+                count++;
+            }
+        }
+    }
+    int x = 22;
 }
 
 void skx::TreeCompiler::compileOperator(std::string &content, skx::Context *pContext, skx::CompileItem *pItem) {
