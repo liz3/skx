@@ -21,6 +21,7 @@ public class Skx extends JavaPlugin implements Listener {
     public void onEnable() {
         apiInstance = new SkxApi(this);
         apiInstance.setLibPath(System.getenv("SKXLIBPATH"));
+        Bukkit.getPluginManager().registerEvents(new SkxEventListener(), this);
         initResponse = apiInstance.initApi();
         if(!initResponse.isSuccess()) {
             System.err.println(initResponse.getMsg());

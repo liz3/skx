@@ -10,16 +10,19 @@
 void skx::EventPreconditions::compilePreConditions(std::string content, skx::TriggerEvent *target, Context* ctx) {
     if(target->eventClass == "org.bukkit.event.player.PlayerInteractEvent") {
         if(content.find("with") != std::string::npos) {
-            auto params = skx::Utils::split(content.substr(content.find("with") + 1), " ");
+            auto params = skx::Utils::split(content.substr(content.find("with") + 5), " ");
             for(auto& param : params){
                 if(param == "or") continue;
                 Comparison* comparison = new Comparison();
                 comparison->type = EQUAL;
-                comparison->source = new OperatorPart(LITERAL, STRING, new TString(param), false);
+                auto strVal =
+                        param[param.length() -1] == ':' ? param.substr(0, param.length() -1) : param;
+                comparison->source = new OperatorPart(LITERAL, STRING, new TString(strVal), false);
                 InteractItem* item = new InteractItem();
                 item->ref = target;
                 comparison->target = new OperatorPart(EXECUTION, STRING, item, false);
                 target->preDefinedConditions.push_back(comparison);
+
             }
         }
     }

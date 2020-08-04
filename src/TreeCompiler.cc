@@ -673,7 +673,7 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
             return;
         }
         TriggerEvent* evInstance = new TriggerEvent(type);
-        EventPreconditions::compilePreConditions(type, evInstance, context);
+        EventPreconditions::compilePreConditions(content, evInstance, context);
         target->triggers.push_back(evInstance);
     }
 #endif

@@ -11,5 +11,10 @@ public class SkxEventListener implements Listener {
     public void wtf(PlayerJoinEvent ev) {
     
     }
-    
+
+    @EventHandler
+    public void test(PlayerInteractEvent ev) {
+      //  System.out.println(ev.get);
+    }
+
 }
