@@ -14,7 +14,7 @@ public class SkxEventListener implements Listener {
 
     @EventHandler
     public void test(PlayerInteractEvent ev) {
-      //  System.out.println(ev.get);
+   //   ev.getClickedBlock().getType()
     }
 
 }
