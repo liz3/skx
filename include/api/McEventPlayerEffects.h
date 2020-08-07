@@ -2,8 +2,8 @@
 // Created by liz3 on 16/07/2020.
 //
 
-#ifndef SKX_PLAYEREFFECTS_H
-#define SKX_PLAYEREFFECTS_H
+#ifndef SKX_MCEVENTPLAYEREFFECTS_H
+#define SKX_MCEVENTPLAYEREFFECTS_H
 
 #include "../Instruction.h"
 #include "../TreeCompiler.h"
@@ -30,4 +30,4 @@ namespace skx {
 }
 
 
-#endif //SKX_PLAYEREFFECTS_H
+#endif //SKX_MCEVENTPLAYEREFFECTS_H

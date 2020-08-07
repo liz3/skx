@@ -2,7 +2,7 @@
 // Created by liz3 on 16/07/2020.
 //
 
-#include "../../include/api/PlayerEffects.h"
+#include "../../include/api/McEventPlayerEffects.h"
 #include "../../include/utils.h"
 #include "../../include/Literal.h"
 #include "../../include/types/TString.h"

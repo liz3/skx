@@ -21,6 +21,16 @@ namespace skx {
                 .len = 4
             },
             EventInfo{
+                .javaClass = "org.bukkit.event.player.PlayerQuitEvent",
+                .matches = new const char*[4]{"on leave", "on player leave", "leave", "player leave"},
+                .len = 4
+            },
+            EventInfo{
+                .javaClass = "org.bukkit.event.player.AsyncPlayerChatEvent",
+                .matches = new const char*[6]{"on chat", "on player chat", "chat", "player chat", "on message", "message"},
+                .len = 6
+            },
+            EventInfo{
                 .javaClass = "org.bukkit.event.player.PlayerInteractEvent",
                 .matches = new const char*[4]{"on click", "on interact", "click", "interact"},
                 .len = 4

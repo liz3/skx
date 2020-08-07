@@ -2,8 +2,8 @@
 // Created by liz3 on 16/07/2020.
 //
 
-#ifndef SKX_MCEVENTVALUES_H
-#define SKX_MCEVENTVALUES_H
+#ifndef SKX_RUNTIMEMCEVENTVALUES_H
+#define SKX_RUNTIMEMCEVENTVALUES_H
 
 #include "../Instruction.h"
 
@@ -15,6 +15,17 @@ namespace skx {
         }
 
         virtual ~PlayerName();
+
+        TriggerEvent* ref;
+        OperatorPart * execute(Context *target) override;
+    };
+    class ChatMessage : public Execution {
+    public:
+        ChatMessage() : Execution() {
+            name = "mc::event::playerName";
+        }
+
+        virtual ~ChatMessage();
 
         TriggerEvent* ref;
         OperatorPart * execute(Context *target) override;
@@ -33,7 +44,7 @@ namespace skx {
     class TargetedItem : public Execution {
     public:
         TargetedItem() : Execution() {
-            name = "mc::event::interactItem";
+            name = "mc::event::targetedItem";
         }
 
         virtual ~TargetedItem();
@@ -44,4 +55,4 @@ namespace skx {
 }
 
 
-#endif //SKX_MCEVENTVALUES_H
+#endif //SKX_RUNTIMEMCEVENTVALUES_H

@@ -19,7 +19,6 @@ namespace skx {
 
 
     bool ApiBridge::setup() {
-        //  setStringValue("apiErrorMessage", "this is a test error");
         return true;
     }
 

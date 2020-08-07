@@ -15,10 +15,12 @@
 #include "../include/api/Json.h"
 
 #ifdef SKX_BUILD_API
-#include "../include/api/McEvents.h"
-#include "../include/api/McEventValues.h"
-#include "../include/api/PlayerEffects.h"
+#include "../include/api/McEventsBaseEffects.h"
+#include "../include/api/RuntimeMcEventValues.h"
+#include "../include/api/McEventPlayerEffects.h"
 #include "../include/api/EventPreconditions.h"
+#include "../include/api-compiler/EventValuesCompiler.h"
+#include "../include/api-compiler/EventBaseEffectCompiler.h"
 
 #endif
 #include <exception>
@@ -524,19 +526,11 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
 #ifdef SKX_BUILD_API
             CompileItem *t = target->root;
             if(t->triggers.size() == 1 && t->triggers[0]->type == MC_EVENT) {
-                if (content == "cancel event" || content == "cancel the event") {
-                    CancelEvent *cancel = new CancelEvent();
-                    if (t->triggers.size() == 1) {
-                        cancel->ref = dynamic_cast<TriggerEvent *>(t->triggers[0]);
-                        target->executions.push_back(cancel);
-                        return;
-                    }
-                    delete cancel;
-                    return;
-                }
                 if(content.find("player") != std::string::npos) {
                     Execution* out = PlayerAction::compilePlayerInstruction(content, context, target);
                     if(out != nullptr) target->executions.push_back(out);
+                } else {
+                    skx::EventBaseEffectCompiler::compile(content, context, target);
                 }
             }
 #endif
@@ -690,11 +684,7 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
 #ifdef SKX_BUILD_API
     CompileItem *t = target->root;
     if(t->triggers.size() == 1 && t->triggers[0]->type == MC_EVENT) {
-        if(content == "players name" || content == "player name") {
-            PlayerName* name = new PlayerName();
-            name->ref = dynamic_cast<TriggerEvent*>(t->triggers[0]);
-            return new OperatorPart(EXECUTION, UNDEFINED, name, false);
-        }
+        return skx::EventValuesCompiler::compile(content, ctx, target, isElseIf);
     }
 #endif
         return nullptr;

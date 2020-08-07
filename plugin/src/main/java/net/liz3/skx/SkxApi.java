@@ -59,13 +59,16 @@ public class SkxApi {
         try {
             System.out.println(hook.getName());
             Class clazz = Class.forName(hook.getName());
-            Bukkit.getPluginManager().registerEvent(clazz, new Listener() {
-                    },
-                    EventPriority.HIGH, new EventExecutor() {
-                        @Override
-                        public void execute(Listener listener, Event event) throws EventException {
+            Bukkit.getPluginManager().registerEvent(clazz, new Listener() {},
+                    EventPriority.HIGH, (listener, event) -> {
+//                        if (!Bukkit.isPrimaryThread()) {
+//                            Bukkit.getScheduler().runTask(skx, () -> {
+//                                handleEvent(hook, event);
+//                            });
+//                        } else {
                             handleEvent(hook, event);
-                        }
+
+
                     }, skx);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

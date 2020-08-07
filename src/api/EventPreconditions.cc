@@ -5,7 +5,7 @@
 #include "../../include/api/EventPreconditions.h"
 #include "../../include/utils.h"
 #include "../../include/types/TString.h"
-#include "../../include/api/McEventValues.h"
+#include "../../include/api/RuntimeMcEventValues.h"
 
 void skx::EventPreconditions::compilePreConditions(std::string content, skx::TriggerEvent *target, Context* ctx) {
     if(target->eventClass == "org.bukkit.event.player.PlayerInteractEvent") {

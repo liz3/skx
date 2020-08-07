@@ -2,9 +2,11 @@
 // Created by liz3 on 16/07/2020.
 //
 
-#include "../../include/api/McEventValues.h"
+#include "../../include/api/RuntimeMcEventValues.h"
 #include "../../include/types/TString.h"
 #include <jni.h>
+
+//RUNTIME
 
 skx::OperatorPart *skx::PlayerName::execute(skx::Context *target) {
     if(ref == nullptr) return nullptr;
@@ -67,4 +69,16 @@ skx::OperatorPart *skx::TargetedItem::execute(skx::Context *target) {
                    [](unsigned char c){ return std::tolower(c); });
     return new OperatorPart(LITERAL, STRING, new TString(strVal), false, true);
 
+}
+
+skx::ChatMessage::~ChatMessage() {
+
+}
+
+skx::OperatorPart *skx::ChatMessage::execute(skx::Context *target) {
+    if(ref == nullptr) return nullptr;
+    JNIEnv* env = ref->env;
+    jfieldID messageField = env->GetFieldID(env->FindClass("org/bukkit/event/player/AsyncPlayerChatEvent"), "message", "Ljava/lang/String;");
+    jstring message = static_cast<jstring>(env->GetObjectField(ref->currEventRef, messageField));
+    return new OperatorPart(LITERAL, STRING, new TString(std::string(env->GetStringUTFChars(message, NULL))), false);
 }

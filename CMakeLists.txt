@@ -33,16 +33,17 @@ set(SKX_SOURCES
         src/api/Json.cpp
         src/Assembler.cc
         src/Disassembler.cc
-        )
+        src/api-compiler/EventBaseEffectCompiler.cc include/api-compiler/EventBaseEffectCompiler.h)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
     list(APPEND SKX_SOURCES
             src/AsyncExecutor.cc
             src/ApiBridge.cc
-            src/api/McEvents.cc
-            src/api/McEventValues.cc
-            src/api/PlayerEffects.cc
+            src/api/McEventsBaseEffects.cc
+            src/api/RuntimeMcEventValues.cc
+            src/api/McEventPlayerEffects.cc
             src/api/EventPreconditions.cc
+            src/api-compiler/EventValuesCompiler.cc
 
             )
 endif ()
