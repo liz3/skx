@@ -5,7 +5,9 @@
 #include "../../include/api/RuntimeMcEventValues.h"
 #include "../../include/types/TString.h"
 #include <jni.h>
-
+#ifdef __linux
+#include <algorithm>
+#endif
 //RUNTIME
 
 skx::OperatorPart *skx::PlayerName::execute(skx::Context *target) {
