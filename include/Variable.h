@@ -18,6 +18,7 @@ class Context;
         CHARACTER,
         POINTER,
         BOOLEAN,
+        MAP,
         UNDEFINED
     };
 
@@ -30,8 +31,17 @@ class Context;
         SPOILED,
         RUNTIME_CR
     };
+    enum ListAccessorType {
+        ALL,
+        VAR_VALUE
+        };
+    struct ListAccessor {
+        std::string name;
+        ListAccessorType type;
+    };
     struct VariableDescriptor {
         std::string name;
+        ListAccessor* listAccessor = nullptr;
         AccessType type;
         bool isFromContext = false;
 

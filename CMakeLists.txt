@@ -33,7 +33,7 @@ set(SKX_SOURCES
         src/api/Json.cpp
         src/Assembler.cc
         src/Disassembler.cc
-        )
+        src/types/TMap.cc include/types/TMap.h)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
     list(APPEND SKX_SOURCES

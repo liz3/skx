@@ -9,6 +9,8 @@
 
 #include "../include/Function.h"
 #include "../include/types/TNumber.h"
+#include "../include/types/TMap.h"
+#include "../include/types/TString.h"
 
 namespace skx {
     OperatorPart *Print::execute(Context *target) {
@@ -45,6 +47,27 @@ namespace skx {
 
     OperatorPart *Loop::execute(Context *target) {
         Executor *exec = new Executor();
+        if(isIterator) {
+            if(!iteratorVar || iteratorVar->type != MAP) {
+                delete exec;
+                return nullptr;
+            }
+            TMap* map = dynamic_cast<TMap *>(iteratorVar->getValue());
+            loopCounter->type = STRING;
+            TString* loopIndexVal = new TString();
+            loopCounter->setValue(loopIndexVal);
+            for (auto& entry : map->value) {
+                loopIndexVal->value = entry.key;
+                VariableValue* v = entry.value;
+                iteratorValue->type = v->type;
+                if(iteratorValue->getValue() != v)
+                iteratorValue->setValue(v);
+                exec->execute(rootItem);
+                if (exec->stopLoop) break;
+            }
+            delete exec;
+            return nullptr;
+        }
         if (hasCondition) {
             if (comparison != nullptr) {
                 while (comparison->execute(target)) {

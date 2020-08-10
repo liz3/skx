@@ -1,10 +1,10 @@
-function foo():
-	set {_test} to 33
-	set {_test2} to {_test} / 3
-	send {_test2} to console
-	set {x} to {x} * {_test2}
+
 on load:
-	set {x} to 1000 * 60 * 60 * 24
-	send {x} to console
-	foo()
-	send {x} to console
+	loop 15 times:
+		send %loop-value% to console
+		if %loop-value% is 5:
+			set {list::%loop-value%} to "test 5"
+		else:
+			set {list::%loop-value%} to "test whatever"
+	loop {list::*}:
+		send %loop-value% and %loop-index% to console

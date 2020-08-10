@@ -9,6 +9,8 @@
 #include "../include/types/TNumber.h"
 #include "../include/types/TBoolean.h"
 #include "../include/types/TCharacter.h"
+#include "../include/types/TArray.h"
+#include "../include/types/TMap.h"
 
 bool skx::Comparison::execute(skx::Context *context) {
     if (type == ASSIGN || type == SUBTRACT || type == ADD || type == MULTIPLY || type == DIVIDE)
@@ -159,6 +161,18 @@ bool skx::Assigment::execute(skx::Context *context) {
         }
         sourceValue = sourceVar->getValue();
     }
+    if(target->isList) {
+        Variable* s = static_cast<Variable*>(target->value);
+        if(s->getValue() == nullptr || s->type != MAP) {
+            s->setValue(new TMap());
+            s->type = MAP;
+        }
+        TMap* map = dynamic_cast<TMap*>(s->getValue());
+        std::string name = target->indexDescriptor->getValue()->getStringValue();
+        map->value.push_back(MapEntry{.key = name, .value = sourceValue->copyValue()});
+        return true;
+    }
+
     if(sourceValue == nullptr)
         return false;
     if(targetVar->getValue() == nullptr || sourceValue->type != targetVar->type) {
@@ -250,6 +264,12 @@ skx::OperatorPart::~OperatorPart() {
         }
         value = nullptr;
     }
+}
+
+skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, skx::Variable *value,
+                                skx::Variable *indexDescriptor, bool isDouble, bool free)
+                                : operatorType(operatorType), type(type), value(value), isDouble(isDouble), free(free), indexDescriptor(indexDescriptor), isList(true)  {
+
 }
 
 skx::OperatorPart *skx::Execution::execute(skx::Context *target) {

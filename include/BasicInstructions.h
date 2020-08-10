@@ -36,6 +36,11 @@ namespace skx {
         Variable* loopTargetVar = nullptr;
         CompileItem* rootItem;
         bool hasCondition = false;
+
+        bool isIterator = false;
+        Variable* iteratorVar = nullptr;
+        Variable* iteratorValue = nullptr;
+
         Comparison* comparison = nullptr;
         Variable* loopCounter = nullptr;
         OperatorPart* execute(Context *target) override;

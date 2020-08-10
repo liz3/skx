@@ -44,8 +44,11 @@ namespace skx {
         void* value = nullptr;
         bool isDouble = false;
         bool free = false;
+        bool isList = false;
+        Variable* indexDescriptor = nullptr;
         virtual ~OperatorPart();
 
+        OperatorPart(OperatorType operatorType, VarType type, Variable *value, Variable* indexDescriptor, bool isDouble = false, bool free = false);
         OperatorPart(OperatorType operatorType, VarType type, void *value, bool isDouble, bool free = false);
     };
     class Comparison {

@@ -51,7 +51,24 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
     } else {
         descriptor->type = descriptor->isFromContext ? CONTEXT : GLOBAL;
     }
+    if(trim.find("::") != std::string::npos) {
+        descriptor->name = trim.substr(0, trim.find("::"));
+        std::string accessorLiteral = trim.substr(trim.find("::") + 2);
+        ListAccessor* accessor = new ListAccessor();
+        if(accessorLiteral == "*") {
+            accessor->type = ALL;
+        } else {
+            if(accessorLiteral[0] == '%' && accessorLiteral[accessorLiteral.length() -1] == '%') {
+                accessor->name = accessorLiteral.substr(1, accessorLiteral.length() -2);
+                accessor->type = VAR_VALUE;
+            }
+        }
+
+        descriptor->listAccessor = accessor;
+    } else {
+
     descriptor->name = trim;
+    }
     return descriptor;
 }
 

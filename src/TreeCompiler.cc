@@ -329,6 +329,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
         if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *currentVar = nullptr;
+
             if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
                 currentVar = skx::Utils::searchRecursive(descriptor->name, ctx->global);
             } else {
@@ -346,10 +347,18 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
                 //   currentVar->created = created;
                 targetCtx->vars[descriptor->name] = currentVar;
             }
-            delete descriptor;
             if (assigment == nullptr || assigment->target == nullptr) {
                 assigment = new Assigment();
+                if(descriptor->listAccessor == nullptr) {
                 assigment->target = new OperatorPart(VARIABLE, currentVar->type, currentVar, currentVar->isDouble);
+                    delete descriptor;
+                } else {
+                    Variable* indexValue = skx::Utils::searchRecursive(descriptor->listAccessor->name, ctx);
+                    if(indexValue) {
+                        assigment->target = new OperatorPart(VARIABLE, currentVar->type, currentVar, indexValue, false, false);
+                        delete descriptor;
+                    }
+                }
                 step++;
             } else {
                 if (step == 2) {
@@ -587,6 +596,38 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
     loop->rootItem = target;
     target->isLoop = true;
     auto spaceSplit = skx::Utils::split(content.substr(5, content.length() - 6), " ");
+    if(isVar(spaceSplit[0])) {
+        VariableDescriptor* descriptor = skx::Variable::extractNameSafe(spaceSplit[0]);
+        if(descriptor) {
+            loop->isIterator = true;
+            if(descriptor->listAccessor && descriptor->listAccessor->type == ALL) {
+                Variable *var = skx::Utils::searchVar(descriptor, ctx);
+                if(var) {
+                    loop->iteratorVar = var;
+                    std::string loopIndexName = spaceSplit.size() == 4 && spaceSplit[2] == "as" ? spaceSplit[3] : "loop-value";
+                    Variable *loopValue = new Variable();
+                    loopValue->name = loopIndexName;
+                    loopValue->isDouble = false;
+                    loopValue->accessType = CONTEXT;
+                    loopValue->contextValue = true;
+                    loopValue->setValue(nullptr);
+                    loop->iteratorValue = loopValue;
+                    ctx->vars[loopIndexName] = loopValue;
+                    Variable *loopIndex = new Variable();
+                    loopIndex->name = "loop-index";
+                    loopIndex->type = STRING;
+                    loopIndex->isDouble = false;
+                    loopIndex->accessType = CONTEXT;
+                    loopIndex->contextValue = true;
+                    loopIndex->setValue(new TString());
+                    loop->loopCounter = loopIndex;
+                    ctx->vars["loop-index"] = loopIndex;
+                    target->executions.push_back(loop);
+                    return;
+                }
+            }
+        }
+    }
     if (spaceSplit[0] == "while") {
         loop->hasCondition = true;
         loop->comparison = new Comparison();
