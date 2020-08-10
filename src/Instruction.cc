@@ -31,8 +31,23 @@ bool skx::Comparison::execute(skx::Context *context) {
         sourceValue = static_cast<VariableValue *>(source->value);
     } else if (source->operatorType == VARIABLE) {
         auto *out = static_cast<Variable *>(source->value);
-        sourceValue = out->getValue();
-        sourceVar = out;
+        if(source->isList) {
+            if(out->type != MAP) {
+                sourceValue = nullptr;
+            } else {
+                TMap* map = dynamic_cast<TMap *>(out->getValue());
+                auto indexName = source->indexDescriptor->getValue()->getStringValue();
+                for(auto& val : map->value) {
+                    if(val.key == indexName) {
+                        sourceValue = val.value;
+                        break;
+                    }
+                }
+            }
+        } else {
+            sourceValue = out->getValue();
+            sourceVar = out;
+        }
     } else if(source->operatorType == EXECUTION) {
         auto* result = static_cast<Execution*>(source->value)->execute(context);
         if(result == nullptr) {
@@ -54,8 +69,24 @@ bool skx::Comparison::execute(skx::Context *context) {
         targetValue = static_cast<VariableValue *>(target->value);
     } else if (target->operatorType == VARIABLE) {
         auto *out = static_cast<Variable *>(target->value);
-        targetValue = out->getValue();
-        targetVar = out;
+        if(target->isList) {
+            if(out->type != MAP) {
+                targetValue = nullptr;
+            } else {
+                TMap* map = dynamic_cast<TMap *>(out->getValue());
+                auto indexName = target->indexDescriptor->getValue()->getStringValue();
+                for(auto& val : map->value) {
+                    if(val.key == indexName) {
+                        targetValue = val.value;
+                        break;
+                    }
+                }
+            }
+        } else {
+            targetValue = out->getValue();
+            targetVar = out;
+        }
+
     } else if(target->operatorType == EXECUTION) {
         auto* result = static_cast<Execution*>(target->value)->execute(context);
         if(result == nullptr) {

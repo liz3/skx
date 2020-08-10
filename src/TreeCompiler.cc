@@ -166,9 +166,27 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
                 if (state == 0) {
                     state++;
                     currentOperator = new Comparison();
-                    currentOperator->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                    if(descriptor->listAccessor == nullptr) {
+                        currentOperator->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                    } else {
+                        if(descriptor->listAccessor->type == VAR_VALUE) {
+                            Variable* indexValue = skx::Utils::searchRecursive(descriptor->listAccessor->name, ctx);
+                            if(indexValue) {
+                                currentOperator->source = new OperatorPart(VARIABLE, var->type, var, indexValue, false, false);
+                            }
+                        }
+                    }
                 } else if (state == 2) {
-                    currentOperator->target = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                    if(descriptor->listAccessor == nullptr) {
+                        currentOperator->target = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                    } else {
+                        if(descriptor->listAccessor->type == VAR_VALUE) {
+                            Variable* indexValue = skx::Utils::searchRecursive(descriptor->listAccessor->name, ctx);
+                            if(indexValue) {
+                                currentOperator->target = new OperatorPart(VARIABLE, var->type, var, indexValue, false, false);
+                            }
+                        }
+                    }
                     target->comparisons.push_back(currentOperator);
                     state = 0;
                     currentOperator = nullptr;
