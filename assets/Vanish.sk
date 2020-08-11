@@ -1,12 +1,14 @@
 
-on load:
+function test():
 	loop 15 times:
 		if %loop-value% smaller then 4:
 			set {list::%loop-value%} to 12
 		else:
 			set {list::%loop-value%} to 22
-	loop 15 times:
-		if {list::%loop-value%} is 12:
-			send {list::%loop-value%} to console
-		else:
-			send {list::%loop-value%} and %loop-value% to console
+	loop {list::*}:
+		send "test" to console
+
+on load:
+	loop 5 times:
+		test()
+		send "=====" to console

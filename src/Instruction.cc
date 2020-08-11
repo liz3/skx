@@ -189,8 +189,17 @@ bool skx::Assigment::execute(skx::Context *context) {
         TMap* map = dynamic_cast<TMap*>(s->getValue());
         std::string name = target->indexDescriptor->getValue()->getStringValue();
         auto* newVal = sourceValue->copyValue();
-        map->value.push_back(MapEntry{.key = name, .value = newVal});
+        if(map->keyMap.find(name) != map->keyMap.end()) {
+            for (int i = 0; i < map->value.size(); ++i) {
+                if(map->value[i].value == map->keyMap[name]) {
+                    map->value.erase(map->value.begin() + i);
+                    break;
+                }
+            }
+            map->keyMap.erase(name);
+        }
         map->keyMap[name] = newVal;
+        map->value.push_back(MapEntry{.key = name, .value = newVal});
         return true;
     }
 
