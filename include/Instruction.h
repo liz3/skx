@@ -96,6 +96,7 @@ namespace skx {
           type = MC_COMMAND;
         }
         std::string name;
+        std::vector<Variable*> args;
         // more to come
     };
     class TriggerEvent : public Trigger {

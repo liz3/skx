@@ -31,6 +31,7 @@ namespace skx {
         bool isElse = false;
         bool isBreak = false;
         bool isLoop = false;
+        bool isCommandTrigger = false;
         ReturnOperation* returner = nullptr; // this is specific to functions ofc
     };
 

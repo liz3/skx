@@ -74,6 +74,10 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
             target->isBreak = true;
             return;
         }
+        if (actualContent == "trigger:") {
+            target->isCommandTrigger = true;
+            return;
+        }
         //ik this is messy, will change later
         if (actualContent.find("if") == 0) {
             compileCondition(actualContent, context, target);
@@ -142,6 +146,13 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             currentOperator = nullptr;
 
         }
+        if(current == "set" && last == "is" && state == 1) {
+            currentOperator->target = new OperatorPart(LITERAL, UNDEFINED, nullptr, false);
+            currentOperator->type = NOT_EQUAL;
+            target->comparisons.push_back(currentOperator);
+            state = 0;
+            currentOperator = nullptr;
+        }
         if ((current == "true" || current == "false") && state == 2) {
             currentOperator->target = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(current == "true"), false);
 
@@ -155,6 +166,22 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             target->comparisons.push_back(currentOperator);
             state = 0;
             currentOperator = nullptr;
+        }
+        if(current.find("arg-") == 0) {
+            Variable* var = skx::Utils::searchRecursive(current, ctx);
+            if(var) {
+                if (state == 0) {
+                    state++;
+                    currentOperator = new Comparison();
+                    currentOperator->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                } else if (state == 2) {
+                    currentOperator->target = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                    target->comparisons.push_back(currentOperator);
+                    state = 0;
+                    currentOperator = nullptr;
+                }
+
+                }
         }
         if (isVar(current)) {
             auto descriptor = skx::Variable::extractNameSafe(current);
@@ -300,6 +327,15 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
             target->assignments.push_back(assigment);
             step = 0;
             assigment = nullptr;
+        } else if (current.find("arg-") == 0) {
+
+            Variable* var = skx::Utils::searchRecursive(current, ctx);
+            if(var) {
+                assigment->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
+                target->assignments.push_back(assigment);
+                step = 0;
+                assigment = nullptr;
+            }
         }
         if (step == 2) {
             auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
@@ -723,7 +759,25 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
     }
 #ifdef SKX_BUILD_API
     if (content.find("command") == 0) {
-        // COmmand
+        TriggerCommand* cmd = new TriggerCommand();
+        auto split = skx::Utils::split(content, " ");
+        for (int i = 0; i < split.size(); ++i) {
+            if(i == 0) continue;
+            if(i == 1) {
+                cmd->name = split[i];
+            } else {
+                int index = i-1;
+                std::string name = "arg-" + std::to_string(index);
+                Variable* var = new Variable();
+                var->name = name;
+                var->type = STRING;
+                var->accessType = CONTEXT;
+                var->ctx = context;
+                context->vars[name] = var;
+                cmd->args.push_back(var);
+            }
+        }
+        target->triggers.push_back(cmd);
     } else {
         std::string type = skx::Utils::getEventClassFromExpression(content.substr(0, content.length() - 1));
         if (type.length() == 0) {
