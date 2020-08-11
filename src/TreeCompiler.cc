@@ -231,7 +231,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
                 if (state < 2) state++;
 
             }
-        } else if (current == "greater") {
+        } else if (current == "greater" || current == "bigger") {
             currentOperator->type = BIGGER;
             if (state < 2) state++;
         } else if (current == "smaller") {

@@ -1,12 +1,11 @@
 
 on load:
 	loop 15 times:
-		if %loop-value% is 5:
+		if %loop-value% bigger or equal then 4:
 			set {list::%loop-value%} to "test 33"
 		else:
 			set {list::%loop-value%} to "test whatever"
 	loop 15 times:
-		send %loop-value% to console
 		if {list::%loop-value%} is "test 33":
 			send "its test 5" to console
 		else:
