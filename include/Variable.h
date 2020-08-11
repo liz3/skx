@@ -88,6 +88,7 @@ class Context;
         static void createVarFromOption(std::string item, skx::Context* targetContext, bool isStatic);
         static VariableDescriptor* extractNameSafe(std::string in);
         static void createVarValue(VarType type, Variable* target, bool isDouble = false);
+        static VariableValue* extractValueFromList(Variable* map, Variable* index);
         VarState state = SPOILED;
         bool contextValue = false;
         bool created = false;

@@ -7,6 +7,7 @@
 
 #include "../Variable.h"
 #include <vector>
+#include <map>
 
 
 namespace skx {
@@ -17,6 +18,7 @@ namespace skx {
     class TMap : public VariableValue {
     public:
         std::vector<MapEntry> value;
+        std::map<std::string, VariableValue*> keyMap;
         TMap();
         TMap(std::vector<MapEntry> value);
 

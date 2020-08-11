@@ -495,12 +495,18 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
                 pr->dependencies.push_back(new OperatorPart(LITERAL, STRING, f, false));
 
             }
-
             if (isVar(current)) {
                 auto descriptor = skx::Variable::extractNameSafe(current);
                 Variable *var = skx::Utils::searchVar(descriptor, context);
                 if (var)
-                    pr->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                    if(descriptor->listAccessor) {
+                        Variable* indexValue = skx::Utils::searchRecursive(descriptor->listAccessor->name, context);
+                        if(indexValue) {
+                            pr->dependencies.push_back( new OperatorPart(VARIABLE, var->type, var, indexValue, false, false));
+                        }
+                    } else{
+                        pr->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
+                    }
                 else
                     std::cout << "[WARNING] Exec Variable not found: " << descriptor->name << " at: " << target->line
                               << "\n";

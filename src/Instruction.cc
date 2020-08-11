@@ -35,14 +35,8 @@ bool skx::Comparison::execute(skx::Context *context) {
             if(out->type != MAP) {
                 sourceValue = nullptr;
             } else {
-                TMap* map = dynamic_cast<TMap *>(out->getValue());
-                auto indexName = source->indexDescriptor->getValue()->getStringValue();
-                for(auto& val : map->value) {
-                    if(val.key == indexName) {
-                        sourceValue = val.value;
-                        break;
-                    }
-                }
+                auto* xx = skx::Variable::extractValueFromList(out, source->indexDescriptor);
+                if(xx) sourceValue = xx;
             }
         } else {
             sourceValue = out->getValue();
@@ -73,14 +67,8 @@ bool skx::Comparison::execute(skx::Context *context) {
             if(out->type != MAP) {
                 targetValue = nullptr;
             } else {
-                TMap* map = dynamic_cast<TMap *>(out->getValue());
-                auto indexName = target->indexDescriptor->getValue()->getStringValue();
-                for(auto& val : map->value) {
-                    if(val.key == indexName) {
-                        targetValue = val.value;
-                        break;
-                    }
-                }
+                auto* xx = skx::Variable::extractValueFromList(out, target->indexDescriptor);
+                if(xx) targetValue = xx;
             }
         } else {
             targetValue = out->getValue();
@@ -200,7 +188,9 @@ bool skx::Assigment::execute(skx::Context *context) {
         }
         TMap* map = dynamic_cast<TMap*>(s->getValue());
         std::string name = target->indexDescriptor->getValue()->getStringValue();
-        map->value.push_back(MapEntry{.key = name, .value = sourceValue->copyValue()});
+        auto* newVal = sourceValue->copyValue();
+        map->value.push_back(MapEntry{.key = name, .value = newVal});
+        map->keyMap[name] = newVal;
         return true;
     }
 
@@ -211,7 +201,6 @@ bool skx::Assigment::execute(skx::Context *context) {
             switch (targetVar->type) {
                 case STRING: {
                     auto *val = dynamic_cast<TString*>(targetVar->getValue());
-
                     delete val;
                     break;
                 }

@@ -27,7 +27,11 @@ namespace skx {
                 isDouble = raw->isDouble;
             } else if (raw->operatorType == VARIABLE) {
                 auto *var = static_cast<Variable *>(raw->value);
-                value = var->getValue();
+                if(raw->isList) {
+                    value = skx::Variable::extractValueFromList(var, raw->indexDescriptor);
+                } else {
+                 value = var->getValue();
+                }
                 type = var->type;
                 isDouble = raw->isDouble;
 

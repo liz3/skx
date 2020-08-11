@@ -14,8 +14,11 @@ skx::TMap::TMap() {
     type = MAP;
 }
 
-skx::TMap::TMap(std::vector<MapEntry>) : value(std::move(value)) {
+skx::TMap::TMap(std::vector<MapEntry> value) : value(std::move(value)) {
     type = MAP;
+    for(auto& val : value)
+        keyMap[val.key] = val.value;
+
 }
 
 skx::TMap::~TMap() {

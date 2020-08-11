@@ -10,6 +10,7 @@
 #include "../include/types/TCharacter.h"
 #include "../include/types/TArray.h"
 #include "../include/api/Json.h"
+#include "../include/types/TMap.h"
 
 
 void skx::Variable::createVarFromOption(std::string item, skx::Context *targetContext, bool isStatic) {
@@ -58,7 +59,8 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
         if(accessorLiteral == "*") {
             accessor->type = ALL;
         } else {
-            if(accessorLiteral[0] == '%' && accessorLiteral[accessorLiteral.length() -1] == '%') {
+            if((accessorLiteral[0] == '%' && accessorLiteral[accessorLiteral.length() -1] == '%') ||
+                    (accessorLiteral[0] == '{' && accessorLiteral[accessorLiteral.length() -1] == '}')) {
                 accessor->name = accessorLiteral.substr(1, accessorLiteral.length() -2);
                 accessor->type = VAR_VALUE;
             }
@@ -152,6 +154,16 @@ void skx::Variable::setValue(skx::VariableValue *value) {
         if(value->varRef == nullptr)
             this->value->varRef = this;
     }
+}
+
+skx::VariableValue *skx::Variable::extractValueFromList(Variable* map, Variable* index) {
+    if(map->type != MAP) return nullptr;
+    if(index->getValue()  == nullptr) return nullptr;
+    std::string search = index->getValue()->getStringValue();
+    TMap* iteratorMap = dynamic_cast<TMap *>(map->getValue());
+    if(iteratorMap->keyMap.find(search) != iteratorMap->keyMap.end())
+        return iteratorMap->keyMap[search];
+    return nullptr;
 }
 
 bool skx::VariableValue::isEqual(skx::VariableValue *other) {
