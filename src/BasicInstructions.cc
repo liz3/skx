@@ -29,11 +29,12 @@ namespace skx {
                 auto *var = static_cast<Variable *>(raw->value);
                 if(raw->isList) {
                     value = skx::Variable::extractValueFromList(var, raw->indexDescriptor);
+
                 } else {
                  value = var->getValue();
+                    type = var->type;
+                    isDouble = raw->isDouble;
                 }
-                type = var->type;
-                isDouble = raw->isDouble;
 
             }
             if (value == nullptr) return nullptr;
