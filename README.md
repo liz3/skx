@@ -38,7 +38,7 @@ For windows install [Windows Build tools](https://visualstudio.microsoft.com/vis
 ### Building: windows
 1. run ```build.bat```
 
-Running either will generate the Output in either just `Release` or `Release/Release`. The library is called skx.(DLL/so.dylib) and the executable `skx-example`
+Running either will generate the Output in either just `Release` or `Release/Release`. The library is called skx.(DLL/so/dylib) and the executable `skx-example`
 
 ## Running
 ### Running the example. 
