@@ -24,15 +24,21 @@ Currently those can only operate on variables OR literals.
  
  ## Building
  
-You will need cmake and the JDK 11 with the headers.
+ ### Prerequisites
 
-### macOS & gnu/linux
-1. In the CmakeLists replace line 53 with the appropiate paths so Cmkake can include the JDK headers.
-2. run ```build.sh```
+You will need cmake and the [JDK 11 with the headers](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)(also inserted in the path), [Cmake](https://cmake.org/download/#latest).
 
-### windows
-1. same as for macOS & gnu/linux.
-2. either use the `git bash` to run the script or recreate what it does. for the `make` command use `cmake --build build`
+For windows install [Windows Build tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)(You only need the c++ build tools)
+
+**Note:** If your JDK location defers from the default. do the edits in the CmakeLists for the jni headers
+
+### Building: macOS & gnu/linux
+1. run ```build.sh```
+
+### Building: windows
+1. run ```build.bat```
+
+Running either will generate the Output in either just `Release` or `Release/Release`. The library is called skx.(DLL/so.dylib) and the executable `skx-example`
 
 ## Running
 ### Running the example. 

@@ -5,7 +5,7 @@
 #include "../../include/api/RuntimeMcEventValues.h"
 #include "../../include/types/TString.h"
 #include <jni.h>
-#ifdef __linux
+#ifndef __APPLE__
 #include <algorithm>
 #endif
 //RUNTIME

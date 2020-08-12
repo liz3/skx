@@ -199,7 +199,7 @@ bool skx::Assigment::execute(skx::Context *context) {
             map->keyMap.erase(name);
         }
         map->keyMap[name] = newVal;
-        map->value.push_back(MapEntry{.key = name, .value = newVal});
+        map->value.push_back(MapEntry{name, newVal});
         return true;
     }
 

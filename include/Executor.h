@@ -8,8 +8,13 @@
 #include "TreeCompiler.h"
 
 namespace skx {
+    #ifdef _WIN32
+    class  __declspec(dllexport) Executor {
+    #else
     class Executor {
+    #endif
     public:
+
         static void executeStandalone(CompileItem* item);
         void execute(CompileItem* item);
         bool stopLoop = false;

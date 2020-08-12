@@ -12,8 +12,8 @@ std::vector<skx::RegexResult> skx::RegexUtils::getMatches(const std::regex &rege
          ++i) {
         std::smatch m = *i;
         RegexResult entry{
-            .pos = static_cast<uint32_t>(m.position()),
-            .content = m.str()
+            static_cast<uint32_t>(m.position()),
+             m.str()
         };
         matches.push_back(entry);
     }

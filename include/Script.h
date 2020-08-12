@@ -14,7 +14,12 @@
 
 
 namespace skx {
+    #ifdef _WIN32
+    class  __declspec(dllexport) Script {
+    #else
     class Script {
+    #endif
+
     public:
         virtual ~Script();
         //base context holding functions & options vars and so on

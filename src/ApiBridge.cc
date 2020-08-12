@@ -86,10 +86,10 @@ namespace skx {
             std::cout << (entry.first->eventClass) << ":" << id << "\n";
             jobject ref = registerEventHook(entry.first->eventClass.c_str(), id, pJobject);
             hooks[id] = EventPair{
-                    .object = env->NewGlobalRef(ref),
-                    .item = entry.second,
-                    .event = entry.first,
-                    .executor = executor
+                     env->NewGlobalRef(ref),
+                     entry.second,
+                     entry.first,
+                     executor
             };
         }
         scripts.push_back(script);
