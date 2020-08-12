@@ -11,8 +11,7 @@ void skx::Executor::executeStandalone(skx::CompileItem *item) {
     exec->isLoop = item->isLoop;
     skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
     exec->root = item;
-    for (int i = 0; i < item->children.size(); ++i) {
-        auto current = item->children[i];
+    for (auto current : item->children) {
         exec->walk(current);
     }
     skx::Utils::updateVarState(item->ctx, SPOILED);
@@ -39,7 +38,7 @@ void skx::Executor::walk(skx::CompileItem *item) {
         lastFailed = false;
     }
     if (item->triggers.empty() && item->assignments.size() == 0 && item->comparisons.size() > 0) {
-        for (int i = 0; i < item->comparisons.size(); ++i) {
+        for (uint32_t i = 0; i < item->comparisons.size(); ++i) {
             auto current = item->comparisons[i];
             bool failed = !current->execute(item->ctx);
             if (failed) {
@@ -58,7 +57,7 @@ void skx::Executor::walk(skx::CompileItem *item) {
         return;
     }
     if (item->triggers.empty() && item->assignments.size() > 0 && item->comparisons.size() == 0) {
-        for (int i = 0; i < item->assignments.size(); ++i) {
+        for (uint32_t i = 0; i < item->assignments.size(); ++i) {
             auto current = item->assignments[i];
             bool failed = !current->execute(item->ctx);
             if (failed) {
@@ -69,7 +68,7 @@ void skx::Executor::walk(skx::CompileItem *item) {
         //assignments should not have children
     }
     if(!item->executions.empty()) {
-        for (int i = 0; i < item->executions.size(); ++i) {
+        for (uint32_t i = 0; i < item->executions.size(); ++i) {
             auto current = item->executions[i];
            current->execute(item->ctx);
         }
@@ -82,8 +81,7 @@ void skx::Executor::execute(skx::CompileItem *item) {
     isLoop = item->isLoop;
     skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
     root = item;
-    for (int i = 0; i < item->children.size(); ++i) {
-        auto current = item->children[i];
+    for (auto current : item->children) {
         if(stopLoop) break;
         walk(current);
     }

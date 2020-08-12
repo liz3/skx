@@ -94,7 +94,7 @@ skx::OperatorPart *skx::JsonInterface::execute(skx::Context *target) {
         if (holderVar->type != POINTER || holderVar->customTypeName != "data::jsonValue") return nullptr;
         TJson *v = dynamic_cast<TJson *>(holderVar->getValue());
         std::string targetProp;
-        int32_t extractIndex = 0;
+        uint32_t extractIndex = 0;
         bool isIndex = false;
         if (dependencies[0]->operatorType == LITERAL) {
             if (dependencies[0]->type != STRING && dependencies[0]->type != NUMBER) return nullptr;

@@ -13,7 +13,7 @@
 #include "../include/types/TMap.h"
 
 
-void skx::Variable::createVarFromOption(std::string item, skx::Context *targetContext, bool isStatic) {
+void skx::Variable::createVarFromOption(std::string item, skx::Context *targetContext) {
     auto start = item.find_first_of(':') + 1;
     std::string name = skx::Utils::trim(item.substr(0, start - 1));
     std::string value = skx::Utils::trim(item.substr(start, item.length() - 1));

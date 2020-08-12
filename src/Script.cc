@@ -27,7 +27,7 @@ skx::Script *skx::Script::parse(const char *input) {
         auto baseType = skx::BaseAction::getBaseType(walkItem->actualContent);
         if(baseType == OPTIONS) {
             for(auto& opt : walkItem->children) {
-                Variable::createVarFromOption(opt->actualContent, result->baseContext, true);
+                Variable::createVarFromOption(opt->actualContent, result->baseContext);
             }
         }
         if(baseType == FUNCTION) {

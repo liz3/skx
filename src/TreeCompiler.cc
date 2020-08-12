@@ -125,13 +125,13 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
     uint8_t state = 0;
     std::string last;
     uint32_t len = isElseIf ? 7 : 3;
-    for (int i = 0; i < spaceSplit.size(); ++i) {
+    for (uint32_t i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
         if (current[current.length() - 1] == ':') {
             current = current.substr(0, current.length() - 1);
         }
         if (current.find('"') == 0 && state == 2) {
-            int x = i;
+            uint32_t x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                 i++;
                 if (i != x)
@@ -286,7 +286,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
     uint8_t step = 0;
     uint32_t pos = 4;
     bool created = false;
-    for (int i = 0; i < spaceSplit.size(); ++i) {
+    for (uint32_t i = 0; i < spaceSplit.size(); ++i) {
         auto current = spaceSplit[i];
         if (step == 0 && !target->assignments.empty() && isOperator(current)) {
             assigment = new Assigment();
@@ -299,7 +299,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
             continue;
         }
         if (current.find('"') == 0 && step == 2) {
-            int x = i;
+            uint32_t x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                 i++;
                 if (i != x)
@@ -441,7 +441,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
         pos += current.length() + 1;
     }
     int count = 1;
-    for (int i = 0; i < target->assignments.size(); ++i) {
+    for (uint32_t i = 0; i < target->assignments.size(); ++i) {
         if(i == 0) continue;
         if(target->assignments[i]->type == MULTIPLY || target->assignments[i]->type == DIVIDE) {
             if(target->assignments[count]->type == ADD || target->assignments[count]->type == SUBTRACT) {
@@ -452,7 +452,6 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
             }
         }
     }
-    int x = 22;
 }
 
 void skx::TreeCompiler::compileOperator(std::string &content, skx::Context *pContext, skx::CompileItem *pItem) {
@@ -516,10 +515,10 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
         auto *pr = new Print();
         auto spaceSplit = skx::Utils::split(content, " ");
         size_t pos = 0;
-        for (int i = 0; i < spaceSplit.size(); i++) {
+        for (uint32_t i = 0; i < spaceSplit.size(); i++) {
             auto current = spaceSplit[i];
             if (current.find('"') == 0) {
-                int x = i;
+                uint32_t x = i;
                 while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                     i++;
                     if (i != x)
@@ -610,10 +609,10 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
 void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pContext, skx::CompileItem *pItem) {
     auto spaceSplit = skx::Utils::split(basicString.substr(7), " ");
 
-    for (int i = 0; i < spaceSplit.size(); i++) {
+    for (uint32_t i = 0; i < spaceSplit.size(); i++) {
         auto current = spaceSplit[i];
         if (current.find('"') == 0) {
-            int x = i;
+            uint32_t x = i;
             while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
                 i++;
                 if (i != x)
@@ -761,7 +760,7 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
     if (content.find("command") == 0) {
         TriggerCommand* cmd = new TriggerCommand();
         auto split = skx::Utils::split(content, " ");
-        for (int i = 0; i < split.size(); ++i) {
+        for (uint32_t i = 0; i < split.size(); ++i) {
             if(i == 0) continue;
             if(i == 1) {
                 cmd->name = split[i];

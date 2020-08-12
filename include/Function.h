@@ -6,7 +6,6 @@
 #define SKX_FUNCTION_H
 
 #include "Variable.h"
-#include "Step.h"
 #include "PreParser.h"
 #include "TreeCompiler.h"
 #include "Context.h"
@@ -24,6 +23,8 @@ namespace skx {
         ReturnOpWithCtx* walk(CompileItem* item);
         bool lastFailed = false;
         uint16_t lastFailLevel = 0;
+        bool isLoop = false;
+        bool stopLoop = false;
     public:
         virtual ~Function();
 

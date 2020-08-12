@@ -14,7 +14,6 @@ set(SKX_SOURCES
         src/Script.cc
         src/Context.cc
         src/Variable.cc
-        src/Step.cc
         src/PreParser.cc
         src/utils.cc
         src/Function.cc

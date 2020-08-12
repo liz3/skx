@@ -192,6 +192,8 @@ uint8_t skx::Assembler::getVarIdFromValue(skx::VariableValue *value) {
             return 6;
         case ARRAY:
             return 7;
+        case MAP:
+            return 8;
     }
     return -1;
 }
@@ -237,6 +239,7 @@ uint8_t skx::Assembler::writeValue(skx::VariableValue *value, std::ofstream *str
             }
             return 5;
         case UNDEFINED:
+        case MAP:
         case ARRAY:
             break;
     }

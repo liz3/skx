@@ -41,7 +41,7 @@ skx::EventBaseEffectCompiler::compile(std::string &content, skx::Context *ctx, s
             } else if(current[0] == '"') {
                 std::string stringVal = "";
                 std::string start = content.substr(pos + 1);
-                for (int i = 0; i < start.length(); ++i) {
+                for (uint32_t i = 0; i < start.length(); ++i) {
                     if (start[i] == '"') break;
                     if (start[i] == '\\' && i < start.length() - 1 && start[i + 1] == '"') {
                         stringVal.append("\"");

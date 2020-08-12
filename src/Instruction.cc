@@ -17,8 +17,8 @@ bool skx::Comparison::execute(skx::Context *context) {
         return false;
     if (source->type == STRING && type != EQUAL && type != NOT_EQUAL)
         return false;
-    VariableValue *sourceValue;
-    VariableValue *targetValue;
+    VariableValue *sourceValue = nullptr;
+    VariableValue *targetValue = nullptr;
     OperatorPart* sourcePrt = nullptr;
     OperatorPart* targetPrt = nullptr;
     bool freeSource = false;
@@ -56,8 +56,6 @@ bool skx::Comparison::execute(skx::Context *context) {
                 sourceValue = tVar->getValue();
             }
         }
-    }else {
-        sourceValue = nullptr;
     }
     if (target->operatorType == LITERAL) {
         targetValue = static_cast<VariableValue *>(target->value);
@@ -89,8 +87,6 @@ bool skx::Comparison::execute(skx::Context *context) {
                 targetValue = tVar->getValue();
             }
         }
-    }else {
-        targetValue = nullptr;
     }
     if (targetValue == nullptr || sourceValue == nullptr) return false;
     if (sourceValue->type != targetValue->type && target->type != UNDEFINED) {
@@ -190,7 +186,7 @@ bool skx::Assigment::execute(skx::Context *context) {
         std::string name = target->indexDescriptor->getValue()->getStringValue();
         auto* newVal = sourceValue->copyValue();
         if(map->keyMap.find(name) != map->keyMap.end()) {
-            for (int i = 0; i < map->value.size(); ++i) {
+            for (uint32_t i = 0; i < map->value.size(); ++i) {
                 if(map->value[i].value == map->keyMap[name]) {
                     map->value.erase(map->value.begin() + i);
                     break;
@@ -297,7 +293,7 @@ skx::OperatorPart::~OperatorPart() {
 
 skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, skx::Variable *value,
                                 skx::Variable *indexDescriptor, bool isDouble, bool free)
-                                : operatorType(operatorType), type(type), value(value), isDouble(isDouble), free(free), indexDescriptor(indexDescriptor), isList(true)  {
+                                : operatorType(operatorType), type(type), value(value), isDouble(isDouble), free(free), isList(true), indexDescriptor(indexDescriptor)  {
 
 }
 
