@@ -1,11 +1,9 @@
 on load:
-	loop 15 times:
-		if %loop-value% smaller then 4:
-			set {list::%loop-value%} to 12
-		else:
-			set {list::%loop-value%} to 22
-	loop 15 times:
-		if {list::%loop-value%} is 12:
-			send {list::%loop-value%} to console
-		else:
-			send {list::%loop-value%} and %loop-value% to console
+	set {_key1} to "key-1"
+	set {_key2} to "key-2"
+	set {players::{_key1}} to 23
+	set {players::{_key2}} to 23
+	if {players::*} contains {_key1} is true:
+		send "yes" to console
+	else:
+		send "no" to console

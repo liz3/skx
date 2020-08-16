@@ -21,6 +21,8 @@
 #include "../include/api/EventPreconditions.h"
 #include "../include/api-compiler/EventValuesCompiler.h"
 #include "../include/api-compiler/EventBaseEffectCompiler.h"
+#include "../include/types/TPlayerRef.h"
+#include "../include/api/MapEffects.h"
 
 #endif
 #include <exception>
@@ -183,7 +185,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
 
                 }
         }
-        if (isVar(current)) {
+        if (isVar(current) && (state == 2 || isOperator(spaceSplit[i+1]) || spaceSplit[i+1] == "is")) {
             auto descriptor = skx::Variable::extractNameSafe(current);
             Variable *var = skx::Utils::searchVar(descriptor, ctx);
             if (!var) {
@@ -248,7 +250,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
         }
 
 
-        if (current == "is") {
+        if (current == "is" || current == "=") {
             currentOperator->type = EQUAL;
             if (state < 2) state++;
         } else if (current == "equal") {
@@ -274,6 +276,13 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
 
         last = current;
         len += current.length() + 1;
+    }
+    if(state == 1) {
+        currentOperator->target = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(true), false);
+        currentOperator->type= EQUAL;
+        target->comparisons.push_back(currentOperator);
+        state = 0;
+        currentOperator = nullptr;
     }
     if (currentOperator != nullptr) {
         delete currentOperator;
@@ -729,7 +738,7 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
 }
 
 bool skx::TreeCompiler::isVar(std::string &val) {
-    return (val[0] == '{' && val[val.length() - 1] == '}') || (val[0] == '%' && val[val.length() - 1] == '%');
+    return (val[0] == '{' && val[val.length() - 1] == '}') || (val[0] == '%' && val[val.length() - 1] == '%') || val == "player";
 }
 
 bool skx::TreeCompiler::isNumber(char c) {
@@ -776,6 +785,14 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
                 cmd->args.push_back(var);
             }
         }
+        Variable* player = new Variable();
+        player->name = "player";
+        player->accessType = CONTEXT;
+        player->ctx = context;
+        player->type = POINTER;
+        player->customTypeName = "std::mc::player";
+        player->setValue(new TPlayerRef(cmd));
+        context->vars["player"] = player;
         target->triggers.push_back(cmd);
     } else {
         std::string type = skx::Utils::getEventClassFromExpression(content.substr(0, content.length() - 1));
@@ -784,6 +801,14 @@ void skx::TreeCompiler::compileTrigger(std::string &content, skx::Context *conte
             return;
         }
         TriggerEvent* evInstance = new TriggerEvent(type);
+        Variable* player = new Variable();
+        player->name = "player";
+        player->accessType = CONTEXT;
+        player->ctx = context;
+        player->type = POINTER;
+        player->customTypeName = "std::mc::player";
+        player->setValue(new TPlayerRef(evInstance));
+        context->vars["player"] = player;
         EventPreconditions::compilePreConditions(content, evInstance, context);
         target->triggers.push_back(evInstance);
     }
@@ -796,6 +821,38 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
 
     if (content.find("json") != std::string::npos) {
         return skx::Json::compileCondition(content, ctx, target);
+    }
+
+    if(content.find('{') == 0 && content.find(" contains ") != std::string::npos) {
+        auto split = skx::Utils::split(content[content.length() -1] == ':' ? content.substr(0, content.length() -1) : content, " ");
+        MapEffects* effect = new MapEffects();
+        effect->execType = MapEffects::CONTAINS;
+
+        VariableDescriptor* mapDesc = skx::Variable::extractNameSafe(split[0]);
+        if(!mapDesc) return nullptr;
+        Variable* map = skx::Utils::searchVar(mapDesc, ctx);
+        if(!map) return nullptr;
+        effect->dependencies.push_back(new OperatorPart(VARIABLE, MAP, map, false));
+        auto val = split[2];
+        if(isVar(val)) {
+            VariableDescriptor* indexDesc = skx::Variable::extractNameSafe(val);
+            if(indexDesc) {
+                Variable* ind = skx::Utils::searchVar(indexDesc, ctx);
+                effect->dependencies.push_back(new OperatorPart(VARIABLE, ind->type, ind, false));
+
+            }
+            delete indexDesc;
+        } else if(val[0] == '"') {
+            if (val[val.length() - 1] == '"') val = val.substr(0, val.length() - 1);
+
+            effect->dependencies.push_back(new OperatorPart(LITERAL, STRING, new TString(val.substr(1, val.length() -1)), false));
+        }
+        delete mapDesc;
+        if(effect->dependencies.size() ==2) {
+            return new OperatorPart(EXECUTION, BOOLEAN, effect, false);
+        } else {
+            delete effect;
+        }
     }
 
 #ifdef SKX_BUILD_API

@@ -9,7 +9,6 @@
 #include "../include/types/TNumber.h"
 #include "../include/types/TCharacter.h"
 #include "../include/types/TArray.h"
-#include "../include/api/Json.h"
 #include "../include/types/TMap.h"
 
 
@@ -41,6 +40,11 @@ void skx::Variable::createVarFromOption(std::string item, skx::Context *targetCo
 
 skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
     auto *descriptor = new VariableDescriptor();
+    if(in == "player") {
+        descriptor->name = "player";
+        descriptor->type = CONTEXT;
+        return descriptor;
+    }
     descriptor->isFromContext = in[0] == '%' && in[in.length()-1] == '%';
     auto trim = in.substr(1, in.length() - 2);
     if (trim.rfind('@', 0) == 0) {
@@ -61,7 +65,8 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
         } else {
             if((accessorLiteral[0] == '%' && accessorLiteral[accessorLiteral.length() -1] == '%') ||
                     (accessorLiteral[0] == '{' && accessorLiteral[accessorLiteral.length() -1] == '}')) {
-                accessor->name = accessorLiteral.substr(1, accessorLiteral.length() -2);
+                accessor->name = accessorLiteral[1] == '_' ? accessorLiteral.substr(2, accessorLiteral.length() -3)
+                        : accessorLiteral.substr(1, accessorLiteral.length() -2);
                 accessor->type = VAR_VALUE;
             }
         }
@@ -77,34 +82,6 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
 skx::Variable::~Variable() {
     if(value != nullptr && value->varRef == this)
         delete value;
-//    if (value != nullptr && !created) {
-//        switch (type) {
-//            case STRING: {
-//                auto *val = dynamic_cast<TString*>(value);
-//
-//                delete val;
-//                break;
-//            }
-//            case NUMBER: {
-//                auto *val = dynamic_cast<TNumber*>(value);
-//                delete val;
-//                break;
-//            }
-//            case CHARACTER: {
-//                auto *val = dynamic_cast<TCharacter*>(value);
-//                delete val;
-//                break;
-//            }
-//            case BOOLEAN: {
-//                auto *val = dynamic_cast<TBoolean*>(value);
-//                delete val;
-//                break;
-//            }
-//            default:
-//                delete value;
-//                break;
-//        }
-//    }
     value = nullptr;
 }
 
