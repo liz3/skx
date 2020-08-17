@@ -666,7 +666,7 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
     auto spaceSplit = skx::Utils::split(content.substr(5, content.length() - 6), " ");
     if(isVar(spaceSplit[0])) {
         VariableDescriptor* descriptor = skx::Variable::extractNameSafe(spaceSplit[0]);
-        if(descriptor) {
+        if(descriptor && descriptor->listAccessor != nullptr) {
             loop->isIterator = true;
             if(descriptor->listAccessor && descriptor->listAccessor->type == ALL) {
                 Variable *var = skx::Utils::searchVar(descriptor, ctx);
