@@ -40,12 +40,13 @@ skx::PreParseResult *skx::PreParser::preParse(std::vector<std::string> base) {
 
 uint16_t skx::PreParser::countTabs(std::string item) {
     uint16_t count = 0;
+
     if (item[0] == ' ') {
         for (char i : item) {
             if (i != ' ') break;
             count++;
         }
-        return count / 4;
+        return count / 2;
     }
     for (char i : item) {
         if (i != '\t') break;

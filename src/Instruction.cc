@@ -143,11 +143,22 @@ bool skx::Assigment::execute(skx::Context *context) {
         return false;
     }
     if (source->type == UNDEFINED && source->operatorType != EXECUTION) {
+      bool f = false;
+      // try to find var type at runtime
+      if(source->operatorType == VARIABLE) {
+        auto * srcVar = static_cast<Variable*>(source->value);
+          if (srcVar->type != UNDEFINED) {
+            source->type = srcVar->type;
+            f = true;
+          }
+      }
+      if(!f) {
         targetVar->type = UNDEFINED;
         targetVar->setValue(nullptr);
         return true;
+      }
     }
-  //  if (source->type != target->type && source->operatorType != EXECUTION) return false;
+    //  if (source->type != target->type && source->operatorType != EXECUTION) return false;
     VariableValue *sourceValue;
 
     if (source->operatorType == LITERAL) {

@@ -1,9 +1,8 @@
+function test(b: number):
+  set {_c} to {_b} + 5
+  send "Looping" and {_c} and "times" to console
+  loop {_c} times:
+    send {_c} to console
 on load:
-	set {_key1} to "key-1"
-	set {_key2} to "key-2"
-	set {players::{_key1}} to 23
-	set {players::{_key2}} to 23
-	if {players::*} contains {_key1} is true:
-		send "yes" to console
-	else:
-		send "no" to console
+  loop 15 times:
+    test(%loop-value%)
