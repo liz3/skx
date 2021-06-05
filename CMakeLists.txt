@@ -66,7 +66,7 @@ endif ()
 if (SKX_BUILD_EXAMPLE)
     add_executable(skx-example tests/main.cc)
     configure_file(assets/Vanish.sk . COPYONLY)
-    target_link_libraries(skx-example skx)
+    target_link_libraries(skx-example asan skx)
 endif ()
 
 if(NOT WIN32)

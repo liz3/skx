@@ -25,6 +25,7 @@ namespace skx {
             name = "std::invoke";
         }
         Function* function;
+
         OperatorPart* execute(Context *target) override;
     };
     class Loop : public Execution {

@@ -159,7 +159,7 @@ bool skx::Assigment::execute(skx::Context *context) {
       }
     }
     //  if (source->type != target->type && source->operatorType != EXECUTION) return false;
-    VariableValue *sourceValue;
+    VariableValue *sourceValue = nullptr;
 
     if (source->operatorType == LITERAL) {
         sourceValue = static_cast<VariableValue *>(source->value);
@@ -277,29 +277,7 @@ skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType typ
 
 
 skx::OperatorPart::~OperatorPart() {
-    if (value != nullptr) {
-        if (operatorType == LITERAL) {
-            switch (type) {
-                case STRING: {
-                    delete static_cast<TString *>(value);
-                    break;
-                }
-                case NUMBER: {
-                    delete static_cast<TNumber *>(value);
-                    break;
-                }
-                case BOOLEAN: {
-                    delete static_cast<TBoolean *>(value);
-                    break;
-                }
-                default:
-                    break;
-            }
-        } else if (operatorType == EXECUTION) {
-            delete static_cast<Execution*>(value);
-        }
-        value = nullptr;
-    }
+  value = nullptr;
 }
 
 skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType type, skx::Variable *value,
@@ -313,10 +291,9 @@ skx::OperatorPart *skx::Execution::execute(skx::Context *target) {
 }
 
 skx::Execution::~Execution() {
-    for (auto &dependencie : dependencies) {
-
-        delete dependencie;
-    }
+     for (auto &dependencie : dependencies) {
+         delete dependencie;
+     }
     dependencies.clear();
 }
 

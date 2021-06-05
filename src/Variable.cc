@@ -10,6 +10,7 @@
 #include "../include/types/TCharacter.h"
 #include "../include/types/TArray.h"
 #include "../include/types/TMap.h"
+#include <iostream>
 
 
 void skx::Variable::createVarFromOption(std::string item, skx::Context *targetContext) {
@@ -80,6 +81,7 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
 }
 
 skx::Variable::~Variable() {
+  std::cout << name << "\n";
     if(value != nullptr && value->varRef == this)
         delete value;
     value = nullptr;

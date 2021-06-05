@@ -11,7 +11,7 @@
 
 int main() {
 
-    std::fstream stream("Vanish.sk");
+    std::fstream stream("Release/Vanish.sk");
     stream.seekg (0, stream.end);
     int length = stream.tellg();
     stream.seekg (0, stream.beg);

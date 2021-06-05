@@ -1,8 +1,9 @@
 function test(b: number):
-  set {_c} to {_b} + 5
+  set {_c} to {_b}
   send "Looping" and {_c} and "times" to console
-  loop {_c} times:
-    send {_c} to console
 on load:
   loop 15 times:
-    test(%loop-value%)
+    set {_added} to %loop-value% + 5
+    multiply 5 times {_added}
+    send {_added} to console
+    test({_added})

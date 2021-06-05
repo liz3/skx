@@ -578,21 +578,27 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
             if (params.length() > 0)
                 for (auto const &param : skx::Utils::split(params, ",")) {
                     auto trimmed = skx::Utils::trim(param);
-                    auto descriptor = skx::Variable::extractNameSafe(trimmed);
-                    Variable *var = nullptr;
-                    if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
-                        var = skx::Utils::searchRecursive(descriptor->name, context->global);
+                    if(isNumber(trimmed[0])) {
+                      call->dependencies.push_back(skx::Literal::extractNumber(trimmed));
+                    } else if (trimmed[0] == '"') {
+                      call->dependencies.push_back(new OperatorPart(LITERAL, STRING, new TString(trimmed.substr(1, trimmed.length() -1)), false));
                     } else {
+                      auto descriptor = skx::Variable::extractNameSafe(trimmed);
+                      Variable *var = nullptr;
+                      if (descriptor->type == STATIC || descriptor->type == GLOBAL) {
+                        var = skx::Utils::searchRecursive(descriptor->name, context->global);
+                      } else {
                         var = skx::Utils::searchRecursive(descriptor->name, context);
-                    }
-                    if (!var) {
+                      }
+                      if (!var) {
                         std::cout << "[WARNING] Call Param not found: " << descriptor->name << " at: " << target->line
                                   << "\n";
                         delete descriptor;
                         continue;
+                      }
+                      delete descriptor;
+                      call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
                     }
-                    delete descriptor;
-                    call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
                 }
             target->executions.push_back(call);
         } else {

@@ -71,7 +71,7 @@ class Context;
     };
     class Variable {
     private:
-        VariableValue* value;
+        VariableValue* value = nullptr;
     public:
         VariableValue *getValue() const;
 

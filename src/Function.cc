@@ -18,8 +18,10 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
             skx::Utils::copyVariableValue(tVar, funcVar);
         } else if (targetVar->operatorType == LITERAL) {
             Variable *funcVar = functionItem->ctx->vars[currentTarget->name];
-            funcVar->type = targetVar->type;
-            funcVar->setValue(static_cast<VariableValue*>( targetVar->value));
+            if(funcVar->getValue() == nullptr) {
+              funcVar->type = targetVar->type;
+              funcVar->setValue(static_cast<VariableValue*>( targetVar->value));
+            }
         }
     }
     ReturnOpWithCtx *returnVal = nullptr;

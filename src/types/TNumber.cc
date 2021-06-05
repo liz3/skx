@@ -88,7 +88,7 @@ bool skx::TNumber::isSmallerOrEquals(skx::VariableValue *other) {
 }
 
 bool skx::TNumber::assign(skx::VariableValue *source) {
-    if(isReadOnly) return false;
+    if(isReadOnly || source == nullptr) return false;
     TNumber *val = dynamic_cast<TNumber *>(source);
     if(isDouble) {
         doubleValue = val->isDouble ? val->doubleValue : val->intValue;
