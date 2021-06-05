@@ -13,7 +13,7 @@
 #include "../include/types/TString.h"
 #include "../include/types/TBoolean.h"
 #include "../include/api/Json.h"
-
+#include "../include/api/NativeCall.h"
 #ifdef SKX_BUILD_API
 #include "../include/api/McEventsBaseEffects.h"
 #include "../include/api/RuntimeMcEventValues.h"
@@ -327,7 +327,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
             assigment = nullptr;
             step = 0;
             created = false;
-        } else if (isNumber(current[0])) {
+        } else if (isNumber(current[0]) && assigment) {
 
             OperatorPart *num = skx::Literal::extractNumber(current);
             if (num != nullptr) {
@@ -827,7 +827,11 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
 
     if (content.find("json") != std::string::npos) {
         return skx::Json::compileCondition(content, ctx, target);
+    } else if (content.find("nativecall") == 0) {
+      return skx::NativeCallCompiler::compileCall(content, ctx, target);
     }
+
+
 
     if(content.find('{') == 0 && content.find(" contains ") != std::string::npos) {
         auto split = skx::Utils::split(content[content.length() -1] == ':' ? content.substr(0, content.length() -1) : content, " ");

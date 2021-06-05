@@ -30,6 +30,7 @@ set(SKX_SOURCES
         src/types/TArray.cc
         src/api/Http.cpp
         src/api/Json.cpp
+        src/api/NativeCall.cc
         src/Assembler.cc
         src/Disassembler.cc
         src/types/TMap.cc include/types/TMap.h src/types/TPlayerRef.cpp include/types/TPlayerRef.h src/api/MapEffects.cpp include/api/MapEffects.h)
