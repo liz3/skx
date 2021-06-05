@@ -12,10 +12,7 @@ function json_test():
     set {_b} to false
     if %loop-value% is 4:
       set {_b} to true
-    if {_b} is true:
-      send "its true" to console
-    else:
-      send "its false" to console
+    send "its:" and {_b} to console
     set {_iter} to "Number: " + %loop-value%
     put json value {_iter} as %loop-value% in {_jsonList}
   put json value {_jsonList} as "a_list" in {_obj}
