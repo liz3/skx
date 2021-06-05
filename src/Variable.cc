@@ -81,7 +81,6 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
 }
 
 skx::Variable::~Variable() {
-  std::cout << name << "\n";
     if(value != nullptr && value->varRef == this)
         delete value;
     value = nullptr;

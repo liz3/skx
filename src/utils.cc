@@ -31,8 +31,11 @@ skx::Variable *skx::Utils::searchRecursive(std::string what, Context *ctx) {
 }
 
 void skx::Utils::copyVariableValue(skx::Variable *source, skx::Variable *target) {
+  if(source->getValue() == nullptr)
+    target->setValue(nullptr);
+  else
     target->setValue(source->getValue()->copyValue());
-    target->type = source->type;
+  target->type = source->type;
 }
 
 void skx::Utils::updateVarState(skx::Context *ctx, skx::VarState state) {

@@ -47,6 +47,9 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     }
     if(!value) return nullptr;
     std::fstream stream(value->value);
+    if(!stream || !stream.is_open()) {
+      return nullptr;
+    }
     stream.seekg (0, stream.end);
     int length = stream.tellg();
     stream.seekg (0, stream.beg);
