@@ -50,8 +50,7 @@ bool skx::TString::assign(skx::VariableValue *source) {
 
 bool skx::TString::add(skx::VariableValue *source) {
     if(isReadOnly) return false;
-    TString* val = dynamic_cast<TString*>(source);
-    this->value = value.append(val->value);
+    this->value = value.append(source->getStringValue());
     return true;
 }
 

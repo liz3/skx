@@ -212,7 +212,7 @@ bool skx::Assigment::execute(skx::Context *context) {
 
     if(sourceValue == nullptr)
         return false;
-    if(targetVar->getValue() == nullptr || sourceValue->type != targetVar->type) {
+    if((targetVar->getValue() == nullptr || sourceValue->type != targetVar->type) && type == ASSIGN) {
         if(targetVar->getValue() != nullptr) {
             switch (targetVar->type) {
                 case STRING: {
@@ -241,7 +241,7 @@ bool skx::Assigment::execute(skx::Context *context) {
         }
         Variable::createVarValue(sourceValue->type, targetVar, sourceValue->type == NUMBER && dynamic_cast<TNumber*>(sourceValue)->isDouble);
     }
-    if( source->type == POINTER) {
+    if(source->type == POINTER) {
         targetVar->setValue(sourceValue);
         targetVar->type = source->type;
         if(sourceValue->varRef != nullptr) {

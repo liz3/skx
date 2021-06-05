@@ -1,9 +1,27 @@
 function test(b: number):
   set {_c} to {_b}
   send "Looping" and {_c} and "times" to console
-on load:
+function json_test():
+  send "hey to console" to console
+  create json object as {_obj}
+  put json value "Yann HN" as "name" in {_obj}
+  create json array as {_jsonList}
   loop 15 times:
-    set {_added} to %loop-value% + 5
-    multiply 5 times {_added}
-    send {_added} to console
-    test({_added})
+    set {_a} to %loop-value% + 1
+    send {_a} to console
+    set {_b} to false
+    if %loop-value% is 4:
+      set {_b} to true
+    if {_b} is true:
+      send "its true" to console
+    else:
+      send "its false" to console
+    set {_iter} to "Number: " + %loop-value%
+    put json value {_iter} as %loop-value% in {_jsonList}
+  put json value {_jsonList} as "a_list" in {_obj}
+  stringify json {_obj} to {_asStr}
+  send {_asStr} to console
+on load:
+  json_test()
+on unload:
+  send "We are done" to console

@@ -9,9 +9,9 @@
 #include "../include/Script.h"
 #include "../include/Executor.h"
 
-int main() {
+int main(int argc, char** argv) {
 
-    std::fstream stream("Release/Vanish.sk");
+    std::fstream stream(argv[1]);
     stream.seekg (0, stream.end);
     int length = stream.tellg();
     stream.seekg (0, stream.beg);
