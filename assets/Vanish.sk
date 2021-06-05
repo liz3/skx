@@ -4,7 +4,8 @@ function test(b: number):
 function json_test():
   send "hey to console" to console
   create json object as {_obj}
-  put json value "Yann HN" as "name" in {_obj}
+  put json value "Liz3" as "name" in {_obj}
+  put json value 21 as "age" in {_obj}
   create json array as {_jsonList}
   loop 15 times:
     set {_a} to %loop-value% + 1
