@@ -17,6 +17,7 @@ function json_test():
     set {_iter} to "Number: " + %loop-value%
     put json value {_iter} as %loop-value% in {_jsonList}
   put json value {_jsonList} as "a_list" in {_obj}
+  put json value true as "bool_val" in {_obj}
   stringify json {_obj} to {_asStr}
   send {_asStr} to console
 on load:

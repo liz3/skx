@@ -433,6 +433,8 @@ void skx::Json::compileRequest(std::string &content, skx::Context *ctx, skx::Com
             } else if (TreeCompiler::isNumber(property[0])) {
                 exec->dependencies.push_back(skx::Literal::extractNumber(property));
 
+            } else if(property == "true" || property == "false") {
+              exec->dependencies.push_back(new OperatorPart(LITERAL, BOOLEAN, new TBoolean(property == "true"), false));
             } else {
                 std::string json = "";
                 std::string start = content.substr(16);
