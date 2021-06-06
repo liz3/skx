@@ -55,10 +55,11 @@ namespace skx {
     public:
         virtual ~Comparison();
 
-        OperatorPart* source;
+       OperatorPart* source;
        OperatorPart* target;
        InstructionOperator type;
        bool execute(Context* context);
+       bool inverted = false;
 
     };
     class ReturnOperation {

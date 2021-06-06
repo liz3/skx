@@ -163,11 +163,18 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             currentOperator = nullptr;
 
         }
-        if (isNumber(current[0]) && state == 2) {
+        if (isNumber(current[0])) {
+          if (state == 2) {
             currentOperator->target = skx::Literal::extractNumber(current);
             target->comparisons.push_back(currentOperator);
             state = 0;
             currentOperator = nullptr;
+          } else if (state == 0) {
+            state++;
+            currentOperator = new Comparison();
+            currentOperator->source = skx::Literal::extractNumber(current);
+
+          }
         }
         if(current.find("arg-") == 0) {
             Variable* var = skx::Utils::searchRecursive(current, ctx);
@@ -250,7 +257,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
         }
 
 
-        if (current == "is" || current == "=") {
+        if (current == "is" || current == "==") {
             currentOperator->type = EQUAL;
             if (state < 2) state++;
         } else if (current == "equal") {
@@ -267,10 +274,8 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
             currentOperator->type = SMALLER;
             if (state < 2) state++;
         } else if (current == "not") {
-            if (currentOperator->type == EQUAL) {
-                currentOperator->type = NOT_EQUAL;
-                if (state < 2) state++;
-            }
+          currentOperator->inverted = !currentOperator->inverted;
+          if (state < 2) state++;
         }
 
 

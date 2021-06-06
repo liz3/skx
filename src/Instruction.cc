@@ -128,7 +128,7 @@ bool skx::Comparison::execute(skx::Context *context) {
     if(freeTarget) {
         delete targetPrt;
     }
-    return res;
+    return inverted ? !res : res;
 }
 
 skx::Comparison::~Comparison() {

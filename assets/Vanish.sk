@@ -5,18 +5,18 @@ function test(b: number):
   set {_c} to {_b}
   send "Looping" and {_c} and "times" to console
 function json_test(index):
-  send "hey to console" to console
+#  send "hey to console" to console
   create json object as {_obj}
   put json value "Liz3" as "name" in {_obj}
   put json value 21 as "age" in {_obj}
   create json array as {_jsonList}
-  loop 15 times:
+  loop 200 times:
     set {_a} to %loop-value% + 1
-    send {_a} to console
+#    send {_a} to console
     set {_b} to false
     if %loop-value% is 4:
       set {_b} to true
-    send "its:" and {_b} to console
+#    send "its:" and {_b} to console
     set {_iter} to "Number: " + %loop-value%
     put json value {_iter} as %loop-value% in {_jsonList}
   put json value {_jsonList} as "a_list" in {_obj}
@@ -24,10 +24,16 @@ function json_test(index):
   put json value {_index} as "index" in {_obj}
   stringify json {_obj} to {_asStr}
   return {_asStr}
+
 function writeFileSafe(content, path):
   set {_res} to nativecall writefile {_path} {_content}
   return {_res}
+
 on load:
+  if 2 is greater then 1 && 5 is not greater then 3:
+    send "its same" to console
+  else:
+    send "it defers" to console
   set {_home} to nativecall getenv "HOME"
   send {_home} to console
   loop 5 times:
