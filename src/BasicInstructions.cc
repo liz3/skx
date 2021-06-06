@@ -88,12 +88,17 @@ namespace skx {
             int32_t localLoopTarget = loopTargetVar != nullptr
                                       ? dynamic_cast<TNumber *>(loopTargetVar->getValue())->intValue
                                       : loopTarget;
+            if(loopCounter)
+              loopCounter->state = RUNTIME_CR;
             for (int32_t i = 0; i < localLoopTarget; ++i) {
                 exec->execute(rootItem);
                 if (exec->stopLoop) break;
                 i = num->intValue;
                 num->intValue++;
             }
+            if(loopCounter)
+              loopCounter->state = SPOILED;
+
         }
         delete exec;
         return nullptr;
