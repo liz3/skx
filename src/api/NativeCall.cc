@@ -12,6 +12,7 @@ skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::str
   if(entry == "strlen") return NativeCallInterface::STRLEN;
   if(entry == "readfile") return NativeCallInterface::READFILE;
   if(entry == "writefile") return NativeCallInterface::WRITEFILE;
+  if(entry == "getenv") return NativeCallInterface::GETENV;
   return NativeCallInterface::UNKNOWN;
 }
 
@@ -33,6 +34,23 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
       int32_t length = value->value.length();
       return new OperatorPart(LITERAL, NUMBER, new TNumber(length), false);
     }
+  case NativeCallInterface::GETENV: {
+    auto* part = dependencies[0];
+    TString* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TString* >(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if (v->type == STRING) {
+        TString *toExtract = dynamic_cast<TString *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    const char* envVal = std::getenv(value->value.c_str());
+    if(envVal == nullptr) return nullptr;
+    return new OperatorPart(LITERAL, STRING, new TString(std::string(envVal)), false);
+  }
   case NativeCallInterface::READFILE: {
     auto* part = dependencies[0];
     TString* value = nullptr;

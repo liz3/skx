@@ -28,6 +28,8 @@ function writeFileSafe(content, path):
   set {_res} to nativecall writefile {_path} {_content}
   return {_res}
 on load:
+  set {_home} to nativecall getenv "HOME"
+  send {_home} to console
   loop 5 times:
     set {_path} to "/home/liz3/sktestdir/out-" + %loop-value%
     set {_content} to json_test(%loop-value%)

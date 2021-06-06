@@ -14,7 +14,8 @@ namespace skx {
         UNKNOWN,
         READFILE,
         WRITEFILE,
-        STRLEN
+        STRLEN,
+        GETENV
       };
     NativeCallInterface(): Execution() {
       name = "native::callinterface";
