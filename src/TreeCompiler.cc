@@ -433,12 +433,12 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
                     assigment = nullptr;
                     step = 0;
                     created = false;
-                } else {
-                    if (currentVar != nullptr) {
-                        currentVar->ctx->vars.erase(currentVar->name);
-                        delete currentVar;
-                    }
-                }
+                }//  else {
+                //     if (currentVar != nullptr) {
+                //         currentVar->ctx->vars.erase(currentVar->name);
+                //         delete currentVar;
+                //     }
+                // }
             }
         }
         if (assigment != nullptr) {

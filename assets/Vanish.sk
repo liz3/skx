@@ -4,7 +4,7 @@ function string_length(str):
 function test(b: number):
   set {_c} to {_b}
   send "Looping" and {_c} and "times" to console
-function json_test():
+function json_test(index):
   send "hey to console" to console
   create json object as {_obj}
   put json value "Liz3" as "name" in {_obj}
@@ -21,17 +21,17 @@ function json_test():
     put json value {_iter} as %loop-value% in {_jsonList}
   put json value {_jsonList} as "a_list" in {_obj}
   put json value true as "bool_val" in {_obj}
+  put json value {_index} as "index" in {_obj}
   stringify json {_obj} to {_asStr}
-  send {_asStr} to console
+  return {_asStr}
+function writeFileSafe(content, path):
+  set {_res} to nativecall writefile {_path} {_content}
+  return {_res}
 on load:
-  set {a} to "hehe"
-  set {a} to "21"
-  set {_e} to string_length({a})
-  set {_f_content} to nativecall readfile "test.py"
-  set {_content_length} to string_length({_f_content})
-  send {_f_content} to console
-  send {_content_length} to console
-  set {_write_result} to nativecall writefile "test2.py" "print( 123 )"
-  send {_write_result} to console
+  loop 5 times:
+    set {_path} to "/home/liz3/sktestdir/out-" + %loop-value%
+    set {_content} to json_test(%loop-value%)
+    set {_write_result} to writeFileSafe({_content}, {_path})
+    send {_write_result} to console
 on unload:
   send "We are done" to console
