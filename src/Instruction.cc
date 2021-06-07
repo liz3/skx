@@ -212,6 +212,10 @@ bool skx::Assigment::execute(skx::Context *context) {
 
     if(sourceValue == nullptr)
         return false;
+
+
+
+
     if((targetVar->getValue() == nullptr || sourceValue->type != targetVar->type) && type == ASSIGN) {
         if(targetVar->getValue() != nullptr) {
             switch (targetVar->type) {
@@ -238,7 +242,17 @@ bool skx::Assigment::execute(skx::Context *context) {
                 default:
                     break;
             }
+            targetVar->setValue(nullptr);
         }
+        //special cases
+    if(sourceValue->type == MAP && type == ASSIGN) {
+      targetVar->type = MAP;
+      targetVar->setValue(sourceValue->copyValue());
+
+      return true;
+    }
+
+
         Variable::createVarValue(sourceValue->type, targetVar, sourceValue->type == NUMBER && dynamic_cast<TNumber*>(sourceValue)->isDouble);
     }
     if(source->type == POINTER) {

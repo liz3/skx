@@ -2,6 +2,7 @@
 #include "../../include/utils.h"
 #include "../../include/Literal.h"
 #include "../../include/types/TString.h"
+#include "../../include/types/TMap.h"
 #include "../../include/types/TNumber.h"
 #include "../../include/types/TBoolean.h"
 
@@ -13,6 +14,7 @@ skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::str
   if(entry == "readfile") return NativeCallInterface::READFILE;
   if(entry == "writefile") return NativeCallInterface::WRITEFILE;
   if(entry == "getenv") return NativeCallInterface::GETENV;
+  if(entry == "strsplit") return NativeCallInterface::STRING_SPLIT;
   return NativeCallInterface::UNKNOWN;
 }
 
@@ -111,6 +113,43 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
       stream.close();
       return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(true), false);
     }
+      case STRING_SPLIT: {
+        auto* part = dependencies[0];
+        TString* value = nullptr;
+        if(part->operatorType == LITERAL) {
+          value = static_cast<TString* >(part->value);
+        } else if (part->operatorType == VARIABLE) {
+          Variable* v = static_cast<Variable*>(part->value);
+          if (v->type == STRING) {
+            TString *toExtract = dynamic_cast<TString *>(v->getValue());
+            value = toExtract;
+          }
+        }
+        if(!value) return nullptr;
+        auto* content_part = dependencies[1];
+        TString* content_value = nullptr;
+        if(content_part->operatorType == LITERAL) {
+        content_value = static_cast<TString* >(content_part->value);
+        } else if (content_part->operatorType == VARIABLE) {
+          Variable* v = static_cast<Variable*>(content_part->value);
+          if (v->type == STRING) {
+            TString *toExtract = dynamic_cast<TString *>(v->getValue());
+            content_value = toExtract;
+          }
+        }
+        if(!content_value) return nullptr;
+        auto split_parts = skx::Utils::split(content_value->value, value->value);
+        std::vector<skx::MapEntry> entries;
+        for(size_t i = 0; i < split_parts.size(); i++) {
+          std::string current = split_parts[i];
+          std::string index_str = std::to_string(i);
+          TString* stre = new TString(current);
+          entries.push_back(MapEntry{index_str, stre});
+        }
+        auto* p =  new OperatorPart(LITERAL, MAP, new TMap(entries), false);
+        p->isList = true;
+        return p;
+      }
     default:
       return nullptr;
   }

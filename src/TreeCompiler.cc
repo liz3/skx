@@ -314,12 +314,15 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
         }
         if (current.find('"') == 0 && step == 2) {
             uint32_t x = i;
-            while (spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) {
+            if(current.length() == 1 || current[current.length()-1] != '"') {
+            while ((spaceSplit[i][spaceSplit[i].length() - 1] != '"' && i < spaceSplit.size() - 1) || i == x) {
                 i++;
                 if (i != x)
                     current = current.append(" " + spaceSplit[i]);
 
             }
+}
+      //      if (current == "\"\"" && i == (x + 1)) current = "\" \"";
             if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
             TString *f = new TString(current.substr(1, current.length() - 2));
             assigment->source = new OperatorPart(LITERAL, STRING, f, false);

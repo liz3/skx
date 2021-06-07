@@ -15,6 +15,7 @@ namespace skx {
         READFILE,
         WRITEFILE,
         STRLEN,
+        STRING_SPLIT,
         GETENV
       };
     NativeCallInterface(): Execution() {

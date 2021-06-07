@@ -29,21 +29,31 @@ function writeFileSafe(content, path):
   set {_res} to nativecall writefile {_path} {_content}
   return {_res}
 
+function splitString(str, delimiter):
+  set {_result} to nativecall strsplit {_delimiter} {_str}
+  return {_result}
+
 on load:
-  # if 2 is greater then 1 && 5 is not greater then 3:
-  #   send "its same" to console
-  # else:
-  #   send "it defers" to console
-  # set {_home} to nativecall getenv "HOME"
+  set {_home} to nativecall getenv "HOME"
+  set {_delimiter} to "/"
+  set {_result} to splitString({_home}, {_delimiter})
+  loop {_result::*}:
+    send %loop-value% to console
+  if 2 is greater then 1 && 5 is greater then 3:
+    send "its same" to console
+  else:
+    send "it defers" to console
+
   # send {_home} to console
   # loop 5 times:
   #   set {_path} to "/home/liz3/sktestdir/out-" + %loop-value%
   #   set {_content} to json_test(%loop-value%)
   #   set {_write_result} to writeFileSafe({_content}, {_path})
   #   send {_write_result} to console
-  loop 5 times:
-    set {_text} to "Number " + %loop-value%
-    set {list::%loop-value%} to {_text}
-  send "looping" to console
-  loop {list::*}:
-    send %loop-value% to console
+  # set {_list} to 0
+  # loop 50000 times:
+  #   set {_text} to "Number " + %loop-value%
+  #   set {_list::%loop-value%} to {_text}
+  # send "looping" to console
+  # loop {_list::*}:
+  #   send %loop-value% to console
