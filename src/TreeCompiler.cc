@@ -192,7 +192,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
 
       }
     }
-    if (isVar(current) && (state == 2 || isOperator(spaceSplit[i+1]) || spaceSplit[i+1] == "is")) {
+    if (isVar(current) && (state == 2 || isOperator(spaceSplit[i+1]) || spaceSplit[i+1] == "is"))  {
       auto descriptor = skx::Variable::extractNameSafe(current);
       Variable *var = skx::Utils::searchVar(descriptor, ctx);
       if (!var) {

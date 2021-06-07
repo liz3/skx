@@ -44,6 +44,13 @@ on load:
   else:
     send "it defers" to console
 
+  loop 12 times:
+    send %loop-value% to console
+    if %loop-value% is 8:
+      loop 6 times:
+        send "breaking" to console
+      break
+  send "done" to console
   # send {_home} to console
   # loop 5 times:
   #   set {_path} to "/home/liz3/sktestdir/out-" + %loop-value%

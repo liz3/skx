@@ -1,0 +1,27 @@
+function fib():
+  set {_n} to 15
+  set {_t1} to 0
+  set {_t2} to 1
+  set {_next} to {_t1} + {_t2}
+  send {_t1} to console
+  send {_t2} to console
+  loop {_n} times:
+    send {_next} to console
+    set {_t1} to {_t2}
+    set {_t2} to {_next}
+    set {_next} to {_t1} + {_t2}
+function fac():
+  set {_i} to 0
+  set {_n} to 10
+#  set {_n} to {_n} - 15
+  send {_n} to console
+  set {_fact} to 1
+  if {_n} is smaller then 0:
+    send "doesnt work" to console
+  else:
+    loop {_n} times:
+      set {_in} to %loop-value% + 1
+      set {_fact} to {_fact} * {_in}
+    send {_fact} to console
+on load:
+  fac()

@@ -15,8 +15,9 @@
 bool skx::Comparison::execute(skx::Context *context) {
   if (type == ASSIGN || type == SUBTRACT || type == ADD || type == MULTIPLY || type == DIVIDE)
     return false;
-  if (source->type == STRING && type != EQUAL && type != NOT_EQUAL)
+  if (source->type == STRING && target->type == STRING && type != EQUAL && type != NOT_EQUAL) {
     return false;
+  }
   VariableValue *sourceValue = nullptr;
   VariableValue *targetValue = nullptr;
   OperatorPart* sourcePrt = nullptr;

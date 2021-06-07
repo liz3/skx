@@ -45,6 +45,7 @@ skx::OperatorPart *skx::Function::run(std::vector<OperatorPart *> execVars, Cont
 
 skx::ReturnOpWithCtx *skx::Function::walk(skx::CompileItem *item) {
   if(!isLoop && item->isLoop) isLoop = true;
+  skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
   if (item->returner != nullptr) {
     auto *r = new ReturnOpWithCtx();
     r->descriptor = item->returner;
@@ -75,7 +76,12 @@ skx::ReturnOpWithCtx *skx::Function::walk(skx::CompileItem *item) {
     for (uint32_t i = 0; i < item->comparisons.size(); ++i) {
       auto current = item->comparisons[i];
       bool failed = !current->execute(item->ctx);
-      if (failed) return nullptr;
+      if (failed) {
+        lastFailed = true;
+        lastFailLevel = item->level;
+        skx::Utils::updateVarState(item->ctx, SPOILED);
+        return nullptr;
+      }
     }
 
     for (auto child : item->children) {
