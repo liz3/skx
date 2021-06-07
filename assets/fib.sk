@@ -1,5 +1,5 @@
 function fib():
-  set {_n} to 15
+  set {_n} to 8
   set {_t1} to 0
   set {_t2} to 1
   set {_next} to {_t1} + {_t2}
@@ -23,5 +23,8 @@ function fac():
       set {_in} to %loop-value% + 1
       set {_fact} to {_fact} * {_in}
     send {_fact} to console
+  fac()
 on load:
   fac()
+  send "" to console
+  fib()

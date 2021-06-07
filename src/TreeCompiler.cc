@@ -54,11 +54,11 @@ skx::CompileItem *skx::TreeCompiler::compileTreeFunction(skx::PreParserItem *ite
     param->type = UNDEFINED;
     functionCtx->vars[param->name] = param;
   }
+  ctx->functions[func->name] = func;
   root->root = root;
   root->ctx = functionCtx;
   compiler.advance(root, item, true);
   func->functionItem = root;
-  ctx->functions[func->name] = func;
   return root;
 }
 
