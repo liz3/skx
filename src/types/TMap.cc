@@ -7,17 +7,17 @@
 #include <utility>
 
 std::string skx::TMap::getStringValue() {
-    return "";
+  return "";
 }
 
 skx::TMap::TMap() {
-    type = MAP;
+  type = MAP;
 }
 
 skx::TMap::TMap(std::vector<MapEntry> value) : value(std::move(value)) {
-    type = MAP;
-    for(auto& val : value)
-        keyMap[val.key] = val.value;
+  type = MAP;
+  for(auto& val : value)
+    keyMap[val.key] = val.value;
 
 }
 
@@ -26,5 +26,5 @@ skx::TMap::~TMap() {
 }
 
 skx::VariableValue *skx::TMap::copyValue() {
-    return new TMap(value);
+  return new TMap(value);
 }

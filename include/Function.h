@@ -14,27 +14,27 @@
 #include <string>
 
 namespace skx {
-    struct ReturnOpWithCtx {
-        Context* ctx;
-        ReturnOperation* descriptor;
-    };
-    class Function {
-    private:
-        ReturnOpWithCtx* walk(CompileItem* item);
-        bool lastFailed = false;
-        uint16_t lastFailLevel = 0;
-        bool isLoop = false;
-        bool stopLoop = false;
-    public:
-        virtual ~Function();
+struct ReturnOpWithCtx {
+  Context* ctx;
+  ReturnOperation* descriptor;
+};
+class Function {
+ private:
+  ReturnOpWithCtx* walk(CompileItem* item);
+  bool lastFailed = false;
+  uint16_t lastFailLevel = 0;
+  bool isLoop = false;
+  bool stopLoop = false;
+ public:
+  virtual ~Function();
 
-        std::string name;
-        std::vector<VariableDescriptor*> targetParams;
-        OperatorPart *run(std::vector<OperatorPart *> execVars, Context *callingContext);
-        CompileItem* functionItem = nullptr;
-        VarType returnType = UNDEFINED;
+  std::string name;
+  std::vector<VariableDescriptor*> targetParams;
+  OperatorPart *run(std::vector<OperatorPart *> execVars, Context *callingContext);
+  CompileItem* functionItem = nullptr;
+  VarType returnType = UNDEFINED;
 
-    };
+};
 }
 
 #endif //SKX_FUNCTION_H

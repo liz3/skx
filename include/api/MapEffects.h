@@ -8,14 +8,14 @@
 #include "../Instruction.h"
 
 namespace skx {
-    class MapEffects : public Execution {
-    public:
-        enum MapEffectType {
-            CONTAINS
-        };
-        MapEffectType execType;
-        OperatorPart * execute(Context *target) override;
-    };
+class MapEffects : public Execution {
+ public:
+  enum MapEffectType {
+    CONTAINS
+  };
+  MapEffectType execType;
+  OperatorPart * execute(Context *target) override;
+};
 }
 
 

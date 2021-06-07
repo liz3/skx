@@ -14,27 +14,27 @@
 
 
 namespace skx {
-    #ifdef _WIN32
-    class  __declspec(dllexport) Script {
-    #else
-    class Script {
-    #endif
+#ifdef _WIN32
+class  __declspec(dllexport) Script {
+#else
+class Script {
+#endif
 
-    public:
-        virtual ~Script();
-        //base context holding functions & options vars and so on
-        Context* baseContext;
-        //self explaining
-        PreParseResult* preParseResult;
+ public:
+  virtual ~Script();
+  //base context holding functions & options vars and so on
+  Context* baseContext;
+  //self explaining
+  PreParseResult* preParseResult;
 
-        //actual compiled trees
-        std::map<TriggerSignal*, CompileItem*> signals;
-        std::map<TriggerCommand*, CompileItem*> mc_commands;
-        std::map<TriggerEvent*, CompileItem*> mc_events;
+  //actual compiled trees
+  std::map<TriggerSignal*, CompileItem*> signals;
+  std::map<TriggerCommand*, CompileItem*> mc_commands;
+  std::map<TriggerEvent*, CompileItem*> mc_events;
 
-        static Script* parse(const char* input);
-        Script(Context *baseContext);
-    };
+  static Script* parse(const char* input);
+  Script(Context *baseContext);
+};
 }
 
 

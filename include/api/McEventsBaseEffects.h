@@ -8,28 +8,28 @@
 #include "../Instruction.h"
 
 namespace skx {
-    class CancelEvent : public Execution {
-    public:
-        CancelEvent() : Execution() {
-            name = "mc::event::cancel";
-        }
+class CancelEvent : public Execution {
+ public:
+  CancelEvent() : Execution() {
+    name = "mc::event::cancel";
+  }
 
-        virtual ~CancelEvent();
+  virtual ~CancelEvent();
 
-        TriggerEvent* ref;
-        OperatorPart * execute(Context *target) override;
-    };
-    class UpdateChatEventMessage : public Execution {
-    public:
-        UpdateChatEventMessage() : Execution() {
-            name = "mc::event::UpdateChatEventMessage";
-        }
+  TriggerEvent* ref;
+  OperatorPart * execute(Context *target) override;
+};
+class UpdateChatEventMessage : public Execution {
+ public:
+  UpdateChatEventMessage() : Execution() {
+    name = "mc::event::UpdateChatEventMessage";
+  }
 
-        virtual ~UpdateChatEventMessage();
+  virtual ~UpdateChatEventMessage();
 
-        TriggerEvent* ref;
-        OperatorPart * execute(Context *target) override;
-    };
+  TriggerEvent* ref;
+  OperatorPart * execute(Context *target) override;
+};
 }
 
 

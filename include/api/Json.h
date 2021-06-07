@@ -10,41 +10,41 @@
 #include <nlohmann/json.hpp>
 
 namespace skx {
-    class TJson : public VariableValue {
-    public:
-        TJson(const nlohmann::json &value);
-        TJson();
+class TJson : public VariableValue {
+ public:
+  TJson(const nlohmann::json &value);
+  TJson();
 
-        virtual ~TJson();
+  virtual ~TJson();
 
-        nlohmann::json value;
-        VariableValue * copyValue() override;
-        std::string getStringValue() override;
-    };
-    class JsonInterface : public Execution {
-    public:
-        enum ActionType {
-            PARSE,
-            STRINGIFY,
-            PUT,
-            REMOVE,
-            CREATE_OBJECT,
-            CREATE_ARRAY,
-            EXTRACT,
-            HAS
-        };
+  nlohmann::json value;
+  VariableValue * copyValue() override;
+  std::string getStringValue() override;
+};
+class JsonInterface : public Execution {
+ public:
+  enum ActionType {
+    PARSE,
+    STRINGIFY,
+    PUT,
+    REMOVE,
+    CREATE_OBJECT,
+    CREATE_ARRAY,
+    EXTRACT,
+    HAS
+  };
 
-        JsonInterface(): Execution() {
-            name = "data::json";
-        }
-        ActionType type;
-        OperatorPart * execute(Context *target) override;
-    };
-    class Json {
-    public:
-        static void compileRequest(std::string& content, Context *pContext, CompileItem *pItem);
-        static OperatorPart* compileCondition(std::string& content, Context *pContext, CompileItem *pItem);
-    };
+  JsonInterface(): Execution() {
+    name = "data::json";
+  }
+  ActionType type;
+  OperatorPart * execute(Context *target) override;
+};
+class Json {
+ public:
+  static void compileRequest(std::string& content, Context *pContext, CompileItem *pItem);
+  static OperatorPart* compileCondition(std::string& content, Context *pContext, CompileItem *pItem);
+};
 }
 
 

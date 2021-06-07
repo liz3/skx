@@ -9,22 +9,22 @@
 #include <vector>
 
 namespace skx {
-    class TArray : public VariableValue {
-    public:
-        TArray();
+class TArray : public VariableValue {
+ public:
+  TArray();
 
-        std::vector<VariableValue*> entries;
-        bool assign(VariableValue *source) override;
-        bool add(VariableValue *source) override;
+  std::vector<VariableValue*> entries;
+  bool assign(VariableValue *source) override;
+  bool add(VariableValue *source) override;
 
-        bool isEqual(VariableValue *other) override;
-        bool isSmaller(VariableValue *other) override;
-        bool isBigger(VariableValue *other) override;
-        bool isSmallerOrEquals(VariableValue *other) override;
-        bool isBiggerOrEquals(VariableValue *other) override;
+  bool isEqual(VariableValue *other) override;
+  bool isSmaller(VariableValue *other) override;
+  bool isBigger(VariableValue *other) override;
+  bool isSmallerOrEquals(VariableValue *other) override;
+  bool isBiggerOrEquals(VariableValue *other) override;
 
-        VariableValue * copyValue() override;
-    };
+  VariableValue * copyValue() override;
+};
 }
 
 

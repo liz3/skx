@@ -10,10 +10,10 @@
 #include "../Context.h"
 
 namespace skx {
-    class EventPreconditions {
-    public:
-        static void compilePreConditions(std::string content, TriggerEvent* target, Context* ctx);
-    };
+class EventPreconditions {
+ public:
+  static void compilePreConditions(std::string content, TriggerEvent* target, Context* ctx);
+};
 }
 
 

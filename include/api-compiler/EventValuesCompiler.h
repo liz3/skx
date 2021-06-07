@@ -10,11 +10,11 @@
 #include "../TreeCompiler.h"
 
 namespace skx {
-    class EventValuesCompiler {
-    public:
-        static OperatorPart* compile(std::string &content, skx::Context *ctx, skx::CompileItem *target,
-                            bool isElseIf);
-    };
+class EventValuesCompiler {
+ public:
+  static OperatorPart* compile(std::string &content, skx::Context *ctx, skx::CompileItem *target,
+                               bool isElseIf);
+};
 }
 
 

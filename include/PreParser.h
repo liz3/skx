@@ -9,34 +9,34 @@
 #include <vector>
 
 namespace skx {
-    class PreParserItem {
-    public:
-        virtual ~PreParserItem();
+class PreParserItem {
+ public:
+  virtual ~PreParserItem();
 
-        std::string itemRaw;
-        PreParserItem* parent;
-        uint32_t pos;
-        uint16_t level;
-        std::string actualContent;
-        std::vector<PreParserItem*> children;
-        bool isComment = false;
-    };
-    class PreParseResult {
-    public:
-        virtual ~PreParseResult();
+  std::string itemRaw;
+  PreParserItem* parent;
+  uint32_t pos;
+  uint16_t level;
+  std::string actualContent;
+  std::vector<PreParserItem*> children;
+  bool isComment = false;
+};
+class PreParseResult {
+ public:
+  virtual ~PreParseResult();
 
-        std::vector<PreParserItem*> rootItems;
-    };
-    struct PreParserState {
-        uint32_t pos;
-    };
-    class PreParser {
-    private:
-        static void advance(PreParserItem* baseItem, PreParserState* state, std::vector<std::string> items);
-        static uint16_t countTabs(std::string item);
-    public:
-        static PreParseResult* preParse(std::vector<std::string> base);
-    };
+  std::vector<PreParserItem*> rootItems;
+};
+struct PreParserState {
+  uint32_t pos;
+};
+class PreParser {
+ private:
+  static void advance(PreParserItem* baseItem, PreParserState* state, std::vector<std::string> items);
+  static uint16_t countTabs(std::string item);
+ public:
+  static PreParseResult* preParse(std::vector<std::string> base);
+};
 }
 
 

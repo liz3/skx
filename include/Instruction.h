@@ -12,127 +12,127 @@
 #include "Variable.h"
 
 namespace skx {
-    enum InstructionOperator {
-        EQUAL,
-        NOT_EQUAL,
-        SMALLER,
-        BIGGER,
-        SMALLER_OR_EQUAL,
-        BIGGER_OR_EQUAL,
-        //Only for assigning
-        ASSIGN,
-        SUBTRACT,
-        ADD,
-        MULTIPLY,
-        DIVIDE,
-        INVERT,
-    };
-    enum OperatorType {
-        LITERAL,
-        VARIABLE,
-        EXECUTION,
-    };
-    enum TriggerType {
-        MC_EVENT,
-        MC_COMMAND,
-        SIGNAL
+enum InstructionOperator {
+  EQUAL,
+  NOT_EQUAL,
+  SMALLER,
+  BIGGER,
+  SMALLER_OR_EQUAL,
+  BIGGER_OR_EQUAL,
+  //Only for assigning
+  ASSIGN,
+  SUBTRACT,
+  ADD,
+  MULTIPLY,
+  DIVIDE,
+  INVERT,
+};
+enum OperatorType {
+  LITERAL,
+  VARIABLE,
+  EXECUTION,
+};
+enum TriggerType {
+  MC_EVENT,
+  MC_COMMAND,
+  SIGNAL
 
-    };
-    struct OperatorPart {
-        OperatorType operatorType;
-        VarType type;
-        void* value = nullptr;
-        bool isDouble = false;
-        bool free = false;
-        bool isList = false;
-        Variable* indexDescriptor = nullptr;
-        virtual ~OperatorPart();
+};
+struct OperatorPart {
+  OperatorType operatorType;
+  VarType type;
+  void* value = nullptr;
+  bool isDouble = false;
+  bool free = false;
+  bool isList = false;
+  Variable* indexDescriptor = nullptr;
+  virtual ~OperatorPart();
 
-        OperatorPart(OperatorType operatorType, VarType type, Variable *value, Variable* indexDescriptor, bool isDouble, bool free);
-        OperatorPart(OperatorType operatorType, VarType type, void *value, bool isDouble, bool free = false);
-    };
-    class Comparison {
-    public:
-        virtual ~Comparison();
+  OperatorPart(OperatorType operatorType, VarType type, Variable *value, Variable* indexDescriptor, bool isDouble, bool free);
+  OperatorPart(OperatorType operatorType, VarType type, void *value, bool isDouble, bool free = false);
+};
+class Comparison {
+ public:
+  virtual ~Comparison();
 
-       OperatorPart* source;
-       OperatorPart* target;
-       InstructionOperator type;
-       bool execute(Context* context);
-       bool inverted = false;
+  OperatorPart* source;
+  OperatorPart* target;
+  InstructionOperator type;
+  bool execute(Context* context);
+  bool inverted = false;
 
-    };
-    class ReturnOperation {
-    public:
-        OperatorPart* targetReturnItem = nullptr;
-    };
-    class Assigment {
-    public:
-        virtual ~Assigment();
+};
+class ReturnOperation {
+ public:
+  OperatorPart* targetReturnItem = nullptr;
+};
+class Assigment {
+ public:
+  virtual ~Assigment();
 
-        OperatorPart* source;
-        OperatorPart* target;
-        InstructionOperator type;
-        bool execute(Context* context);
+  OperatorPart* source;
+  OperatorPart* target;
+  InstructionOperator type;
+  bool execute(Context* context);
 
-    };
-    class Execution {
-    public:
-        virtual ~Execution();
+};
+class Execution {
+ public:
+  virtual ~Execution();
 
-        std::string name;
-        std::vector<OperatorPart*> dependencies;
-        virtual OperatorPart* execute(Context* target);
-    };
-    class Trigger {
-    public:
-        virtual ~Trigger();
+  std::string name;
+  std::vector<OperatorPart*> dependencies;
+  virtual OperatorPart* execute(Context* target);
+};
+class Trigger {
+ public:
+  virtual ~Trigger();
 
-        TriggerType type;
-    };
+  TriggerType type;
+};
 
-    class TriggerCommand : public Trigger {
-    public:
-        TriggerCommand() : Trigger() {
-          type = MC_COMMAND;
-        }
-        std::string name;
-        std::vector<Variable*> args;
-        // more to come
-    };
-    class TriggerEvent : public Trigger {
-    public:
-        TriggerEvent() : Trigger() {
-            type = MC_EVENT;
-        }
+class TriggerCommand : public Trigger {
+ public:
+  TriggerCommand() : Trigger() {
+    type = MC_COMMAND;
+  }
+  std::string name;
+  std::vector<Variable*> args;
+  // more to come
+};
+class TriggerEvent : public Trigger {
+ public:
+  TriggerEvent() : Trigger() {
+    type = MC_EVENT;
+  }
 
-        TriggerEvent(const std::string &eventClass) : eventClass(eventClass) {
-            type = MC_EVENT;
-        }
+  TriggerEvent(const std::string &eventClass) : eventClass(eventClass) {
+    type = MC_EVENT;
+  }
 
-        std::string eventClass;
-        std::vector<Comparison*> preDefinedConditions;
+  std::string eventClass;
+  std::vector<Comparison*> preDefinedConditions;
 #ifdef SKX_BUILD_API
-        jobject currEventRef = nullptr;
-        JNIEnv* env = nullptr;
+  jobject currEventRef = nullptr;
+  JNIEnv* env = nullptr;
 #endif
 
-    };
-    class TriggerSignal : public Trigger {
-    public:
-        TriggerSignal() : Trigger() {
-            type = SIGNAL;
-        }
+};
+class TriggerSignal : public Trigger {
+ public:
+  TriggerSignal() : Trigger() {
+    type = SIGNAL;
+  }
 
-        virtual ~TriggerSignal() {
+  virtual ~TriggerSignal() {
 
-        }
-        enum TriggerTypeSignal {
-            LOAD,
-            UN_LOAD
-        };
-        TriggerTypeSignal signalType;
-    };
+  }
+  enum TriggerTypeSignal {
+    LOAD,
+    UN_LOAD
+  };
+  TriggerTypeSignal signalType;
+};
 
 }
 

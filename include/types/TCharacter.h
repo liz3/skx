@@ -8,23 +8,23 @@
 #include "../Variable.h"
 
 namespace skx {
-    class TCharacter : public VariableValue {
-    public:
-        char value;
+class TCharacter : public VariableValue {
+ public:
+  char value;
 
-        TCharacter();
+  TCharacter();
 
-        TCharacter(char value);
+  TCharacter(char value);
 
-        bool assign(VariableValue *source) override;
-        bool isEqual(VariableValue *other) override;
-        bool isBigger(VariableValue *other) override;
-        bool isSmaller(VariableValue *other) override;
-        bool isBiggerOrEquals(VariableValue *other) override;
-        bool isSmallerOrEquals(VariableValue *other) override;
-        std::string getStringValue() override;
-        VariableValue * copyValue() override;
-    };
+  bool assign(VariableValue *source) override;
+  bool isEqual(VariableValue *other) override;
+  bool isBigger(VariableValue *other) override;
+  bool isSmaller(VariableValue *other) override;
+  bool isBiggerOrEquals(VariableValue *other) override;
+  bool isSmallerOrEquals(VariableValue *other) override;
+  std::string getStringValue() override;
+  VariableValue * copyValue() override;
+};
 }
 
 

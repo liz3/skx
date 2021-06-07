@@ -11,21 +11,21 @@
 
 
 namespace skx {
-    struct MapEntry {
-        std::string key;
-        VariableValue* value;
-    };
-    class TMap : public VariableValue {
-    public:
-        std::vector<MapEntry> value;
-        std::map<std::string, VariableValue*> keyMap;
-        TMap();
-        TMap(std::vector<MapEntry> value);
+struct MapEntry {
+  std::string key;
+  VariableValue* value;
+};
+class TMap : public VariableValue {
+ public:
+  std::vector<MapEntry> value;
+  std::map<std::string, VariableValue*> keyMap;
+  TMap();
+  TMap(std::vector<MapEntry> value);
 
-        virtual ~TMap();
-        std::string getStringValue() override;
-        VariableValue * copyValue() override;
-    };
+  virtual ~TMap();
+  std::string getStringValue() override;
+  VariableValue * copyValue() override;
+};
 }
 
 

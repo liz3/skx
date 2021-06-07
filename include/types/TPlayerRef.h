@@ -10,20 +10,20 @@
 #include "../api/RuntimeMcEventValues.h"
 
 namespace skx {
-    class TPlayerRef : public VariableValue {
-    public:
-        TPlayerRef();
-        TriggerEvent* eventRef = nullptr;
-        TriggerCommand* command = nullptr;
+class TPlayerRef : public VariableValue {
+ public:
+  TPlayerRef();
+  TriggerEvent* eventRef = nullptr;
+  TriggerCommand* command = nullptr;
 
-        TPlayerRef(TriggerEvent *eventRef);
+  TPlayerRef(TriggerEvent *eventRef);
 
-        TPlayerRef(TriggerCommand *command);
+  TPlayerRef(TriggerCommand *command);
 
-        std::string getStringValue() override;
+  std::string getStringValue() override;
 
-        PlayerName *playerName = nullptr;
-    };
+  PlayerName *playerName = nullptr;
+};
 }
 
 

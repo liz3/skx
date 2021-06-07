@@ -10,12 +10,12 @@
 namespace skx {
 const std::regex functionCallPattern("[^\\>\\[( {]+\\(.*\\)(?!.*\")");
 struct RegexResult {
-    uint32_t pos;
-    std::string content;
+  uint32_t pos;
+  std::string content;
 };
 class RegexUtils {
-public:
-    static std::vector<RegexResult> getMatches(const std::regex& regex, const std::string& content);
+ public:
+  static std::vector<RegexResult> getMatches(const std::regex& regex, const std::string& content);
 };
 
 }

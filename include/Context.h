@@ -15,21 +15,21 @@
 namespace skx {
 class Variable;
 class Function;
-    class Context {
-    public:
-        virtual ~Context();
+class Context {
+ public:
+  virtual ~Context();
 
-        uint16_t level;
-        uint32_t steps;
-        uint32_t stepPointer;
-        Context* parent = nullptr;
-        Context* global = nullptr; // ROOT context, has global vars and shit like that that
-        std::map<std::string, skx::Variable*> vars;
-        std::map<std::string, skx::Function*> functions;
-        std::vector<Context*> childContexts;
+  uint16_t level;
+  uint32_t steps;
+  uint32_t stepPointer;
+  Context* parent = nullptr;
+  Context* global = nullptr; // ROOT context, has global vars and shit like that that
+  std::map<std::string, skx::Variable*> vars;
+  std::map<std::string, skx::Function*> functions;
+  std::vector<Context*> childContexts;
 
-        Context(uint16_t level, uint32_t steps, uint32_t stepPointer, Context *parent);
-    };
+  Context(uint16_t level, uint32_t steps, uint32_t stepPointer, Context *parent);
+};
 }
 
 

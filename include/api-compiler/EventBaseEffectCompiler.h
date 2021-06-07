@@ -11,10 +11,10 @@
 #include "../TreeCompiler.h"
 
 namespace skx {
-    class EventBaseEffectCompiler {
-    public:
-        static void compile(std::string &content, skx::Context *ctx, skx::CompileItem *target);
-    };
+class EventBaseEffectCompiler {
+ public:
+  static void compile(std::string &content, skx::Context *ctx, skx::CompileItem *target);
+};
 }
 
 

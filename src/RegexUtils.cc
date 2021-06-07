@@ -5,17 +5,17 @@
 #include "../include/RegexUtils.h"
 
 std::vector<skx::RegexResult> skx::RegexUtils::getMatches(const std::regex &regex, const std::string &content) {
-    std::vector<RegexResult> matches;
+  std::vector<RegexResult> matches;
 
-    for (std::sregex_iterator i = std::sregex_iterator(content.begin(), content.end(), regex);
-         i != std::sregex_iterator();
-         ++i) {
-        std::smatch m = *i;
-        RegexResult entry{
-            static_cast<uint32_t>(m.position()),
-             m.str()
-        };
-        matches.push_back(entry);
-    }
-    return matches;
+  for (std::sregex_iterator i = std::sregex_iterator(content.begin(), content.end(), regex);
+       i != std::sregex_iterator();
+       ++i) {
+    std::smatch m = *i;
+    RegexResult entry{
+      static_cast<uint32_t>(m.position()),
+      m.str()
+    };
+    matches.push_back(entry);
+  }
+  return matches;
 }

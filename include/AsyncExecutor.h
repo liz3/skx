@@ -14,27 +14,27 @@
 namespace skx {
 using CallingTask = std::function<void()>;
 
-    class AsyncTask {
-    public:
-       CallingTask task;
-    };
-    class AsyncExecutor {
-    public:
-        void interrupt();
-        AsyncExecutor();
-        void queueTask(AsyncTask* task);
-        void queueFunc(const CallingTask& task);
-        bool isRunning() const;
+class AsyncTask {
+ public:
+  CallingTask task;
+};
+class AsyncExecutor {
+ public:
+  void interrupt();
+  AsyncExecutor();
+  void queueTask(AsyncTask* task);
+  void queueFunc(const CallingTask& task);
+  bool isRunning() const;
 
-        virtual ~AsyncExecutor();
+  virtual ~AsyncExecutor();
 
-    private:
-        bool stopped = false;
-        bool running = false;
-        std::deque<AsyncTask*> tasks;
-        void runLoop();
-        std::thread* thread = nullptr;
-    };
+ private:
+  bool stopped = false;
+  bool running = false;
+  std::deque<AsyncTask*> tasks;
+  void runLoop();
+  std::thread* thread = nullptr;
+};
 }
 
 

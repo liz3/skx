@@ -8,12 +8,12 @@
 #include <jni.h>
 
 namespace skx {
-    class JniUtils {
-    public:
-        static jobject getPlayerFromEvent(JNIEnv* env, jobject ref) {
-            jfieldID playerId = env->GetFieldID(env->FindClass("org/bukkit/event/player/PlayerEvent"),"player", "Lorg/bukkit/entity/Player;");
-            return env->GetObjectField(ref, playerId);
-        }
-    };
+class JniUtils {
+ public:
+  static jobject getPlayerFromEvent(JNIEnv* env, jobject ref) {
+    jfieldID playerId = env->GetFieldID(env->FindClass("org/bukkit/event/player/PlayerEvent"),"player", "Lorg/bukkit/entity/Player;");
+    return env->GetObjectField(ref, playerId);
+  }
+};
 }
 #endif //SKX_JNUUTILS_H
