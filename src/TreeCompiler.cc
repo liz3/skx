@@ -306,7 +306,11 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
       assigment = new Assigment();
       auto *last = target->assignments[target->assignments.size() - 1];
       Variable *lastVar = static_cast<Variable *>(last->target->value);
-      assigment->target = new OperatorPart(VARIABLE, lastVar->type, lastVar, lastVar->isDouble);
+      if(last->target->isList)
+        //                                                                                                                          Todo, need to derive free from parent?
+        assigment->target = new OperatorPart(VARIABLE, lastVar->type, lastVar, last->target->indexDescriptor, last->target->isDouble, false);
+      else
+        assigment->target = new OperatorPart(VARIABLE, lastVar->type, lastVar, lastVar->isDouble);
       step = 2;
       assigment->type = getOperator(current);
       pos += current.length() + 1;

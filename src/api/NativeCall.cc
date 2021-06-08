@@ -31,7 +31,7 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
       TMap* map = static_cast<TMap*>(v->getValue());
       val = map->value.size();
     }
-   return new OperatorPart(LITERAL, NUMBER, new TNumber(val), false);
+    return new OperatorPart(LITERAL, NUMBER, new TNumber(val), false);
   }
   case NativeCallInterface::STRLEN: {
     auto* part = dependencies[0];

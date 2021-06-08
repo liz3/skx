@@ -197,17 +197,35 @@ bool skx::Assigment::execute(skx::Context *context) {
     TMap* map = dynamic_cast<TMap*>(s->getValue());
     std::string name = target->indexDescriptor->getValue()->getStringValue();
     auto* newVal = sourceValue->copyValue();
-    if(map->keyMap.find(name) != map->keyMap.end()) {
-      for (uint32_t i = 0; i < map->value.size(); ++i) {
-        if(map->value[i].value == map->keyMap[name]) {
-          map->value.erase(map->value.begin() + i);
-          break;
+    if(type == ASSIGN) {
+      if(map->keyMap.find(name) != map->keyMap.end()) {
+        for (uint32_t i = 0; i < map->value.size(); ++i) {
+          if(map->value[i].value == map->keyMap[name]) {
+            map->value.erase(map->value.begin() + i);
+            break;
+          }
         }
+        map->keyMap.erase(name);
       }
-      map->keyMap.erase(name);
+      map->keyMap[name] = newVal;
+      map->value.push_back(MapEntry{name, newVal});
+    } else {
+      if(map->keyMap.find(name) == map->keyMap.end())
+        return false;
+      auto * srcMapVal = map->keyMap[name];
+      switch (type) {
+      case ADD:
+        return srcMapVal->add(sourceValue);
+      case SUBTRACT:
+        return srcMapVal->subtract(sourceValue);
+      case MULTIPLY:
+        return  srcMapVal->multiply(sourceValue);
+      case DIVIDE:
+        return srcMapVal->divide(sourceValue);
+      default:
+        break;
+      }
     }
-    map->keyMap[name] = newVal;
-    map->value.push_back(MapEntry{name, newVal});
     return true;
   }
 
