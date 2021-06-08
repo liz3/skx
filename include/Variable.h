@@ -52,6 +52,7 @@ class VariableValue {
 
   bool isReadOnly = false;
   VarType type;
+  std::string customTypeName = "";
   Variable* varRef = nullptr;
   //comparison
   virtual bool isEqual(VariableValue* other);

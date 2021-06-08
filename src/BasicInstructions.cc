@@ -67,6 +67,8 @@ OperatorPart *Loop::execute(Context *target) {
       iteratorValue->type = v->type;
       if(iteratorValue->getValue() != v)
         iteratorValue->setValue(v);
+      if(v->type == POINTER)
+        iteratorValue->customTypeName = v->customTypeName;
       exec->execute(rootItem);
       if (exec->stopLoop) break;
     }

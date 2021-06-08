@@ -22,8 +22,8 @@ function json_test(index):
   put json value {_jsonList} as "a_list" in {_obj}
   put json value true as "bool_val" in {_obj}
   put json value {_index} as "index" in {_obj}
-  stringify json {_obj} to {_asStr}
-  return {_asStr}
+#  stringify json {_obj} to {_asStr}
+  return {_obj}
 
 function writeFileSafe(content, path):
   set {_res} to nativecall writefile {_path} {_content}
@@ -34,33 +34,10 @@ function splitString(str, delimiter):
   return {_result}
 
 on load:
-  set {_home} to nativecall getenv "HOME"
-  set {_delimiter} to "/"
-  set {_result} to splitString({_home}, {_delimiter})
-  loop {_result::*}:
-    send %loop-value% to console
-  if 2 is greater then 1 && 5 is greater then 3:
-    send "its same" to console
-  else:
-    send "it defers" to console
-
-  loop 12 times:
-    send %loop-value% to console
-    if %loop-value% is 8:
-      loop 6 times:
-        send "breaking" to console
-      break
-  send "done" to console
-  # send {_home} to console
-  # loop 5 times:
-  #   set {_path} to "/home/liz3/sktestdir/out-" + %loop-value%
-  #   set {_content} to json_test(%loop-value%)
-  #   set {_write_result} to writeFileSafe({_content}, {_path})
-  #   send {_write_result} to console
-  # set {_list} to 0
-  # loop 50000 times:
-  #   set {_text} to "Number " + %loop-value%
-  #   set {_list::%loop-value%} to {_text}
-  # send "looping" to console
-  # loop {_list::*}:
-  #   send %loop-value% to console
+  set {_map} to 0
+  loop 15 times:
+    set {_res} to json_test(%loop-value%)
+    set {_map::%loop-value%} to {_res}
+  loop {_map::*}:
+    stringify json %loop-value% to {_a}
+    send {_a} to console

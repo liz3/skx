@@ -187,6 +187,7 @@ bool skx::Assigment::execute(skx::Context *context) {
       return false;
     }
     sourceValue = sourceVar->getValue();
+    source->type = sourceValue->type;
   }
   if(target->isList) {
     Variable* s = static_cast<Variable*>(target->value);
@@ -197,6 +198,10 @@ bool skx::Assigment::execute(skx::Context *context) {
     TMap* map = dynamic_cast<TMap*>(s->getValue());
     std::string name = target->indexDescriptor->getValue()->getStringValue();
     auto* newVal = sourceValue->copyValue();
+    if(sourceValue->varRef != nullptr && sourceValue->type == POINTER) {
+      newVal->customTypeName = sourceValue->varRef->customTypeName;
+    }
+
     if(type == ASSIGN) {
       if(map->keyMap.find(name) != map->keyMap.end()) {
         for (uint32_t i = 0; i < map->value.size(); ++i) {
