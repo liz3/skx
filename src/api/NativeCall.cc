@@ -15,11 +15,24 @@ skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::str
   if(entry == "writefile") return NativeCallInterface::WRITEFILE;
   if(entry == "getenv") return NativeCallInterface::GETENV;
   if(entry == "strsplit") return NativeCallInterface::STRING_SPLIT;
+  if(entry == "maplen" || entry == "mapsize") return NativeCallInterface::MAP_SIZE;
   return NativeCallInterface::UNKNOWN;
 }
 
 skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
   switch(type) {
+  case NativeCallInterface::MAP_SIZE: {
+    auto* part = dependencies[0];
+    if(part->operatorType != VARIABLE)
+      return nullptr;
+    Variable* v = static_cast<Variable*>(part->value);
+    int32_t val = 0;
+    if(v->type == MAP) {
+      TMap* map = static_cast<TMap*>(v->getValue());
+      val = map->value.size();
+    }
+   return new OperatorPart(LITERAL, NUMBER, new TNumber(val), false);
+  }
   case NativeCallInterface::STRLEN: {
     auto* part = dependencies[0];
     TString* value = nullptr;

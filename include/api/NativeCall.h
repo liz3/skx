@@ -16,6 +16,7 @@ class NativeCallInterface : public Execution {
     WRITEFILE,
     STRLEN,
     STRING_SPLIT,
+    MAP_SIZE,
     GETENV
   };
   NativeCallInterface(): Execution() {

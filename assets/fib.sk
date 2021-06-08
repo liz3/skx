@@ -10,7 +10,8 @@ function fib():
     set {_t1} to {_t2}
     set {_t2} to {_next}
     set {_next} to {_t1} + {_t2}
-function fac():
+function fac(count):
+  send "current recurr" and {_count} to console
   set {_i} to 0
   set {_n} to 10
 #  set {_n} to {_n} - 15
@@ -23,8 +24,13 @@ function fac():
       set {_in} to %loop-value% + 1
       set {_fact} to {_fact} * {_in}
     send {_fact} to console
-  fac()
+  set {_next} to {_count} + 1
+  if {_next} is smaller then 5000:
+    fac({_next})
+  else:
+    send "vlurp" to console
 on load:
-  fac()
+  set {_start} to 0
+  fac({_start})
   send "" to console
   fib()
