@@ -21,10 +21,14 @@ class Print : public Execution {
 };
 class StringTemplate : public Execution {
   public:
+  struct TemplateEntry {
+    std::string val;
+    uint8_t type;
+  };
     StringTemplate(): Execution() {
       name = "std::stringtemplate";
     }
-  std::vector<std::string> baseParts;
+  std::vector<TemplateEntry> baseParts;
   OperatorPart* execute(Context *target) override;
 };
 class FunctionInvoker : public Execution { //Yep, this is a execution

@@ -53,11 +53,14 @@ OperatorPart *Print::execute(Context *target) {
 OperatorPart *StringTemplate::execute(Context* target) {
 
   std::string rendered = "";
+  uint16_t depsCount = 0;
   for(size_t i = 0; i < baseParts.size(); i++)  {
-    std::string current = baseParts[i];
-    rendered += current;
-    if(i < dependencies.size()) {
-      auto *var = static_cast<Variable *>(dependencies[i]->value);
+    auto current = baseParts[i];
+    if(current.type == 0) {
+      rendered += current.val;
+    }else {
+      auto *var = static_cast<Variable *>(dependencies[depsCount]->value);
+      depsCount++;
       if(!var) continue;
       auto* value = var->getValue();
       if(!value) continue;

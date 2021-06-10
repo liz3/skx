@@ -1,4 +1,5 @@
 on load:
-  loop 5 times;
-    send "Number is %loop-value% kekw: " to console
-#    send {_x} to console
+  set {_text} to "Text"
+  loop 10 times:
+    set {_text} to "%{_text}%[%loop-value%]\%."
+  send {_text} to console

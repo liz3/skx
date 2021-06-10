@@ -8,8 +8,7 @@ on load:
     set {_list::%loop-value%} to {_loop-value}
   send "looping" to console
   loop {_list::*}:
-    if %loop-value% is bigger then 9999:
+    if {_loop-value} is bigger then 9999:
       send {_loop-value} and "its over 9999" to console
-      break
-  #  else:
-  #    send %loop-value% and "hello world" to console
+    else:
+      send {_loop-value} and "hello world" to console
