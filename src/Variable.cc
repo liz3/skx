@@ -39,7 +39,7 @@ void skx::Variable::createVarFromOption(std::string item, skx::Context *targetCo
   targetContext->vars[name] = variable;
 }
 
-skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
+skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in, bool isFromTemplate) {
   auto *descriptor = new VariableDescriptor();
   if(in == "player") {
     descriptor->name = "player";
@@ -48,6 +48,10 @@ skx::VariableDescriptor *skx::Variable::extractNameSafe(std::string in) {
   }
   descriptor->isFromContext = in[0] == '%' && in[in.length()-1] == '%';
   auto trim = in.substr(1, in.length() - 2);
+  if(trim[0] == '{' && trim[trim.length() -1] == '}' && isFromTemplate) {
+    //double escaped
+    trim = trim.substr(1, trim.length() - 2);
+  }
   if (trim.rfind('@', 0) == 0) {
     descriptor->type = STATIC;
     trim = trim.substr(1);

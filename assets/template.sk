@@ -1,0 +1,4 @@
+on load:
+  loop 5 times;
+    send "Number is %loop-value% kekw: " to console
+#    send {_x} to console

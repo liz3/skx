@@ -21,6 +21,7 @@ set(SKX_SOURCES
         src/TreeCompiler.cc
         src/Executor.cc
         src/BasicInstructions.cc
+        src/StringTemplateCompiler.cc
         src/RegexUtils.cc
         src/Literal.cc
         src/types/TString.cc

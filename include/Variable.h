@@ -87,7 +87,7 @@ class Variable {
   std::string customTypeName; // when pointer
   bool isDouble = false; // specific to number;
   static void createVarFromOption(std::string item, skx::Context *targetContext);
-  static VariableDescriptor* extractNameSafe(std::string in);
+  static VariableDescriptor* extractNameSafe(std::string in, bool isFromTemplate = false);
   static void createVarValue(VarType type, Variable* target, bool isDouble = false);
   static VariableValue* extractValueFromList(Variable* map, Variable* index);
   VarState state = SPOILED;

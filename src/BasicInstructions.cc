@@ -14,15 +14,21 @@
 
 namespace skx {
 OperatorPart *Print::execute(Context *target) {
-  for (auto raw : dependencies) {
-    if (raw != dependencies[0]) {
+  for (auto root : dependencies) {
+    OperatorPart* raw = nullptr;
+    if(root->operatorType == EXECUTION) {
+      raw = static_cast<Execution*>(root->value)->execute(target);
+    } else {
+      raw = root;
+    }
+    if (root != dependencies[0]) {
       std::cout << " ";
     }
+
     VariableValue *value = nullptr;
     bool isDouble = false;
-    VarType type;
     if (raw->operatorType == LITERAL) {
-      type = raw->type;
+
       value = static_cast<VariableValue *>(raw->value);
       isDouble = raw->isDouble;
     } else if (raw->operatorType == VARIABLE) {
@@ -32,7 +38,7 @@ OperatorPart *Print::execute(Context *target) {
 
       } else {
         value = var->getValue();
-        type = var->type;
+
         isDouble = raw->isDouble;
       }
 
@@ -42,6 +48,25 @@ OperatorPart *Print::execute(Context *target) {
   }
   std::cout << "\n";
   return nullptr;
+}
+
+OperatorPart *StringTemplate::execute(Context* target) {
+
+  std::string rendered = "";
+  for(size_t i = 0; i < baseParts.size(); i++)  {
+    std::string current = baseParts[i];
+    rendered += current;
+    if(i < dependencies.size()) {
+      auto *var = static_cast<Variable *>(dependencies[i]->value);
+      if(!var) continue;
+      auto* value = var->getValue();
+      if(!value) continue;
+      rendered += value->getStringValue();
+
+    }
+  }
+
+  return new OperatorPart(LITERAL, STRING, new TString(rendered), false);
 }
 
 OperatorPart *FunctionInvoker::execute(Context *target) {

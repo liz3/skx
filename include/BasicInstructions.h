@@ -19,6 +19,14 @@ class Print : public Execution {
 
   OperatorPart* execute(Context *target) override;
 };
+class StringTemplate : public Execution {
+  public:
+    StringTemplate(): Execution() {
+      name = "std::stringtemplate";
+    }
+  std::vector<std::string> baseParts;
+  OperatorPart* execute(Context *target) override;
+};
 class FunctionInvoker : public Execution { //Yep, this is a execution
  public:
   FunctionInvoker() : Execution() {

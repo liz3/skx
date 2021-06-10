@@ -1,10 +1,15 @@
 on load:
- # set {_res} to 25 / 1
- # send {_res} to console
-  set {_m} to 0
-  loop 12 times:
-    set {_m::%loop-value%} to %loop-value% + 1
-  set {_size} to nativecall maplen {_m}
-  send {_size} to console
-  loop {_m::*}:
-    send "value is" and %loop-value% to console
+  set {_text} to "test"
+  loop 10 times:
+    set {_text} to {_text} + "."
+  send {_text} to console
+  set {_list} to 0
+  loop 15000 times:
+    set {_list::%loop-value%} to {_loop-value}
+  send "looping" to console
+  loop {_list::*}:
+    if %loop-value% is bigger then 9999:
+      send {_loop-value} and "its over 9999" to console
+      break
+  #  else:
+  #    send %loop-value% and "hello world" to console

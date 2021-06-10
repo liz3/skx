@@ -14,6 +14,7 @@
 #include "../include/types/TBoolean.h"
 #include "../include/api/Json.h"
 #include "../include/api/NativeCall.h"
+#include "../include/StringTemplateCompiler.h"
 #ifdef SKX_BUILD_API
 #include "../include/api/McEventsBaseEffects.h"
 #include "../include/api/RuntimeMcEventValues.h"
@@ -141,8 +142,14 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
 
       }
       if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
-      TString *f = new TString(current.substr(1, current.length() - 2));
-      currentOperator->target = new OperatorPart(LITERAL, STRING, f, false);
+      auto* templateResult = StringTemplateCompiler::compile(current.substr(1, current.length() - 2), ctx, target);
+      if(templateResult) {
+        currentOperator->target = templateResult;
+      } else {
+        TString *f = new TString(current.substr(1, current.length() - 2));
+        currentOperator->target = new OperatorPart(LITERAL, STRING, f, false);
+
+      }
       target->comparisons.push_back(currentOperator);
       state = 0;
       currentOperator = nullptr;
@@ -328,8 +335,14 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
       }
       //      if (current == "\"\"" && i == (x + 1)) current = "\" \"";
       if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
-      TString *f = new TString(current.substr(1, current.length() - 2));
-      assigment->source = new OperatorPart(LITERAL, STRING, f, false);
+      auto* templateResult = StringTemplateCompiler::compile(current.substr(1, current.length() - 2), ctx, target);
+      if(templateResult) {
+        assigment->source = templateResult;
+      } else {
+        TString *f = new TString(current.substr(1, current.length() - 2));
+        assigment->source = new OperatorPart(LITERAL, STRING, f, false);
+
+      }
       target->assignments.push_back(assigment);
       step = 0;
       assigment = nullptr;
@@ -547,8 +560,14 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
 
         }
         if (current[current.length() - 1] == ':') current = current.substr(0, current.length() - 1);
+        auto* templateResult = StringTemplateCompiler::compile(current.substr(1, current.length() - 2), context, target);
+        if(templateResult) {
+          pr->dependencies.push_back(templateResult);
+        } else {
         TString *f = new TString(current.substr(1, current.length() - 2));
         pr->dependencies.push_back(new OperatorPart(LITERAL, STRING, f, false));
+
+        }
 
       }
       if (isVar(current)) {
@@ -755,7 +774,7 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
 }
 
 bool skx::TreeCompiler::isVar(std::string &val) {
-  return (val[0] == '{' && val[val.length() - 1] == '}') || (val[0] == '%' && val[val.length() - 1] == '%') || val == "player";
+  return (val[0] == '{' && val[val.length() - 1] == '}') || val == "player";
 }
 
 bool skx::TreeCompiler::isNumber(char c) {
