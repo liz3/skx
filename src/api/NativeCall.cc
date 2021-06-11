@@ -5,6 +5,7 @@
 #include "../../include/types/TMap.h"
 #include "../../include/types/TNumber.h"
 #include "../../include/types/TBoolean.h"
+#include <math.h>
 
 #include <iostream>
 #include <fstream>
@@ -16,6 +17,14 @@ skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::str
   if(entry == "getenv") return NativeCallInterface::GETENV;
   if(entry == "strsplit") return NativeCallInterface::STRING_SPLIT;
   if(entry == "maplen" || entry == "mapsize") return NativeCallInterface::MAP_SIZE;
+
+  if(entry == "mathpow") return NativeCallInterface::MATH_POW;
+  if(entry == "mathsin") return NativeCallInterface::MATH_SIN;
+  if(entry == "mathcos") return NativeCallInterface::MATH_COS;
+  if(entry == "mathtan") return NativeCallInterface::MATH_TAN;
+  if(entry == "mathsqrt") return NativeCallInterface::MATH_SQRT;
+  if(entry == "mathfloor") return NativeCallInterface::MATH_FLOOR;
+  if(entry == "mathceil") return NativeCallInterface::MATH_CEIL;
   return NativeCallInterface::UNKNOWN;
 }
 
@@ -163,6 +172,94 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     p->isList = true;
     return p;
   }
+    // Math stuff
+  case MATH_POW: {
+    auto* part = dependencies[0];
+    TNumber* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TNumber* >(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if (v->type == NUMBER) {
+        TNumber *toExtract = dynamic_cast<TNumber *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    auto* content_part = dependencies[1];
+    TNumber* content_value = nullptr;
+    if(content_part->operatorType == LITERAL) {
+      content_value = static_cast<TNumber* >(content_part->value);
+    } else if (content_part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(content_part->value);
+      if (v->type == NUMBER) {
+        TNumber *toExtract = dynamic_cast<TNumber *>(v->getValue());
+        content_value = toExtract;
+      }
+    }
+    if(!content_value) return nullptr;
+    double result = pow(value->isDouble ? value->doubleValue : value->intValue, content_value->isDouble ? content_value->doubleValue : content_value->intValue);
+    return new OperatorPart(LITERAL, NUMBER, new TNumber(result), true);
+
+  }
+  case MATH_COS:
+  case MATH_TAN:
+  case MATH_SQRT:
+  case MATH_SIN: {
+    auto* part = dependencies[0];
+    TNumber* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TNumber* >(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if (v->type == NUMBER) {
+        TNumber *toExtract = dynamic_cast<TNumber *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    double result;
+    if(type == MATH_SIN) {
+      result = sin(value->isDouble ? value->doubleValue : value->intValue);
+    } else if (type == MATH_COS) {
+      result = cos(value->isDouble ? value->doubleValue : value->intValue);
+    } else if (type == MATH_TAN) {
+      result = tan(value->isDouble ? value->doubleValue : value->intValue);
+    } else if (type == MATH_SQRT) {
+      result = sqrt(value->isDouble ? value->doubleValue : value->intValue);
+    } else {
+      return nullptr;
+    }
+    return new OperatorPart(LITERAL, NUMBER, new TNumber(result), true);
+  }
+  case MATH_CEIL:
+  case MATH_FLOOR: {
+    auto* part = dependencies[0];
+    TNumber* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TNumber* >(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if (v->type == NUMBER) {
+        TNumber *toExtract = dynamic_cast<TNumber *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    int32_t result;
+    if(type == MATH_CEIL) {
+      result = ceil(value->isDouble ? value->doubleValue : value->intValue);
+    } else if (type == MATH_FLOOR) {
+      result = floor(value->isDouble ? value->doubleValue : value->intValue);
+    } else {
+      return nullptr;
+    }
+    return new OperatorPart(LITERAL, NUMBER, new TNumber(result), false);
+
+
+  }
+
+
   default:
     return nullptr;
   }

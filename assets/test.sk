@@ -1,14 +1,4 @@
 on load:
-  set {_text} to "test"
-  loop 10 times:
-    set {_text} to {_text} + "."
-  send {_text} to console
-  set {_list} to 0
-  loop 15000 times:
-    set {_list::%loop-value%} to {_loop-value}
-  send "looping" to console
-  loop {_list::*}:
-    if {_loop-value} is bigger then 9999:
-      send {_loop-value} and "its over 9999" to console
-    else:
-      send {_loop-value} and "hello world" to console
+  set {_e} to 2.3
+  set {_result} to nativecall mathceil {_e}
+  send {_result} to console

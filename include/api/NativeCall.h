@@ -17,6 +17,14 @@ class NativeCallInterface : public Execution {
     STRLEN,
     STRING_SPLIT,
     MAP_SIZE,
+
+    MATH_POW,
+    MATH_SIN,
+    MATH_COS,
+    MATH_TAN,
+    MATH_SQRT,
+    MATH_FLOOR,
+    MATH_CEIL,
     GETENV
   };
   NativeCallInterface(): Execution() {
