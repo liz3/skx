@@ -14,6 +14,7 @@ class NativeCallInterface : public Execution {
     UNKNOWN,
     READFILE,
     WRITEFILE,
+    REMFILE,
     STRLEN,
     STRING_SPLIT,
     MAP_SIZE,
@@ -25,7 +26,8 @@ class NativeCallInterface : public Execution {
     MATH_SQRT,
     MATH_FLOOR,
     MATH_CEIL,
-    GETENV
+    GETENV,
+    EVAL,
   };
   NativeCallInterface(): Execution() {
     name = "native::callinterface";

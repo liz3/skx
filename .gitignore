@@ -7,3 +7,4 @@ plugin/.idea
 Release
 /debug
 *.orig
+.DS_Store

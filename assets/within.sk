@@ -1,0 +1,3 @@
+on load:
+  loop 5 times:
+    send "hey" to console

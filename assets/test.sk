@@ -1,4 +1,5 @@
 on load:
-  set {_e} to 2.3
-  set {_result} to nativecall mathceil {_e}
+  set {_val} to  "loop 5 times:\n\t\tsend \"hello\" to console\n"
+  send "evaluating:" and {_val} to console
+  set {_result} to nativecall eval {_val}
   send {_result} to console

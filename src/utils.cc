@@ -5,6 +5,7 @@
 #include "../include/utils.h"
 #include "../include/types/TArray.h"
 #include "../include/EventInfo.h"
+#include <regex>
 
 std::vector<std::string> skx::Utils::split(std::string base, std::string delimiter) {
   std::vector<std::string> final;
@@ -49,6 +50,13 @@ skx::Variable *skx::Utils::searchVar(skx::VariableDescriptor *descriptor, skx::C
   }
   return Utils::searchRecursive(descriptor->name, ctx);
 
+}
+
+std::string skx::Utils::unescape(std::string input) {
+  input = std::regex_replace(input, std::regex("\\\\t"), "\t");
+  input = std::regex_replace(input, std::regex("\\\\n"), "\n");
+  input = std::regex_replace(input, std::regex("\\\\\""), "\"");
+  return input;
 }
 
 std::string skx::Utils::getEventClassFromExpression(std::string content) {

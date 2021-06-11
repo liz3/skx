@@ -5,17 +5,27 @@
 #include "../../include/types/TMap.h"
 #include "../../include/types/TNumber.h"
 #include "../../include/types/TBoolean.h"
-#include <math.h>
 
+
+#include <math.h>
 #include <iostream>
 #include <fstream>
+#include <regex>
+#include "../../include/Script.h"
+#include "../../include/Executor.h"
+
 
 skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::string &entry) {
-  if(entry == "strlen") return NativeCallInterface::STRLEN;
+
   if(entry == "readfile") return NativeCallInterface::READFILE;
   if(entry == "writefile") return NativeCallInterface::WRITEFILE;
+  if(entry == "removefile") return NativeCallInterface::REMFILE;
+
   if(entry == "getenv") return NativeCallInterface::GETENV;
+
+  if(entry == "strlen") return NativeCallInterface::STRLEN;
   if(entry == "strsplit") return NativeCallInterface::STRING_SPLIT;
+
   if(entry == "maplen" || entry == "mapsize") return NativeCallInterface::MAP_SIZE;
 
   if(entry == "mathpow") return NativeCallInterface::MATH_POW;
@@ -25,6 +35,9 @@ skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::str
   if(entry == "mathsqrt") return NativeCallInterface::MATH_SQRT;
   if(entry == "mathfloor") return NativeCallInterface::MATH_FLOOR;
   if(entry == "mathceil") return NativeCallInterface::MATH_CEIL;
+
+  if(entry == "eval" || entry == "evaluate") return NativeCallInterface::EVAL;
+
   return NativeCallInterface::UNKNOWN;
 }
 
@@ -58,6 +71,57 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     int32_t length = value->value.length();
     return new OperatorPart(LITERAL, NUMBER, new TNumber(length), false);
   }
+  case NativeCallInterface::EVAL: {
+    auto* part = dependencies[0];
+    TString* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TString* >(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if (v->type == STRING) {
+        TString *toExtract = dynamic_cast<TString *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    bool auto_wrap = true;
+    if(dependencies.size() == 2) {
+
+      auto* aw_part = dependencies[1];
+      if(aw_part->operatorType == LITERAL) {
+        auto_wrap = static_cast<TBoolean* >(aw_part->value)->value;
+      } else if (aw_part->operatorType == VARIABLE) {
+        Variable* v = static_cast<Variable*>(aw_part->value);
+        if (v->type == BOOLEAN) {
+          TBoolean *toExtract = dynamic_cast<TBoolean *>(v->getValue());
+          auto_wrap = toExtract->value;
+        }
+      }
+    }
+    std::string code = value->value;
+    if(auto_wrap) {
+      code = "on load:\n  " + code + "\n";
+    }
+    code = std::regex_replace(code, std::regex("\\\\t"), "\t");
+    code = std::regex_replace(code, std::regex("\\\\n"), "\n");
+    auto compile_result = skx::Script::parse(code.c_str());
+    for(const auto& entry : compile_result->signals) {
+      if(entry.first->signalType == skx::TriggerSignal::LOAD) {
+        skx::Executor::executeStandalone(entry.second);
+      }
+    }
+    for(const auto& entry : compile_result->signals) {
+      if(entry.first->signalType == skx::TriggerSignal::UN_LOAD) {
+        skx::Executor::executeStandalone(entry.second);
+      }
+    }
+
+    delete compile_result;
+
+
+    return new OperatorPart(LITERAL, BOOLEAN, new TBoolean(true), false);
+  }
+
   case NativeCallInterface::GETENV: {
     auto* part = dependencies[0];
     TString* value = nullptr;
@@ -105,7 +169,25 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     return new OperatorPart(LITERAL, STRING, new TString(std::string(buffer)), false);
 
   }
-  case NativeCallInterface::WRITEFILE: {
+ case NativeCallInterface::REMFILE: {
+    auto* part = dependencies[0];
+    TString* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TString* >(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if (v->type == STRING) {
+        TString *toExtract = dynamic_cast<TString *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    int32_t result = remove(value->value.c_str());
+    return new OperatorPart(LITERAL, NUMBER, new TNumber(result), false);
+
+  }
+
+ case NativeCallInterface::WRITEFILE: {
     auto* part = dependencies[0];
     TString* value = nullptr;
     if(part->operatorType == LITERAL) {
