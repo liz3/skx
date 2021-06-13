@@ -3,6 +3,8 @@ on load:
   # send "evaluating:" and {_val} to console
   # set {_result} to nativecall eval {_val}
   # send {_result} to console
-  set {_x} to 25
-  if {_x} is bigger then 30 || {_x} is 25 || :
+  set {_x} to 10
+  if {_x} is bigger then 30 || {_x} is 25:
     send "yes" to console
+  else if {_x} is 10:
+    send "10" to console
