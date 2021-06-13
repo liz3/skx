@@ -324,6 +324,10 @@ skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType typ
 
 }
 
+skx::Comparison::Comparison() : combineType(START) {}
+
+skx::Comparison::Comparison(ConditionCombineType type) : combineType(type) {}
+
 skx::OperatorPart *skx::Execution::execute(skx::Context *target) {
   return nullptr;
 }

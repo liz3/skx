@@ -42,10 +42,14 @@ void skx::Executor::walk(skx::CompileItem *item) {
       auto current = item->comparisons[i];
       bool failed = !current->execute(item->ctx);
       if (failed) {
+        if (i < item->comparisons.size() -1 && item->comparisons[i+1]->combineType == OR)
+          continue;
         lastFailed = true;
         lastFailLevel = item->level;
         skx::Utils::updateVarState(item->ctx, SPOILED);
         return;
+      } else if (i < item->comparisons.size() -1 && item->comparisons[i+1]->combineType == OR) {
+        break;
       }
     }
     for (auto child : item->children) {

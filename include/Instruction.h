@@ -32,6 +32,11 @@ enum OperatorType {
   VARIABLE,
   EXECUTION,
 };
+enum ConditionCombineType {
+  START,
+  AND,
+  OR
+};
 enum TriggerType {
   MC_EVENT,
   MC_COMMAND,
@@ -54,13 +59,14 @@ struct OperatorPart {
 class Comparison {
  public:
   virtual ~Comparison();
-
+  Comparison();
+  Comparison(ConditionCombineType combineType);
   OperatorPart* source;
   OperatorPart* target;
   InstructionOperator type;
   bool execute(Context* context);
   bool inverted = false;
-
+  ConditionCombineType combineType;
 };
 class ReturnOperation {
  public:

@@ -126,6 +126,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
   target->isElseIf = isElseIf;
   Comparison *currentOperator = nullptr;
   uint8_t state = 0;
+  ConditionCombineType lastCombinator = START;
   std::string last;
   uint32_t len = isElseIf ? 7 : 3;
   for (uint32_t i = 0; i < spaceSplit.size(); ++i) {
@@ -178,7 +179,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
         currentOperator = nullptr;
       } else if (state == 0) {
         state++;
-        currentOperator = new Comparison();
+        currentOperator = new Comparison(lastCombinator);
         currentOperator->source = skx::Literal::extractNumber(current);
 
       }
@@ -188,7 +189,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
       if(var) {
         if (state == 0) {
           state++;
-          currentOperator = new Comparison();
+          currentOperator = new Comparison(lastCombinator);
           currentOperator->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
         } else if (state == 2) {
           currentOperator->target = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
@@ -208,7 +209,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
       } else {
         if (state == 0) {
           state++;
-          currentOperator = new Comparison();
+          currentOperator = new Comparison(lastCombinator);
           if(descriptor->listAccessor == nullptr) {
             currentOperator->source = new OperatorPart(VARIABLE, var->type, var, var->isDouble);
           } else {
@@ -243,7 +244,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
       std::string x = content.substr(len);
       OperatorPart *part = compileExecutionValue(x, ctx, target, isElseIf);
       if (part != nullptr && currentOperator == nullptr) {
-        currentOperator = new Comparison();
+        currentOperator = new Comparison(lastCombinator);
         currentOperator->source = part;
         state++;
       }
@@ -254,7 +255,7 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
       }
       OperatorPart *part = compileExecutionValue(x, ctx, target, isElseIf);
       if (part != nullptr) {
-        if (currentOperator == nullptr) currentOperator = new Comparison();
+        if (currentOperator == nullptr) currentOperator = new Comparison(lastCombinator);
         currentOperator->target = part;
         target->comparisons.push_back(currentOperator);
         state = 0;
@@ -284,6 +285,11 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
       currentOperator->inverted = !currentOperator->inverted;
       if (state < 2) state++;
     }
+    if((current == "||" || current == "or") && state == 0)
+      lastCombinator = OR;
+
+    if((current == "&&" || current == "and") && state == 0)
+      lastCombinator = AND;
 
 
     last = current;
