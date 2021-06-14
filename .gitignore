@@ -6,5 +6,6 @@ plugin/.gradle
 plugin/.idea
 Release
 /debug
+/Debug
 *.orig
 .DS_Store

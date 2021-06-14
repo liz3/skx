@@ -133,8 +133,15 @@ bool skx::Comparison::execute(skx::Context *context) {
 }
 
 skx::Comparison::~Comparison() {
-  delete source;
-  delete target;
+  if(source != nullptr) {
+    delete source;
+    source = nullptr;
+  }
+
+  if(target != nullptr) {
+
+    delete target;
+    target = nullptr;  }
 }
 
 bool skx::Assigment::execute(skx::Context *context) {
@@ -161,12 +168,14 @@ bool skx::Assigment::execute(skx::Context *context) {
   }
   //  if (source->type != target->type && source->operatorType != EXECUTION) return false;
   VariableValue *sourceValue = nullptr;
-
+  OperatorPart* freeAfterAssign = nullptr;
   if (source->operatorType == LITERAL) {
     sourceValue = static_cast<VariableValue *>(source->value);
   } else if (source->operatorType == EXECUTION) {
     auto *execTarget = static_cast<Execution *>(source->value);
     OperatorPart *executionResult = execTarget->execute(context);
+    if(execTarget->name == "native::callinterface") // im not proud of this but its the most effective way to avoid duplicated code, maybe needs refactor later
+      freeAfterAssign = executionResult;
     if (executionResult == nullptr) {
       sourceValue = nullptr;
     } else {
@@ -231,15 +240,13 @@ bool skx::Assigment::execute(skx::Context *context) {
         break;
       }
     }
+    if(freeAfterAssign != nullptr)
+      delete freeAfterAssign;
     return true;
   }
 
   if(sourceValue == nullptr)
     return false;
-
-
-
-
   if((targetVar->getValue() == nullptr || sourceValue->type != targetVar->type) && type == ASSIGN) {
     if(targetVar->getValue() != nullptr) {
       switch (targetVar->type) {
@@ -273,6 +280,9 @@ bool skx::Assigment::execute(skx::Context *context) {
       targetVar->type = MAP;
       targetVar->setValue(sourceValue->copyValue());
 
+    if(freeAfterAssign != nullptr)
+      delete freeAfterAssign;
+
       return true;
     }
 
@@ -286,21 +296,30 @@ bool skx::Assigment::execute(skx::Context *context) {
       targetVar->customTypeName = sourceValue->varRef->customTypeName;
     }
   }
+  bool res = false;
   switch (type) {
   case ASSIGN:
-    return targetVar->getValue()->assign(sourceValue);
+    res = targetVar->getValue()->assign(sourceValue);
+    break;
   case ADD:
-    return targetVar->getValue()->add(sourceValue);
+    res =  targetVar->getValue()->add(sourceValue);
+    break;
   case SUBTRACT:
-    return targetVar->getValue()->subtract(sourceValue);
+    res= targetVar->getValue()->subtract(sourceValue);
+    break;
   case MULTIPLY:
-    return targetVar->getValue()->multiply(sourceValue);
+    res= targetVar->getValue()->multiply(sourceValue);
+    break;
   case DIVIDE:
-    return targetVar->getValue()->divide(sourceValue);
+    res = targetVar->getValue()->divide(sourceValue);
+    break;
   default:
     break;
   }
-  return true;
+    if(freeAfterAssign != nullptr)
+      delete freeAfterAssign;
+
+  return  res;
 }
 
 skx::Assigment::~Assigment() {
@@ -315,6 +334,15 @@ skx::OperatorPart::OperatorPart(skx::OperatorType operatorType, skx::VarType typ
 
 
 skx::OperatorPart::~OperatorPart() {
+  if(operatorType == LITERAL) {
+    auto* val =  static_cast<VariableValue*>(value);
+    if(val != nullptr && val->varRef == nullptr)
+      delete val;
+  } else if (operatorType == EXECUTION) {
+    auto* val = static_cast<Execution*>(value);
+    if(val != nullptr)
+      delete val;
+  }
   value = nullptr;
 }
 

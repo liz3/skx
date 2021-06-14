@@ -431,6 +431,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
       } else {
         currentVar = skx::Utils::searchRecursive(descriptor->name, ctx);
       }
+
       if (currentVar == nullptr) {
         created = true;
         Context *targetCtx = descriptor->type == CONTEXT ? ctx : ctx->global;
@@ -447,16 +448,17 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
         assigment = new Assigment();
         if(descriptor->listAccessor == nullptr) {
           assigment->target = new OperatorPart(VARIABLE, currentVar->type, currentVar, currentVar->isDouble);
-          delete descriptor;
+
         } else {
           Variable* indexValue = skx::Utils::searchRecursive(descriptor->listAccessor->name, ctx);
           if(indexValue) {
             assigment->target = new OperatorPart(VARIABLE, currentVar->type, currentVar, indexValue, false, false);
-            delete descriptor;
           }
         }
         step++;
+        delete descriptor;
       } else {
+        delete descriptor;
         if (step == 2) {
           assigment->source = new OperatorPart(VARIABLE, currentVar->type, currentVar, currentVar->isDouble);
           if (created) {
@@ -742,6 +744,8 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
         }
       }
     }
+    if(descriptor != nullptr)
+      delete descriptor;
   }
   if (spaceSplit[0] == "while") {
     loop->hasCondition = true;

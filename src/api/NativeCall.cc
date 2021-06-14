@@ -38,6 +38,8 @@ skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::str
 
   if(entry == "eval" || entry == "evaluate") return NativeCallInterface::EVAL;
 
+  if(entry == "writestream" || entry == "writeio") return NativeCallInterface::WRITE_OUT;
+
   return NativeCallInterface::UNKNOWN;
 }
 
@@ -166,7 +168,9 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     // read data as a block:
     stream.read (buffer,length);
     stream.close();
-    return new OperatorPart(LITERAL, STRING, new TString(std::string(buffer)), false);
+    auto* res = new OperatorPart(LITERAL, STRING, new TString(std::string(buffer)), false);
+    delete[] buffer;
+    return res;
 
   }
  case NativeCallInterface::REMFILE: {

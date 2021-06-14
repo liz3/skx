@@ -28,6 +28,7 @@ class NativeCallInterface : public Execution {
     MATH_CEIL,
     GETENV,
     EVAL,
+    WRITE_OUT
   };
   NativeCallInterface(): Execution() {
     name = "native::callinterface";

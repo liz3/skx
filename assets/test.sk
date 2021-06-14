@@ -3,6 +3,7 @@ on load:
   # send "evaluating:" and {_val} to console
   # set {_result} to nativecall eval {_val}
   # send {_result} to console
+  set {_content} to nativecall readfile "/home/liz3/Projects/skx/assets/within.sk"
   set {_x} to 10
   if {_x} is bigger then 30 || {_x} is 25:
     send "yes" to console
