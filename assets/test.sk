@@ -9,3 +9,5 @@ on load:
     send "yes" to console
   else if {_x} is 10:
     send "10" to console
+  nativecall writestream 2 "test\n"
+  send {_r} to console

@@ -8,6 +8,8 @@
 
 
 #include <math.h>
+#include <unistd.h>
+
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -140,6 +142,37 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     const char* envVal = std::getenv(value->value.c_str());
     if(envVal == nullptr) return nullptr;
     return new OperatorPart(LITERAL, STRING, new TString(std::string(envVal)), false);
+  }
+  case NativeCallInterface::WRITE_OUT: {
+    auto* streamPart = dependencies[0];
+    TNumber* stream = nullptr;
+    if(streamPart->operatorType == LITERAL) {
+      stream = static_cast<TNumber*>(streamPart->value);
+    } else if (streamPart->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(streamPart->value);
+      if (v->type == NUMBER) {
+        TNumber *toExtract = dynamic_cast<TNumber *>(v->getValue());
+        stream = toExtract;
+      }
+    }
+    auto* contentPart = dependencies[1];
+    TString* content = nullptr;
+    if(contentPart->operatorType == LITERAL) {
+      content = static_cast<TString*>(contentPart->value);
+    } else if (contentPart->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(contentPart->value);
+      if (v->type == NUMBER) {
+        TString *toExtract = dynamic_cast<TString *>(v->getValue());
+        content = toExtract;
+      }
+    }
+    if(!content)
+      return nullptr;
+
+    int32_t res = write(stream->intValue, content->value.c_str(), content->value.length());
+
+
+    return new OperatorPart(LITERAL, NUMBER, new TNumber(res), false);
   }
   case NativeCallInterface::READFILE: {
     auto* part = dependencies[0];
@@ -351,7 +384,7 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
   }
 }
 
-skx::OperatorPart *skx::NativeCallCompiler::compileCall(std::string& content, Context* pContext, CompileItem* pItem) {
+skx::NativeCallInterface *skx::NativeCallCompiler::compileCall(std::string& content, Context* pContext, CompileItem* pItem) {
 //nativecall
   std::string baseOffset = content.substr(11);
   auto split = skx::Utils::split(baseOffset, " ");
@@ -395,9 +428,10 @@ skx::OperatorPart *skx::NativeCallCompiler::compileCall(std::string& content, Co
         }
         value += max[i];
       }
+      value = Utils::unescape(value);
       exec->dependencies.push_back(new OperatorPart(LITERAL, STRING, new TString(value), false));
     }
     offset += e.length() + 1;
   }
-  return new OperatorPart(EXECUTION, UNDEFINED, exec, false);
+  return exec;
 }

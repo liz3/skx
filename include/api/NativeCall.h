@@ -40,7 +40,7 @@ class NativeCallCompiler {
  private:
   static NativeCallInterface::CallType getCallType(std::string& entry);
  public:
-  static OperatorPart* compileCall(std::string& content, Context* pContext, CompileItem* pItem);
+  static NativeCallInterface* compileCall(std::string& content, Context* pContext, CompileItem* pItem);
 };
 }
 

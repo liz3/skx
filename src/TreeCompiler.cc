@@ -606,7 +606,11 @@ void skx::TreeCompiler::compileExecution(std::string &content, skx::Context *con
     else
       delete pr;
     return;
-  } else {
+  } else if(content.find("nativecall") == 0) {
+    auto* exec = skx::NativeCallCompiler::compileCall(content, context, target);
+  if(exec)
+    target->executions.push_back(exec);
+  }else {
     auto funcCallMatches = skx::RegexUtils::getMatches(skx::functionCallPattern, content);
     if (!(funcCallMatches).empty()) {
       auto entry = funcCallMatches[0];
@@ -873,11 +877,9 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
   if (content.find("json") != std::string::npos) {
     return skx::Json::compileCondition(content, ctx, target);
   } else if (content.find("nativecall") == 0) {
-    return skx::NativeCallCompiler::compileCall(content, ctx, target);
+    auto* exec = skx::NativeCallCompiler::compileCall(content, ctx, target);
+    return new OperatorPart(EXECUTION, UNDEFINED, exec, false);
   }
-
-
-
   if(content.find('{') == 0 && content.find(" contains ") != std::string::npos) {
     auto split = skx::Utils::split(content[content.length() -1] == ':' ? content.substr(0, content.length() -1) : content, " ");
     MapEffects* effect = new MapEffects();
