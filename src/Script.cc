@@ -70,6 +70,11 @@ skx::Script *skx::Script::parse(const char *input) {
   return result;
 }
 
+void skx::Script::setPrintFunc(printer_t func) {
+  baseContext->printFunc = func;
+}
+
+
 skx::Script::Script(Context *baseContext) : baseContext(baseContext) {}
 
 skx::Script::~Script() {

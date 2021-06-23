@@ -14,6 +14,7 @@
 
 namespace skx {
 OperatorPart *Print::execute(Context *target) {
+  std::string result = "";
   for (auto root : dependencies) {
     OperatorPart* raw = nullptr;
     if(root->operatorType == EXECUTION) {
@@ -22,7 +23,7 @@ OperatorPart *Print::execute(Context *target) {
       raw = root;
     }
     if (root != dependencies[0]) {
-      std::cout << " ";
+      result += " ";
     }
 
     VariableValue *value = nullptr;
@@ -44,9 +45,14 @@ OperatorPart *Print::execute(Context *target) {
 
     }
     if (value == nullptr) return nullptr;
-    std::cout << value->getStringValue();
+    result += value->getStringValue();
   }
-  std::cout << "\n";
+  result += "\n";
+  auto* g = target->global;
+  if(g->printFunc != nullptr)
+    (g->printFunc)(result, 1);
+  else
+    std::cout << result;
   return nullptr;
 }
 

@@ -34,6 +34,7 @@ class Script {
 
   static Script* parse(const char* input);
   Script(Context *baseContext);
+  void setPrintFunc(printer_t func);
 };
 }
 

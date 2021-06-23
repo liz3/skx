@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 
+typedef void (*printer_t)(std::string, int);
 
 namespace skx {
 class Variable;
@@ -19,6 +20,7 @@ class Context {
  public:
   virtual ~Context();
 
+  printer_t printFunc;
   uint16_t level;
   uint32_t steps;
   uint32_t stepPointer;

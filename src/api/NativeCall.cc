@@ -168,8 +168,12 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     }
     if(!content)
       return nullptr;
-
-    int32_t res = write(stream->intValue, content->value.c_str(), content->value.length());
+    int32_t res = 0;
+    Context* g = target->global;
+    if(g->printFunc != nullptr)
+      g->printFunc(content->value, stream->intValue);
+    else
+      res = write(stream->intValue, content->value.c_str(), content->value.length());
 
 
     return new OperatorPart(LITERAL, NUMBER, new TNumber(res), false);

@@ -9,6 +9,10 @@
 #include "../include/Script.h"
 #include "../include/Executor.h"
 
+void printTest(std::string data, int stream) {
+  std::cout << "[" << stream << "] >> " << data;
+}
+
 int main(int argc, char** argv) {
 
     std::fstream stream(argv[1]);
@@ -24,6 +28,7 @@ int main(int argc, char** argv) {
     std::cout << ">> Parsing script into tree:\n";
     std::chrono::high_resolution_clock::time_point parseStart = std::chrono::high_resolution_clock::now();
     auto result = skx::Script::parse(buffer);
+    result->setPrintFunc(&printTest);
     std::chrono::high_resolution_clock::time_point parseEnd = std::chrono::high_resolution_clock::now();
     std::cout << ">> Parse time: " << (std::chrono::duration_cast<std::chrono::microseconds>(parseEnd - parseStart).count()) << " micro seconds\n";
     delete result->preParseResult;

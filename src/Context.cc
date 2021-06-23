@@ -11,9 +11,11 @@ skx::Context::Context(uint16_t level, uint32_t steps, uint32_t stepPointer, skx:
   stepPointer(
     stepPointer),
   parent(parent) {
+
   if(parent) {
     parent->childContexts.push_back(this);
   }
+  printFunc = nullptr;
 
 }
 
