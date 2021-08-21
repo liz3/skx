@@ -1,4 +1,4 @@
-#include "../../include/StringTemplateCompiler.h"
+#include "../include/StringTemplateCompiler.h"
 #include <vector>
 #include <iostream>
 

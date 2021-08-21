@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(skx)
 
-option(SKX_BUILD_API "Build Java" ON)
+option(SKX_BUILD_API "Build Java" OFF)
 option(SKX_BUILD_EXAMPLE "Build Example Executable" ON)
 
 if (SKX_BUILD_API)
@@ -34,12 +34,16 @@ set(SKX_SOURCES
         src/api/NativeCall.cc
         src/Assembler.cc
         src/Disassembler.cc
-        src/types/TMap.cc include/types/TMap.h src/types/TPlayerRef.cpp include/types/TPlayerRef.h src/api/MapEffects.cpp include/api/MapEffects.h)
+        src/types/TMap.cc
+        include/types/TMap.h
+        src/api/MapEffects.cpp 
+        include/api/MapEffects.h)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
     list(APPEND SKX_SOURCES
             src/AsyncExecutor.cc
             src/ApiBridge.cc
+            src/types/TPlayerRef.cpp
             src/api/McEventsBaseEffects.cc
             src/api/RuntimeMcEventValues.cc
             src/api/McEventPlayerEffects.cc

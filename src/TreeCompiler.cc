@@ -15,6 +15,8 @@
 #include "../include/api/Json.h"
 #include "../include/api/NativeCall.h"
 #include "../include/StringTemplateCompiler.h"
+#include "../include/api/MapEffects.h"
+
 #ifdef SKX_BUILD_API
 #include "../include/api/McEventsBaseEffects.h"
 #include "../include/api/RuntimeMcEventValues.h"
@@ -23,7 +25,6 @@
 #include "../include/api-compiler/EventValuesCompiler.h"
 #include "../include/api-compiler/EventBaseEffectCompiler.h"
 #include "../include/types/TPlayerRef.h"
-#include "../include/api/MapEffects.h"
 
 #endif
 #include <exception>
