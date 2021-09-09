@@ -1,0 +1,7 @@
+on load:
+  send "write something:" to console
+  set {_line} to nativecall getline
+  if {_line} is "harvey specter":
+    send "hello harvey, how are you" to console
+  else:
+    send "who are you:" and {_line} to console

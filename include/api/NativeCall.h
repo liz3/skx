@@ -30,7 +30,8 @@ class NativeCallInterface : public Execution {
     EVAL,
     WRITE_OUT,
     ARGS_LEN,
-    ARGS
+    ARGS,
+    GET_LINE,
   };
   NativeCallInterface(): Execution() {
     name = "native::callinterface";
