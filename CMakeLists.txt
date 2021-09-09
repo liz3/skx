@@ -36,14 +36,14 @@ set(SKX_SOURCES
         src/Disassembler.cc
         src/types/TMap.cc
         include/types/TMap.h
-        src/api/MapEffects.cpp 
+        src/api/MapEffects.cc
         include/api/MapEffects.h)
 if (SKX_BUILD_API)
     include_directories(plugin/build)
     list(APPEND SKX_SOURCES
             src/AsyncExecutor.cc
             src/ApiBridge.cc
-            src/types/TPlayerRef.cpp
+            src/types/TPlayerRef.cc
             src/api/McEventsBaseEffects.cc
             src/api/RuntimeMcEventValues.cc
             src/api/McEventPlayerEffects.cc
