@@ -15,6 +15,17 @@
  * Walk over script tree like when pre parsing and passing down subsequential contexts
  */
 
+std::vector<std::string> skx::Script::args;
+size_t skx::Script::argsLength = 0;
+
+skx::Script *skx::Script::parse(const char *input, size_t argLength, std::vector<std::string> args) {
+  if(argLength > 0) {
+    skx::Script::args = args;
+    skx::Script::argsLength = argLength;
+  }
+
+ return skx::Script::parse(input);
+}
 
 skx::Script *skx::Script::parse(const char *input) {
   std::string base(input);
@@ -75,7 +86,7 @@ void skx::Script::setPrintFunc(printer_t func) {
 }
 
 
-skx::Script::Script(Context *baseContext) : baseContext(baseContext) {}
+skx::Script::Script(Context *baseContext) : baseContext(baseContext){}
 
 skx::Script::~Script() {
   for(const auto& entry : signals) {

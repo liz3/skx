@@ -26,11 +26,15 @@ class Script {
   Context* baseContext;
   //self explaining
   PreParseResult* preParseResult;
+  static size_t argsLength;
+  static std::vector<std::string> args;
 
   //actual compiled trees
   std::map<TriggerSignal*, CompileItem*> signals;
   std::map<TriggerCommand*, CompileItem*> mc_commands;
   std::map<TriggerEvent*, CompileItem*> mc_events;
+
+  static Script* parse(const char* input, size_t argLength, std::vector<std::string> args);
 
   static Script* parse(const char* input);
   Script(Context *baseContext);

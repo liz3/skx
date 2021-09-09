@@ -906,7 +906,7 @@ skx::TreeCompiler::compileExecutionValue(std::string &content, skx::Context *ctx
       effect->dependencies.push_back(new OperatorPart(LITERAL, STRING, new TString(val.substr(1, val.length() -1)), false));
     }
     delete mapDesc;
-    if(effect->dependencies.size() ==2) {
+    if(effect->dependencies.size() == 2) {
       return new OperatorPart(EXECUTION, BOOLEAN, effect, false);
     } else {
       delete effect;

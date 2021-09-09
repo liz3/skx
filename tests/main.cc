@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <chrono>
+#include <vector>
 #include "../include/Script.h"
 #include "../include/Executor.h"
 
@@ -14,7 +15,14 @@ void printTest(std::string data, int stream) {
 }
 
 int main(int argc, char** argv) {
+    std::vector<std::string> argsVec;
+    if(argc > 2) {
+      for(size_t i = 2; i < argc; i++) {
+        argsVec.push_back(std::string(argv[i]));
+        std::cout << argv[i] << "\n";
+      }
 
+    }
     std::fstream stream(argv[1]);
     stream.seekg (0, stream.end);
     int length = stream.tellg();
@@ -27,7 +35,7 @@ int main(int argc, char** argv) {
     stream.read (buffer,length);
     std::cout << ">> Parsing script into tree:\n";
     std::chrono::high_resolution_clock::time_point parseStart = std::chrono::high_resolution_clock::now();
-    auto result = skx::Script::parse(buffer);
+    auto result = skx::Script::parse(buffer, argsVec.size(), argsVec);
     result->setPrintFunc(&printTest);
     std::chrono::high_resolution_clock::time_point parseEnd = std::chrono::high_resolution_clock::now();
     std::cout << ">> Parse time: " << (std::chrono::duration_cast<std::chrono::microseconds>(parseEnd - parseStart).count()) << " micro seconds\n";

@@ -1,0 +1,6 @@
+on load:
+  set {_c} to nativecall argslen "test"
+  send {_c} to console
+  loop {_c} times:
+    set {_arg} to nativecall args {_loop-value}
+    send {_arg} to console

@@ -19,6 +19,9 @@
 
 skx::NativeCallInterface::CallType skx::NativeCallCompiler::getCallType(std::string &entry) {
 
+  if(entry == "argslen") return NativeCallInterface::ARGS_LEN;
+  if(entry == "args") return NativeCallInterface::ARGS;
+
   if(entry == "readfile") return NativeCallInterface::READFILE;
   if(entry == "writefile") return NativeCallInterface::WRITEFILE;
   if(entry == "removefile") return NativeCallInterface::REMFILE;
@@ -58,6 +61,24 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
       val = map->value.size();
     }
     return new OperatorPart(LITERAL, NUMBER, new TNumber(val), false);
+  }
+  case NativeCallInterface::ARGS_LEN: {
+    return new OperatorPart(LITERAL, NUMBER, new TNumber((int32_t)skx::Script::argsLength), false);
+  }
+  case NativeCallInterface::ARGS: {
+    auto* part = dependencies[0];
+    TNumber* value = nullptr;
+    if(part->operatorType == LITERAL) {
+      value = static_cast<TNumber*>(part->value);
+    } else if (part->operatorType == VARIABLE) {
+      Variable* v = static_cast<Variable*>(part->value);
+      if(v->type == NUMBER) {
+        TNumber *toExtract = dynamic_cast<TNumber *>(v->getValue());
+        value = toExtract;
+      }
+    }
+    if(!value) return nullptr;
+    return new OperatorPart(LITERAL, STRING, new TString(skx::Script::args[value->intValue]), false);
   }
   case NativeCallInterface::STRLEN: {
     auto* part = dependencies[0];
