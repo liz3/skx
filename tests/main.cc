@@ -19,7 +19,6 @@ int main(int argc, char** argv) {
     if(argc > 2) {
       for(size_t i = 2; i < argc; i++) {
         argsVec.push_back(std::string(argv[i]));
-        std::cout << argv[i] << "\n";
       }
 
     }

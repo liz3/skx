@@ -415,12 +415,14 @@ skx::NativeCallInterface *skx::NativeCallCompiler::compileCall(std::string& cont
   auto split = skx::Utils::split(baseOffset, " ");
   NativeCallInterface::CallType type = skx::NativeCallCompiler::getCallType(split[0]);
   if(type == NativeCallInterface::UNKNOWN) return nullptr;
+  NativeCallInterface* exec = new NativeCallInterface();
+  exec->type = type;
+  if (split.size() == 1)
+    return exec;
   std::string args = baseOffset.substr(split[0].length() + 1);
   auto argsSplit = skx::Utils::split(args, " ");
   size_t offset = 0;
   size_t toSkip = 0;
-  NativeCallInterface* exec = new NativeCallInterface();
-  exec->type = type;
   for(auto& e : argsSplit) {
     if(toSkip > 0) {
       toSkip--;
