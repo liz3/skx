@@ -21,7 +21,7 @@ function fac(count):
     send "doesnt work" to console
   else:
     loop {_n} times:
-      set {_in} to %loop-value% + 1
+      set {_in} to {_loop-value} + 1
       set {_fact} to {_fact} * {_in}
     send {_fact} to console
   set {_next} to {_count} + 1

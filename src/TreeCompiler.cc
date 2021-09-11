@@ -715,6 +715,7 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
 
 void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ctx, skx::CompileItem *target) {
 
+  std::cout << content.substr(5, content.length() - 6) << "\n";
   Loop *loop = new Loop();
   loop->fromFunction = isFunction;
   loop->rootItem = target;
@@ -757,6 +758,14 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
   if (spaceSplit[0] == "while") {
     loop->hasCondition = true;
     loop->comparison = new Comparison();
+    if (spaceSplit.size() > 1 && (spaceSplit[1] == "true" || spaceSplit[1] == "false")) {
+      bool v = spaceSplit[1] == "true";
+      loop->comparison->type = EQUAL;
+      loop->comparison->target = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(v), false);
+      loop->comparison->source = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(v), false);
+      target->executions.push_back(loop);
+      return;
+    }
   } else if (spaceSplit[1] == "times") {
     if (isVar(spaceSplit[0])) {
       VariableDescriptor *descriptor = skx::Variable::extractNameSafe(spaceSplit[0]);
