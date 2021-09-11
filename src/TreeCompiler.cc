@@ -761,7 +761,7 @@ void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ct
     if (spaceSplit.size() > 1 && (spaceSplit[1] == "true" || spaceSplit[1] == "false")) {
       bool v = spaceSplit[1] == "true";
       loop->comparison->type = EQUAL;
-      loop->comparison->target = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(v), false);
+      loop->comparison->target = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(true), false);
       loop->comparison->source = new OperatorPart(LITERAL, BOOLEAN, new TBoolean(v), false);
       target->executions.push_back(loop);
       return;
