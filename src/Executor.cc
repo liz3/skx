@@ -5,6 +5,8 @@
 #include "../include/Executor.h"
 #include "../include/utils.h"
 
+#include <iostream>
+
 
 void skx::Executor::executeStandalone(skx::CompileItem *item) {
   auto *exec = new Executor();
@@ -18,21 +20,50 @@ void skx::Executor::executeStandalone(skx::CompileItem *item) {
   delete exec;
 }
 
-void skx::Executor::walk(skx::CompileItem *item) {
+skx::OperatorPart* skx::Executor::executeFunction(skx::CompileItem* item) {
+  isFunction=true;
+  OperatorPart* returnValue = nullptr;
+  ReturnOpWithCtx* returnVal = nullptr;
+skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
+  for (auto current : item->children) {
+    returnVal = walk(current);
+    if (returnVal != nullptr) break;
+  }
+  skx::Utils::updateVarState(item->ctx, SPOILED);
+  if (returnVal != nullptr) {
+    returnValue = returnVal->descriptor->targetReturnItem;
+  }
+
+  delete returnVal;
+  return returnValue;
+
+}
+skx::ReturnOpWithCtx* skx::Executor::walk(skx::CompileItem *item) {
   skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
+  if(isFunction && item->returner != nullptr) {
+    auto* r = new ReturnOpWithCtx();
+    r->descriptor = item->returner;
+    r->ctx = item->ctx;
+    isLoop = false;
+    return r;
+  }
   if(item->isElse && lastFailed && lastFailLevel == item->level) {
     for (auto child : item->children) {
-      walk(child);
+      auto* res = walk(child);
+      if(isFunction && res != nullptr) {
+        lastFailed = false;
+        return res;
+      }
     }
     lastFailed = false;
-    return;
+    return nullptr;
   }
   if(item->isBreak && isLoop) {
     if(!stopLoop)
       stopLoop = true;
-    return;
+    return nullptr;
   } else if(stopLoop) {
-    return;
+    return nullptr;
   }
   if(item->level > lastFailLevel && lastFailed) {
     lastFailed = false;
@@ -47,18 +78,21 @@ void skx::Executor::walk(skx::CompileItem *item) {
         lastFailed = true;
         lastFailLevel = item->level;
         skx::Utils::updateVarState(item->ctx, SPOILED);
-        return;
+        return nullptr;
       } else if (i < item->comparisons.size() -1 && item->comparisons[i+1]->combineType == OR) {
         break;
       }
     }
     for (auto child : item->children) {
-      if(stopLoop) return;
-      walk(child);
+      if(stopLoop) return nullptr;
+
+      auto * res = walk(child);
+      if(isFunction && res != nullptr)
+        return res;
     }
 
     skx::Utils::updateVarState(item->ctx, SPOILED);
-    return;
+    return nullptr;
   }
   if (item->triggers.empty() && item->assignments.size() > 0 && item->comparisons.size() == 0) {
     for (uint32_t i = 0; i < item->assignments.size(); ++i) {
@@ -66,7 +100,7 @@ void skx::Executor::walk(skx::CompileItem *item) {
       bool failed = !current->execute(item->ctx);
       if (failed) {
         skx::Utils::updateVarState(item->ctx, SPOILED);
-        return;
+        return nullptr;
       }
     }
     //assignments should not have children
@@ -74,20 +108,34 @@ void skx::Executor::walk(skx::CompileItem *item) {
   if(!item->executions.empty()) {
     for (uint32_t i = 0; i < item->executions.size(); ++i) {
       auto current = item->executions[i];
-      current->execute(item->ctx);
-    }
+      auto *res = current->execute(item->ctx);
+      if(isFunction && res != nullptr) {
+        // TODO make this cleaner somehow, right now id say this is rather hacky
+        auto result = new ReturnOpWithCtx();
+        result->ctx = item->ctx;
+        result->descriptor = new ReturnOperation();
+        result->descriptor->targetReturnItem = res;
+        return result;
+      }
+      }
   }
   skx::Utils::updateVarState(item->ctx, SPOILED);
-
+  return nullptr;
 }
 
-void skx::Executor::execute(skx::CompileItem *item) {
+skx::OperatorPart* skx::Executor::execute(skx::CompileItem *item) {
   isLoop = item->isLoop;
   skx::Utils::updateVarState(item->ctx, RUNTIME_CR);
   root = item;
   for (auto current : item->children) {
     if(stopLoop) break;
-    walk(current);
+    auto res = walk(current);
+    if(isFunction && res != nullptr) {
+      auto* toReturn = res->descriptor->targetReturnItem;
+      delete res;
+      return toReturn;
+    }
   }
   skx::Utils::updateVarState(item->ctx, SPOILED);
+  return nullptr;
 }

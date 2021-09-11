@@ -53,6 +53,7 @@ class Loop : public Execution {
   bool isIterator = false;
   Variable* iteratorVar = nullptr;
   Variable* iteratorValue = nullptr;
+  bool fromFunction = false;
 
   Comparison* comparison = nullptr;
   Variable* loopCounter = nullptr;

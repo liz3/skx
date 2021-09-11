@@ -86,6 +86,9 @@ OperatorPart *FunctionInvoker::execute(Context *target) {
 
 OperatorPart *Loop::execute(Context *target) {
   Executor *exec = new Executor();
+  exec->isFunction = fromFunction;
+
+  OperatorPart* loopResult = nullptr;
   if(isIterator) {
     if(!iteratorVar || iteratorVar->type != MAP) {
       delete exec;
@@ -103,16 +106,16 @@ OperatorPart *Loop::execute(Context *target) {
         iteratorValue->setValue(v);
       if(v->type == POINTER)
         iteratorValue->customTypeName = v->customTypeName;
-      exec->execute(rootItem);
-      if (exec->stopLoop) break;
+      loopResult = exec->execute(rootItem);
+      if (exec->stopLoop || loopResult != nullptr) break;
     }
     delete exec;
-    return nullptr;
+    return loopResult;
   }
   if (hasCondition) {
     if (comparison != nullptr) {
       while (comparison->execute(target)) {
-        exec->execute(rootItem);
+        loopResult = exec->execute(rootItem);
       }
     }
   } else {
@@ -127,8 +130,8 @@ OperatorPart *Loop::execute(Context *target) {
     if(loopCounter)
       loopCounter->state = RUNTIME_CR;
     for (int32_t i = 0; i < localLoopTarget; ++i) {
-      exec->execute(rootItem);
-      if (exec->stopLoop) break;
+      loopResult = exec->execute(rootItem);
+      if (exec->stopLoop || loopResult != nullptr) break;
       i = num->intValue;
       num->intValue++;
     }
@@ -137,6 +140,6 @@ OperatorPart *Loop::execute(Context *target) {
 
   }
   delete exec;
-  return nullptr;
+  return loopResult;
 }
 }

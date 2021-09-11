@@ -254,7 +254,6 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     return new OperatorPart(LITERAL, NUMBER, new TNumber(result), false);
 
   }
-
  case NativeCallInterface::WRITEFILE: {
     auto* part = dependencies[0];
     TString* value = nullptr;

@@ -1,0 +1,12 @@
+function test(amount, trap, returnValue):
+  loop {_amount} times:
+    send "looping" and {_loop-value} to console
+    if {_loop-value} is {_trap}:
+      send "triggered trap" to console
+  return {_returnValue}
+on load:
+  set {_am} to 10
+  set {_tr} to 5
+  set {_retVal} to "this will be returned"
+  set {_result} to test({_am}, {_tr}, {_retVal})
+  send "result is:" and {_result} to console

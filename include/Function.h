@@ -14,17 +14,8 @@
 #include <string>
 
 namespace skx {
-struct ReturnOpWithCtx {
-  Context* ctx;
-  ReturnOperation* descriptor;
-};
 class Function {
  private:
-  ReturnOpWithCtx* walk(CompileItem* item);
-  bool lastFailed = false;
-  uint16_t lastFailLevel = 0;
-  bool isLoop = false;
-  bool stopLoop = false;
  public:
   virtual ~Function();
 

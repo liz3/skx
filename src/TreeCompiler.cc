@@ -43,6 +43,7 @@ skx::CompileItem *skx::TreeCompiler::compileTree(skx::PreParserItem *item, skx::
 
 skx::CompileItem *skx::TreeCompiler::compileTreeFunction(skx::PreParserItem *item, skx::Context *ctx) {
   TreeCompiler compiler;
+  compiler.isFunction = true;
   CompileItem *root = new CompileItem();
   Function *func = new Function();
   compiler.setupFunctionMeta(item->actualContent, func);
@@ -400,7 +401,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
             if (var)
               call->dependencies.push_back(new OperatorPart(VARIABLE, var->type, var, var->isDouble));
             else
-              std::cout << "[WARNING] Assigment Variable not found: " << descriptor->name << " at: "
+              std::cout << "[WARNING] Assigment Variable for function not found: " << descriptor->name << " at: "
                         << target->line << "\n";
             delete descriptor;
           }
@@ -715,6 +716,7 @@ void skx::TreeCompiler::compileReturn(std::string &basicString, skx::Context *pC
 void skx::TreeCompiler::compileLoop(const std::string &content, skx::Context *ctx, skx::CompileItem *target) {
 
   Loop *loop = new Loop();
+  loop->fromFunction = isFunction;
   loop->rootItem = target;
   target->isLoop = true;
   auto spaceSplit = skx::Utils::split(content.substr(5, content.length() - 6), " ");

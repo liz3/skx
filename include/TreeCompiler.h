@@ -41,7 +41,7 @@ class TreeCompiler {
   static CompileItem* compileTreeFunction(PreParserItem* item, Context* ctx);
   static bool isNumber(char c);
   static bool isVar(std::string& val);
-
+  bool isFunction = false;
  private:
   void compileExpression(PreParserItem* item, Context* context, CompileItem* target);
   void advance(CompileItem* parent, PreParserItem* parentItem, bool isFuncSuperContext = false);

@@ -95,7 +95,7 @@ bool skx::Comparison::execute(skx::Context *context) {
   }
 
   //this is a bit special case
-  if (target->type == UNDEFINED && target->operatorType != EXECUTION) {
+  if (target->type == UNDEFINED && target->operatorType != EXECUTION && targetValue == nullptr) {
     if (type != EQUAL && type != NOT_EQUAL) return false;
     return type == EQUAL ? sourceVar->type == UNDEFINED : sourceVar->type != UNDEFINED;
   }
