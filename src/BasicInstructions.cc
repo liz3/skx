@@ -115,6 +115,8 @@ OperatorPart *Loop::execute(Context *target) {
   if (hasCondition) {
     if (comparison != nullptr) {
       while (comparison->execute(target)) {
+        if(exec->stopLoop || loopResult != nullptr)
+          break;
         loopResult = exec->execute(rootItem);
       }
     }
