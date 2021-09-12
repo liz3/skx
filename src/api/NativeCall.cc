@@ -8,8 +8,9 @@
 
 
 #include <math.h>
+#ifndef _WIN32
 #include <unistd.h>
-
+#endif
 #include <iostream>
 #include <fstream>
 #include <regex>
@@ -199,9 +200,17 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
     Context* g = target->global;
     if(g->printFunc != nullptr)
       g->printFunc(content->value, stream->intValue);
-    else
+    else {
+      #ifdef _WIN32
+        if(stream->intValue == 2)
+        std::cerr << content->value;
+        else
+        std::cout << content->value;
+        res = content->value.length();
+      #else
       res = write(stream->intValue, content->value.c_str(), content->value.length());
-
+      #endif
+    }
 
     return new OperatorPart(LITERAL, NUMBER, new TNumber(res), false);
   }
