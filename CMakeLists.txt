@@ -35,6 +35,7 @@ set(SKX_SOURCES
         src/Assembler.cc
         src/Disassembler.cc
         src/types/TMap.cc
+        src/ParserState.cc
         include/types/TMap.h
         src/api/MapEffects.cc
         include/api/MapEffects.h)

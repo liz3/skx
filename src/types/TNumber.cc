@@ -94,7 +94,6 @@ bool skx::TNumber::assign(skx::VariableValue *source) {
     doubleValue = val->isDouble ? val->doubleValue : val->intValue;
   } else {
     intValue = val->isDouble ? val->doubleValue : val->intValue;
-
   }
   return true;
 }

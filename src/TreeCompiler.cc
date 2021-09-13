@@ -83,6 +83,7 @@ void skx::TreeCompiler::compileExpression(skx::PreParserItem *item, Context *con
       target->isCommandTrigger = true;
       return;
     }
+  //  ParserState state{actualContent, 0};
     //ik this is messy, will change later
     if (actualContent.find("if") == 0) {
       compileCondition(actualContent, context, target);

@@ -25,11 +25,11 @@ class TNumber : public VariableValue {
 
   bool assign(VariableValue *source) override;
   bool add(VariableValue *source) override;
-  bool subtract(VariableValue *source) override;
-  bool divide(VariableValue *source) override;
-  bool multiply(VariableValue *source) override;
+  bool subtract(VariableValue*source) override;
+  bool divide(VariableValue*source) override;
+  bool multiply(VariableValue*source) override;
   std::string getStringValue() override;
-  VariableValue * copyValue() override;
+  VariableValue*copyValue() override;
 };
 }
 

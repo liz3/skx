@@ -1,10 +1,5 @@
 on load:
-  loop while true:
-    send "write something:" to console
-    set {_line} to nativecall getline
-    if {_line} is "harvey specter":
-      send "hello harvey, how are you" to console
-      break
-    else:
-      send "who are you:" and {_line} to console
-  send "finished" to console
+  set {_x} to 2147483646
+  loop 5 times:
+    set {_x} to {_x} + 1
+    send {_x} to console
