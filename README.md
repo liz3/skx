@@ -24,7 +24,8 @@ To work with the system theres a `nativecall` api which allows things like file 
 For now use `src/api/NativeCall.cc` file, it has all native calls.
 An example is:
 ```
-set {content} to nativecall readfile "some/foo/bar/file.txt`
+set {content} to nativecall readfile "some/foo/bar/file.txt"
+```
 
 ## Current issues
 The Tree compiler has some issues with the way that its not a token based parser, which did somne limitations.
