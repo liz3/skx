@@ -1,5 +1,5 @@
 # Skx
-This is a prototype and not functional!
+This is a prototype and can easily break!
 
 ## Whats Skx
 Skx is a compiler & runtime for the [Skript lang](https://github.com/SkriptLang/Skript), written in c++ 14.
