@@ -28,7 +28,7 @@ set {content} to nativecall readfile "some/foo/bar/file.txt"
 ```
 
 ## Current issues
-The Tree compiler has some issues with the way that its not a token based parser, which did somne limitations.
+The Tree compiler has some issues with the way that its not a token based parser, which did add some limitations.
 
 ## Building
 The CMake file has two variables, one builds a executable which can take a file as a argument and runs it.
