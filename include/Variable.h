@@ -44,6 +44,7 @@ struct VariableDescriptor {
   ListAccessor* listAccessor = nullptr;
   AccessType type;
   bool isFromContext = false;
+  std::string varType;
 
 };
 class VariableValue {

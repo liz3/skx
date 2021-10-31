@@ -1,0 +1,13 @@
+function add_test(a: number, b:number):
+  set {_result} to {_a} + {_b}
+  set:string {_text} to "this is printed within the function"
+  send {_text} to console
+  return {_result}
+
+on load:
+  set {_x} to 23
+  set {_y} to 24
+  set:string {_text} to "test 123"
+  set:number {_result} to add_test({_x}, {_y})
+  send {_result} to console
+  send {_text} to console

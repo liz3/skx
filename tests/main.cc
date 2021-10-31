@@ -9,7 +9,7 @@
 #include <vector>
 #include "../include/Script.h"
 #include "../include/Executor.h"
-
+#include "../include/Assembler.h"
 void printTest(std::string data, int stream) {
   std::cout << "[" << stream << "] >> " << data;
 }
@@ -37,6 +37,10 @@ int main(int argc, char** argv) {
     auto result = skx::Script::parse(buffer, argsVec.size(), argsVec);
     result->setPrintFunc(&printTest);
     std::chrono::high_resolution_clock::time_point parseEnd = std::chrono::high_resolution_clock::now();
+    if(argc == 3) {
+      if(std::string(argv[2]) == "assemble")
+        std::cout << skx::Assembler::assemble(result) << "\n";
+    }
     std::cout << ">> Parse time: " << (std::chrono::duration_cast<std::chrono::microseconds>(parseEnd - parseStart).count()) << " micro seconds\n";
     delete result->preParseResult;
     for(const auto& entry : result->signals) {

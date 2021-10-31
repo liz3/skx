@@ -310,7 +310,18 @@ skx::TreeCompiler::compileCondition(std::string &content, skx::Context *ctx, skx
 }
 
 void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Context *ctx, skx::CompileItem *target) {
-  auto spaceSplit = skx::Utils::split(content.substr(4), " ");
+  VarType targetType = UNDEFINED;
+  bool hasType = content[3] == ':';
+  if(hasType) {
+    std::string type = content.substr(4, content.find(" ")-4);
+
+    if(type == "string")
+      targetType = STRING;
+
+    if(type == "number")
+        targetType = NUMBER;
+  }
+  auto spaceSplit = skx::Utils::split(content.substr(hasType ? content.find(" ") : 4), " ");
   Assigment *assigment = nullptr;
   uint8_t step = 0;
   uint32_t pos = 4;
@@ -368,6 +379,8 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
       if (num != nullptr) {
         assigment->source = num;
       }
+
+        static_cast<Variable*>(assigment->target->value)->type =  NUMBER;
       target->assignments.push_back(assigment);
       step = 0;
       assigment = nullptr;
@@ -443,6 +456,7 @@ void skx::TreeCompiler::compileAssigment(const std::string &content, skx::Contex
         currentVar->accessType = descriptor->type;
         currentVar->setValue(nullptr);
         currentVar->ctx = targetCtx;
+        currentVar->type = targetType;
         //   currentVar->created = created;
         targetCtx->vars[descriptor->name] = currentVar;
       }
@@ -545,6 +559,8 @@ void skx::TreeCompiler::setupFunctionMeta(std::string &content, skx::Function *t
       } else {
         auto typeSplit = skx::Utils::split(trimmed, ":");
         auto actualName = skx::Utils::trim(typeSplit[0]);
+        auto type = skx::Utils::trim(typeSplit[1]);
+         descriptor->varType = type;
         //TODO implement actual param type & default value, also what if the default value has a ,?
         //auto actualType = skx::Utils::trim(typeSplit[1]);
         descriptor->type = CONTEXT;
