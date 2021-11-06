@@ -37,9 +37,13 @@ int main(int argc, char** argv) {
     auto result = skx::Script::parse(buffer, argsVec.size(), argsVec);
     result->setPrintFunc(&printTest);
     std::chrono::high_resolution_clock::time_point parseEnd = std::chrono::high_resolution_clock::now();
-    if(argc == 3) {
-      if(std::string(argv[2]) == "assemble")
-        std::cout << skx::Assembler::assemble(result) << "\n";
+    if(argc >= 3) {
+      if(std::string(argv[2]) == "assemble") {
+        std::string content =  skx::Assembler::assemble(result);
+        std::ofstream out_stream(argv[3]);
+        out_stream << content;
+        out_stream.close();
+      }
     }
     std::cout << ">> Parse time: " << (std::chrono::duration_cast<std::chrono::microseconds>(parseEnd - parseStart).count()) << " micro seconds\n";
     delete result->preParseResult;

@@ -424,7 +424,7 @@ skx::OperatorPart *skx::NativeCallInterface::execute(skx::Context *target) {
 }
 
 skx::NativeCallInterface *skx::NativeCallCompiler::compileCall(std::string& content, Context* pContext, CompileItem* pItem) {
-//nativecall
+  //nativecall
   std::string baseOffset = content.substr(11);
   auto split = skx::Utils::split(baseOffset, " ");
   NativeCallInterface::CallType type = skx::NativeCallCompiler::getCallType(split[0]);

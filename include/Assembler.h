@@ -24,8 +24,9 @@ struct VariablePos {
 class AssemblySection {
 private:
   std::vector<std::string> segments;
-  std::string name;
+
 public:
+  std::string name;
   AssemblySection(std::string name) : name(name) {
   }
   void add(std::string str) {
@@ -59,7 +60,8 @@ public:
     pos.offset = 0;
     pos.pushName = pushName;
     vars.push_back(pos);
-    return "qword [rsp+" + std::to_string(pos.offset) + "]";
+
+    return "[sp, #" + std::to_string(pos.offset) + "]";
 
   }
   void inc() {
@@ -75,7 +77,7 @@ public:
     for(auto& entry : vars) {
       if(entry.var == var) {
         int64_t diff = entry.offset;
-        return "qword [rsp+" + std::to_string(diff) + "]";
+        return "[sp, #" + std::to_string(diff) + "]";
       }
     }
     if(parent == nullptr)
@@ -87,7 +89,7 @@ public:
     for(auto& entry : vars) {
       if(entry.var == var) {
         int64_t diff = (entry.offset) + offset;
-        return "qword [rsp+" + std::to_string(diff) + "]";
+        return "[sp, #" + std::to_string(diff) + "]";
       }
     }
     if(parent == nullptr)
@@ -96,21 +98,20 @@ public:
   }
 
   std::string getSize(bool drop) {
-    int64_t size = 0;
+    int64_t size = 2;
     for(auto& entry : vars) {
       if(entry.pushName.length() == 0)
         size++;
     }
-    return (drop ? "add rsp, " : "sub rsp, ") + std::to_string(size * 8);
+    int remaining = size % 4;
+    if(remaining != 0)
+      size += (4 - remaining);
+    std::string savedRegs =  (std::string(!drop ? "stp" : "ldp") + " x29, x30, [sp, #") + std::to_string((size * 8)-16)+"]";
+    std::string numStr =  (drop ? "add sp, sp, #" : "sub sp, sp, #") + std::to_string(size * 8);
+    return drop ? savedRegs + "\n\t" + numStr : numStr + "\n\t" + savedRegs;
   }
   std::vector<std::string> getStackAdds(bool swap) {
     std::vector<std::string> adds;
-    for(auto& entry : vars) {
-      if(entry.pushName.length() > 0)
-        adds.push_back((swap ? "pop " : "push ") + entry.pushName);
-    }
-    if(swap)
-      std::reverse(adds.begin(), adds.end());
     return adds;
   }
 
@@ -148,10 +149,12 @@ class DataSection {
   std::string serialise() {
     std::string output;
     for(auto& entry : entries) {
-      output.append(entry.second.name + ": db \"" + entry.second.value +  "\", 0\n");
+      output.append(entry.second.name + ":\n\t.ascii \"" + entry.second.value +  "\\0\"\n");
+      output.append(entry.second.name + "_len = . - " + entry.second.name + "\n");
     }
     for(auto& entry : statics) {
-      output.append(entry.first + ": db " + entry.second +  ", 0\n");
+      output.append(entry.first + ":\n\t.ascii \"" + entry.second +  "\\0\"\n");
+      output.append(entry.first + "_len = . - " + entry.first + "\n");
     }
 
     return output;
@@ -167,7 +170,7 @@ class Assembler {
  private:
   std::string getOpFromType(InstructionOperator type);
   std::string getNameForFunctionParameter(size_t index);
-  void assembleTree(CompileItem* item, AssemblerContext* ctx, AssemblySection* section);
+  void assembleTree(CompileItem* item, AssemblerContext* ctx, AssemblySection* section, bool omitStackSize = false);
   void walk(CompileItem* item, AssemblerContext* ctx, AssemblySection* section);
   void assembleTreeWithName(CompileItem* item, AssemblerContext* ctx, std::string name);
   void assembleFunction(Function* function, AssemblerContext* ctx);

@@ -3,11 +3,13 @@ function add_test(a: number, b:number):
   set:string {_text} to "this is printed within the function"
   send {_text} to console
   return {_result}
-
+function p(result: number):
+  set {_target} to 24 + 20 + 4
+  if {_target} is {_result}:
+    send "target matches" to console
 on load:
-  set {_x} to 23
+  set {_x} to 24
   set {_y} to 24
-  set:string {_text} to "test 123"
   set:number {_result} to add_test({_x}, {_y})
   send {_result} to console
-  send {_text} to console
+  p({_result})
